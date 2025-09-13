@@ -13,10 +13,8 @@ from unittest.mock import Mock
 import pytest
 import structlog
 
-from provide.foundation.logger.core import (
-    _LAZY_SETUP_STATE,
-    logger as foundation_logger,
-)
+# Note: Removed module-level import of foundation_logger to avoid circular imports
+# These will be imported within functions when needed
 from provide.foundation.streams.file import reset_streams
 
 
@@ -153,13 +151,13 @@ def _reset_opentelemetry_providers() -> None:
 
 def reset_foundation_state() -> None:
     """
-    Internal function to reset structlog and Foundation's state.
+    Internal function to reset structlog and Foundation's state using Hub-based approach.
 
     This resets:
     - structlog configuration to defaults
-    - Foundation logger state and configuration
+    - Foundation Hub state (which manages all Foundation components)
     - Stream state back to defaults
-    - Lazy setup state tracking
+    - Lazy setup state tracking (if available)
     - OpenTelemetry provider state (if available)
     """
     # Reset structlog to its default unconfigured state
@@ -174,35 +172,37 @@ def reset_foundation_state() -> None:
     # The warnings are harmless in test context.
     # _reset_opentelemetry_providers()
 
-    # Reset foundation logger state
-    foundation_logger._is_configured_by_setup = False
-    foundation_logger._active_config = None
-    foundation_logger._active_resolved_emoji_config = None
-    _LAZY_SETUP_STATE.update({"done": False, "error": None, "in_progress": False})
+    # Clear Hub (this handles all Foundation state including logger instances)
+    try:
+        from provide.foundation.hub.manager import clear_hub
+        clear_hub()
+    except ImportError:
+        # Hub module not available, skip
+        pass
+
+    # Reset lazy setup state if it exists
+    try:
+        from provide.foundation.logger.core import _LAZY_SETUP_STATE
+        _LAZY_SETUP_STATE.update({"done": False, "error": None, "in_progress": False})
+    except ImportError:
+        # Legacy state not available, skip
+        pass
 
 
 def reset_foundation_setup_for_testing() -> None:
     """
-    Public test utility to reset Foundation's internal state.
+    Public test utility to reset Foundation's internal state using Hub-based approach.
 
     This function ensures clean test isolation by resetting all
-    Foundation logging state between test runs.
+    Foundation state between test runs. Now uses Hub.clear_hub() which
+    properly resets all Foundation components.
     """
-    # Full reset but with improved OpenTelemetry handling
+    # Full reset with Hub-based state management
     reset_foundation_state()
-
-    # Clear and re-initialize the hub for test isolation
-    try:
-        from provide.foundation.hub.manager import clear_hub
-
-        clear_hub()
-    except ImportError:
-        pass
 
     # Re-register HTTP transport for tests that need it
     try:
         from provide.foundation.transport.http import _register_http_transport
-
         _register_http_transport()
     except ImportError:
         # Transport module not available
