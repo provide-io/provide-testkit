@@ -202,16 +202,20 @@ def reset_foundation_setup_for_testing() -> None:
     Foundation state between test runs. Now uses Hub.clear_hub() which
     properly resets all Foundation components.
     """
-    # Full reset with Hub-based state management
-    reset_foundation_state()
+    # Minimal version for debugging - just reset structlog
+    import structlog
+    structlog.reset_defaults()
 
-    # Re-register HTTP transport for tests that need it
-    try:
-        from provide.foundation.transport.http import _register_http_transport
-        _register_http_transport()
-    except ImportError:
-        # Transport module not available
-        pass
+    # TODO: Re-enable full reset after debugging hanging issue
+    # reset_foundation_state()
+
+    # Re-register HTTP transport for tests that need it (disabled for debugging)
+    # try:
+    #     from provide.foundation.transport.http import _register_http_transport
+    #     _register_http_transport()
+    # except ImportError:
+    #     # Transport module not available
+    #     pass
 
 
 __all__ = [
