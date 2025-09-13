@@ -177,13 +177,12 @@ def reset_foundation_state() -> None:
     # _reset_opentelemetry_providers()
 
     # Clear Hub (this handles all Foundation state including logger instances)
-    # Temporarily commented out to debug hanging issue
-    # try:
-    #     from provide.foundation.hub.manager import clear_hub
-    #     clear_hub()
-    # except ImportError:
-    #     # Hub module not available, skip
-    #     pass
+    try:
+        from provide.foundation.hub.manager import clear_hub
+        clear_hub()
+    except ImportError:
+        # Hub module not available, skip
+        pass
 
     # Reset lazy setup state if it exists
     try:
@@ -202,20 +201,16 @@ def reset_foundation_setup_for_testing() -> None:
     Foundation state between test runs. Now uses Hub.clear_hub() which
     properly resets all Foundation components.
     """
-    # Minimal version for debugging - just reset structlog
-    import structlog
-    structlog.reset_defaults()
+    # Full reset with Hub-based state management
+    reset_foundation_state()
 
-    # TODO: Re-enable full reset after debugging hanging issue
-    # reset_foundation_state()
-
-    # Re-register HTTP transport for tests that need it (disabled for debugging)
-    # try:
-    #     from provide.foundation.transport.http import _register_http_transport
-    #     _register_http_transport()
-    # except ImportError:
-    #     # Transport module not available
-    #     pass
+    # Re-register HTTP transport for tests that need it
+    try:
+        from provide.foundation.transport.http import _register_http_transport
+        _register_http_transport()
+    except ImportError:
+        # Transport module not available
+        pass
 
 
 __all__ = [
