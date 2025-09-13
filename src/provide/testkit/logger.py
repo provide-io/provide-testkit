@@ -177,12 +177,13 @@ def reset_foundation_state() -> None:
     # _reset_opentelemetry_providers()
 
     # Clear Hub (this handles all Foundation state including logger instances)
-    try:
-        from provide.foundation.hub.manager import clear_hub
-        clear_hub()
-    except ImportError:
-        # Hub module not available, skip
-        pass
+    # Temporarily commented out to debug hanging issue
+    # try:
+    #     from provide.foundation.hub.manager import clear_hub
+    #     clear_hub()
+    # except ImportError:
+    #     # Hub module not available, skip
+    #     pass
 
     # Reset lazy setup state if it exists
     try:
