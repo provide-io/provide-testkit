@@ -13,9 +13,8 @@ from unittest.mock import Mock
 import pytest
 import structlog
 
-# Note: Removed module-level import of foundation_logger to avoid circular imports
-# These will be imported within functions when needed
-from provide.foundation.streams.file import reset_streams
+# Note: Removed module-level imports to avoid circular imports
+# All Foundation imports will be done within functions when needed
 
 
 @pytest.fixture
@@ -164,7 +163,12 @@ def reset_foundation_state() -> None:
     structlog.reset_defaults()
 
     # Reset stream state
-    reset_streams()
+    try:
+        from provide.foundation.streams.file import reset_streams
+        reset_streams()
+    except ImportError:
+        # Streams module not available, skip
+        pass
 
     # Reset OpenTelemetry providers to avoid "Overriding" warnings and stream closure
     # Note: OpenTelemetry providers are designed to prevent override for safety.
