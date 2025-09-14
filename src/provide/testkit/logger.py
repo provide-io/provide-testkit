@@ -159,54 +159,38 @@ def reset_foundation_state() -> None:
     - Lazy setup state tracking (if available)
     - OpenTelemetry provider state (if available)
     """
-    # Reset structlog to its default unconfigured state
-    structlog.reset_defaults()
+    # Use the new internal reset APIs from Foundation's testmode module
+    from provide.foundation.testmode.internal import (
+        reset_coordinator_state,
+        reset_eventsets_state,
+        reset_hub_state,
+        reset_logger_state,
+        reset_streams_state,
+        reset_structlog_state,
+    )
 
-    # Reset stream state
-    try:
-        from provide.foundation.streams.file import reset_streams
-        reset_streams()
-    except ImportError:
-        # Streams module not available, skip
-        pass
+    # Reset in the proper order to avoid triggering reinitialization
+    reset_structlog_state()
+    reset_streams_state()
 
     # Reset OpenTelemetry providers to avoid "Overriding" warnings and stream closure
     # Note: OpenTelemetry providers are designed to prevent override for safety.
     # In test environments, we suppress this reset to avoid hanging/blocking.
     # The warnings are harmless in test context.
-    # _reset_opentelemetry_providers()
+    _reset_opentelemetry_providers()
 
     # Reset lazy setup state FIRST to prevent hub operations from triggering setup
-    try:
-        from provide.foundation.logger.core import _LAZY_SETUP_STATE
-        _LAZY_SETUP_STATE.update({"done": False, "error": None, "in_progress": False})
-    except ImportError:
-        # Legacy state not available, skip
-        pass
+    reset_logger_state()
 
     # Clear Hub (this handles all Foundation state including logger instances)
-    try:
-        from provide.foundation.hub.manager import clear_hub
-        clear_hub()
-    except ImportError:
-        # Hub module not available, skip
-        pass
+    reset_hub_state()
 
-    # Reset coordinator state (cached log level and setup logger)
-    try:
-        from provide.foundation.logger.setup.coordinator import reset_coordinator_state
-        reset_coordinator_state()
-    except ImportError:
-        # Coordinator module not available, skip
-        pass
+    # Reset coordinator and event set state
+    reset_coordinator_state()
+    reset_eventsets_state()
 
-    # Final reset of lazy setup state (after all operations that might trigger setup)
-    try:
-        from provide.foundation.logger.core import _LAZY_SETUP_STATE
-        _LAZY_SETUP_STATE.update({"done": False, "error": None, "in_progress": False})
-    except ImportError:
-        # Legacy state not available, skip
-        pass
+    # Final reset of logger state (after all operations that might trigger setup)
+    reset_logger_state()
 
 
 def reset_foundation_setup_for_testing() -> None:
