@@ -44,6 +44,14 @@ def setup_foundation_telemetry_for_test(
     def _setup(config: TelemetryConfig | None = None) -> None:
         if config is None:
             config = TelemetryConfig()
-        setup_telemetry(config)
+
+        # Use Hub API directly instead of deprecated setup_telemetry
+        try:
+            from provide.foundation.hub.manager import get_hub
+            hub = get_hub()
+            hub.initialize_foundation(config, force=True)
+        except ImportError:
+            # Fallback to deprecated setup_telemetry if Hub not available
+            setup_telemetry(config)
 
     return _setup
