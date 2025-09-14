@@ -11,7 +11,7 @@ from typing import TextIO
 
 import pytest
 
-from provide.foundation import TelemetryConfig, setup_telemetry
+from provide.foundation import TelemetryConfig, get_hub
 from provide.testkit.streams import set_log_stream_for_testing
 
 
@@ -46,12 +46,7 @@ def setup_foundation_telemetry_for_test(
             config = TelemetryConfig()
 
         # Use Hub API directly instead of deprecated setup_telemetry
-        try:
-            from provide.foundation.hub.manager import get_hub
-            hub = get_hub()
-            hub.initialize_foundation(config, force=True)
-        except ImportError:
-            # Fallback to deprecated setup_telemetry if Hub not available
-            setup_telemetry(config)
+        hub = get_hub()
+        hub.initialize_foundation(config, force=True)
 
     return _setup
