@@ -145,7 +145,7 @@ grpc-dev = [
     "provide-testkit[standard,grpc,typecheck]",
 ]
 
-full = [
+all = [
     "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils]",
 ]
 
