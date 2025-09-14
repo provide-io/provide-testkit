@@ -79,6 +79,12 @@ def __getattr__(name: str) -> Any:
         "reset_foundation_state",
         "mock_logger",
         "mock_logger_factory",
+        # New hook utilities
+        "DEFAULT_NOISY_LOGGERS",
+        "get_noisy_loggers",
+        "get_log_level_for_noisy_loggers",
+        "pytest_runtest_setup",
+        "suppress_loggers",
     ]:
         import provide.testkit.logger as logger_module
 
@@ -248,6 +254,12 @@ __all__ = [
     # Logger testing
     "reset_foundation_setup_for_testing",
     "reset_foundation_state",
+    # Logger hook utilities
+    "DEFAULT_NOISY_LOGGERS",
+    "get_noisy_loggers",
+    "get_log_level_for_noisy_loggers",
+    "pytest_runtest_setup",
+    "suppress_loggers",
     # Stream testing
     "set_log_stream_for_testing",
     # Common fixtures
