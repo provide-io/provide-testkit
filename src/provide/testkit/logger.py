@@ -192,6 +192,14 @@ def reset_foundation_state() -> None:
         # Legacy state not available, skip
         pass
 
+    # Reset coordinator state (cached log level and setup logger)
+    try:
+        from provide.foundation.logger.setup.coordinator import reset_coordinator_state
+        reset_coordinator_state()
+    except ImportError:
+        # Coordinator module not available, skip
+        pass
+
 
 def reset_foundation_setup_for_testing() -> None:
     """
