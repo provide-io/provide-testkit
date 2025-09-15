@@ -164,10 +164,7 @@ dev-dependencies = [
 ]
 
 [tool.uv.sources]
-provide-foundation = { workspace = true }
-
-[tool.uv.workspace]
-members = ["../provide-foundation"]
+provide-foundation = { path = "../provide-foundation", editable = true }
 
 [tool.ruff]
 target-version = "py311"
