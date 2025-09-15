@@ -11,7 +11,7 @@ from typing import Any
 try:
     import radon
     from radon.complexity import cc_visit
-    from radon.metrics import mi_visit, raw_visit
+    from radon.metrics import mi_visit
     from radon.raw import analyze
     RADON_AVAILABLE = True
 except ImportError:
@@ -19,7 +19,6 @@ except ImportError:
     radon = None
     cc_visit = None
     mi_visit = None
-    raw_visit = None
     analyze = None
 
 from ..base import QualityResult, QualityTool, QualityToolError
