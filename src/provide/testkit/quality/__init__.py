@@ -58,4 +58,19 @@ def __getattr__(name: str):
         from .documentation import DocumentationFixture
         return DocumentationFixture
 
+    # Quality decorators
+    elif name in [
+        "quality_gate", "coverage_gate", "security_gate", "complexity_gate",
+        "documentation_gate", "performance_gate", "quality_check",
+        "coverage_required", "security_required", "complexity_required",
+        "documentation_required", "performance_required", "quality_required"
+    ]:
+        from .decorators import (
+            quality_gate, coverage_gate, security_gate, complexity_gate,
+            documentation_gate, performance_gate, quality_check,
+            coverage_required, security_required, complexity_required,
+            documentation_required, performance_required, quality_required
+        )
+        return locals()[name]
+
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
