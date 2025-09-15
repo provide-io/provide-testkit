@@ -84,7 +84,11 @@ class TestCoverageTracker:
         """Test successful coverage analysis."""
         mock_coverage = Mock()
         mock_coverage.report.return_value = 92.5
-        mock_coverage.get_data.return_value = Mock()
+
+        # Mock coverage data properly
+        mock_data = Mock()
+        mock_data.measured_files.return_value = []
+        mock_coverage.get_data.return_value = mock_data
         mock_coverage_class.return_value = mock_coverage
 
         tracker = CoverageTracker({"fail_under": 90})
@@ -102,7 +106,11 @@ class TestCoverageTracker:
         """Test analysis when coverage is below threshold."""
         mock_coverage = Mock()
         mock_coverage.report.return_value = 75.0
-        mock_coverage.get_data.return_value = Mock()
+
+        # Mock coverage data properly
+        mock_data = Mock()
+        mock_data.measured_files.return_value = []
+        mock_coverage.get_data.return_value = mock_data
         mock_coverage_class.return_value = mock_coverage
 
         tracker = CoverageTracker({"fail_under": 80})
