@@ -176,6 +176,14 @@ def reset_foundation_state() -> None:
     # The warnings are harmless in test context.
     # _reset_opentelemetry_providers()
 
+    # Reset lazy setup state FIRST to prevent hub operations from triggering setup
+    try:
+        from provide.foundation.logger.core import _LAZY_SETUP_STATE
+        _LAZY_SETUP_STATE.update({"done": False, "error": None, "in_progress": False})
+    except ImportError:
+        # Legacy state not available, skip
+        pass
+
     # Clear Hub (this handles all Foundation state including logger instances)
     try:
         from provide.foundation.hub.manager import clear_hub
@@ -184,20 +192,20 @@ def reset_foundation_state() -> None:
         # Hub module not available, skip
         pass
 
-    # Reset lazy setup state if it exists
-    try:
-        from provide.foundation.logger.core import _LAZY_SETUP_STATE
-        _LAZY_SETUP_STATE.update({"done": False, "error": None, "in_progress": False})
-    except ImportError:
-        # Legacy state not available, skip
-        pass
-
     # Reset coordinator state (cached log level and setup logger)
     try:
         from provide.foundation.logger.setup.coordinator import reset_coordinator_state
         reset_coordinator_state()
     except ImportError:
         # Coordinator module not available, skip
+        pass
+
+    # Final reset of lazy setup state (after all operations that might trigger setup)
+    try:
+        from provide.foundation.logger.core import _LAZY_SETUP_STATE
+        _LAZY_SETUP_STATE.update({"done": False, "error": None, "in_progress": False})
+    except ImportError:
+        # Legacy state not available, skip
         pass
 
 
@@ -218,6 +226,14 @@ def reset_foundation_setup_for_testing() -> None:
         _register_http_transport()
     except ImportError:
         # Transport module not available
+        pass
+
+    # Final reset of lazy setup state (after transport registration)
+    try:
+        from provide.foundation.logger.core import _LAZY_SETUP_STATE
+        _LAZY_SETUP_STATE.update({"done": False, "error": None, "in_progress": False})
+    except ImportError:
+        # Legacy state not available, skip
         pass
 
 
