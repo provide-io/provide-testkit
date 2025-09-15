@@ -52,7 +52,7 @@ class SecurityFixture(BaseQualityFixture):
             return {"error": "Scanner not available"}
 
         result = self.scanner.analyze(path, artifact_dir=self.artifact_dir)
-        self.add_result("security", result)
+        self.add_result(result)
         return {
             "passed": result.passed,
             "score": result.score,
@@ -72,7 +72,7 @@ class SecurityFixture(BaseQualityFixture):
         if not self.scanner:
             return "No security scanner available"
 
-        results = self.get_results()
+        results = self.get_results_by_tool()
         if "security" not in results:
             return "No security results available"
 

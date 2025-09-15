@@ -105,6 +105,10 @@ class BaseQualityFixture(ABC):
         """Get all tracked results."""
         return self.results.copy()
 
+    def get_results_by_tool(self) -> dict[str, QualityResult]:
+        """Get results indexed by tool name."""
+        return {result.tool: result for result in self.results}
+
     def ensure_setup(self) -> None:
         """Ensure setup has been called."""
         if not self._setup_complete:

@@ -1,0 +1,9 @@
+{
+  "tool": "security",
+  "passed": true,
+  "score": 100.0,
+  "details": {
+    "message": "No Python files found to scan"
+  },
+  "execution_time": 9.489059448242188e-05
+}
