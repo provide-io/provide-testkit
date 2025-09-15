@@ -58,6 +58,7 @@ quality = [
 
 # Advanced type checking
 typecheck = [
+    "mypy>=1.17.1",
     "pyright>=1.1.401",
     "pyre-check>=0.9.23",
     "pyre-extensions>=0.0.32",
@@ -65,6 +66,7 @@ typecheck = [
     "ty>=0.0.1a6",
     "types-cryptography>=3.3.23.2",
     "types-toml>=0.10.8.20240310",
+    "types-protobuf>=6.30.2.20250516",
 ]
 
 # Property-based and advanced testing
@@ -103,7 +105,9 @@ process = [
 # gRPC/Protobuf development
 grpc = [
     "grpc-stubs>=1.53.0.6",
+    "grpcio>=1.73.0",
     "grpcio-tools>=1.73.0",
+    "grpcio-health-checking>=1.73.0",
     "types-protobuf>=6.30.2.20250516",
     "types-grpcio>=1.0.0.20250603",
 ]
@@ -143,6 +147,10 @@ standard = [
 
 grpc-dev = [
     "provide-testkit[standard,grpc,typecheck]",
+]
+
+pyvider-dev = [
+    "provide-testkit[standard,advanced-testing,typecheck,grpc,build,profiling]",
 ]
 
 all = [
