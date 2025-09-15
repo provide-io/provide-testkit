@@ -157,7 +157,6 @@ all = [
     "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils]",
 ]
 
-[dependency-groups]
 dev = [
     "provide-testkit[quality]",
 ]
