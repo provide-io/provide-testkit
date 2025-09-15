@@ -11,10 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Common Development Commands
 
 ```bash
-
-uv venv
-source .venv/bin/activate
-uv sync --all-groups --dev
+# Set up development environment (creates workenv/, installs dependencies)
+source env.sh
 
 # Run tests
 pytest                           # Run all tests
