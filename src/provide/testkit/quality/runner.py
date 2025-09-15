@@ -155,6 +155,10 @@ class QualityRunner:
                     if "min_score" in requirement and result.score is not None:
                         if result.score < requirement["min_score"]:
                             return False
+            elif isinstance(requirement, bool):
+                # Boolean requirement - must pass if True (check before int/float!)
+                if requirement and not result.passed:
+                    return False
             elif isinstance(requirement, (int, float)):
                 # Simple score requirement
                 if result.score is None or result.score < requirement:
@@ -162,10 +166,6 @@ class QualityRunner:
             elif isinstance(requirement, str):
                 # String requirements (e.g., complexity grades)
                 if not self._check_grade_requirement(result, requirement):
-                    return False
-            elif isinstance(requirement, bool):
-                # Boolean requirement - must pass if True
-                if requirement and not result.passed:
                     return False
 
         return True
