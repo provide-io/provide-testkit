@@ -10,7 +10,7 @@ from typing import Any
 
 try:
     import radon
-    from radon.complexity import cc_visit
+    from radon.complexity import cc_visit, cc_rank
     from radon.metrics import mi_visit
     from radon.raw import analyze
     RADON_AVAILABLE = True
@@ -18,6 +18,7 @@ except ImportError:
     RADON_AVAILABLE = False
     radon = None
     cc_visit = None
+    cc_rank = None
     mi_visit = None
     analyze = None
 
@@ -113,7 +114,7 @@ class ComplexityAnalyzer:
                             "file": str(file_path),
                             "name": item.name,
                             "complexity": item.complexity,
-                            "rank": item.rank,
+                            "rank": cc_rank(item.complexity),
                             "lineno": item.lineno
                         })
 
