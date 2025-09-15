@@ -49,11 +49,14 @@ Issues = "https://github.com/provide-io/provide-testkit/issues"
 
 [project.optional-dependencies]
 
-# Basic code quality tools
+# Comprehensive code quality tools
 quality = [
     "ruff>=0.11.8",
     "mypy>=1.17.1",
     "bandit>=1.8.3",
+    "coverage[toml]>=7.0.0",
+    "radon>=6.0.0",
+    "interrogate>=1.5.0",
 ]
 
 # Advanced type checking

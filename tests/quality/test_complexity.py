@@ -89,8 +89,8 @@ class TestComplexityAnalyzer:
 
         assert result.tool == "complexity"
         assert result.passed is False  # Should fail due to max_complexity: 20 < 25
-        assert result.score == 40.0  # F grade = 40%
-        assert result.details["overall_grade"] == "F"
+        assert result.score == 55.0  # D grade = 55% (complexity 25 is in 20-30 range)
+        assert result.details["overall_grade"] == "D"
         assert result.details["max_complexity"] == 25
 
     def test_discover_python_files(self, tmp_path):

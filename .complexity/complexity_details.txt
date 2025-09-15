@@ -1,0 +1,42 @@
+Most Complex Functions
+==================================================
+
+1. _process_complexity_results (Grade C)
+   File: ../provide-testkit/src/provide/testkit/quality/complexity/analyzer.py:179
+   Complexity: 18
+
+2. _run_radon_analysis (Grade B)
+   File: ../provide-testkit/src/provide/testkit/quality/complexity/analyzer.py:81
+   Complexity: 9
+
+3. ComplexityAnalyzer (Grade B)
+   File: ../provide-testkit/src/provide/testkit/quality/complexity/analyzer.py:28
+   Complexity: 7
+
+4. _generate_text_report (Grade B)
+   File: ../provide-testkit/src/provide/testkit/quality/complexity/analyzer.py:323
+   Complexity: 7
+
+5. _discover_python_files (Grade B)
+   File: ../provide-testkit/src/provide/testkit/quality/complexity/analyzer.py:157
+   Complexity: 6
+
+6. _generate_artifacts (Grade A)
+   File: ../provide-testkit/src/provide/testkit/quality/complexity/analyzer.py:282
+   Complexity: 4
+
+7. __init__ (Grade A)
+   File: ../provide-testkit/src/provide/testkit/quality/complexity/analyzer.py:35
+   Complexity: 3
+
+8. report (Grade A)
+   File: ../provide-testkit/src/provide/testkit/quality/complexity/analyzer.py:383
+   Complexity: 3
+
+9. analyze (Grade A)
+   File: ../provide-testkit/src/provide/testkit/quality/complexity/analyzer.py:50
+   Complexity: 2
+
+10. _generate_detail_report (Grade A)
+   File: ../provide-testkit/src/provide/testkit/quality/complexity/analyzer.py:364
+   Complexity: 2

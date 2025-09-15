@@ -1,0 +1,10 @@
+{
+  "tool": "complexity",
+  "passed": true,
+  "score": 100.0,
+  "details": {
+    "message": "No Python files found to analyze",
+    "grade": "A"
+  },
+  "execution_time": 1.5735626220703125e-05
+}
