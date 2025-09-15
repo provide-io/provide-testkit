@@ -47,6 +47,9 @@ Homepage = "https://github.com/provide-io/provide-testkit"
 Repository = "https://github.com/provide-io/provide-testkit"
 Issues = "https://github.com/provide-io/provide-testkit/issues"
 
+[project.scripts]
+provide-testkit = "provide.testkit.main:main"
+
 [project.optional-dependencies]
 
 # Comprehensive code quality tools
