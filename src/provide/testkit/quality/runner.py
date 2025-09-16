@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -18,18 +19,18 @@ class QualityRunner:
 
     def __init__(
         self,
-        artifact_root: Path,
+        artifact_root: Path | None = None,
         tools: list[str] | None = None,
         config: dict[str, Any] | None = None
     ):
         """Initialize the quality runner.
 
         Args:
-            artifact_root: Root directory for storing artifacts
+            artifact_root: Root directory for storing artifacts (defaults to .quality-artifacts)
             tools: List of tool names to run (None for default set)
             config: Configuration for tools and runner
         """
-        self.artifact_root = Path(artifact_root)
+        self.artifact_root = Path(artifact_root) if artifact_root else Path(".quality-artifacts")
         self.config = config or {}
         self.tools = tools or self._get_default_tools()
         self.tool_instances: dict[str, QualityTool] = {}
@@ -235,3 +236,144 @@ class QualityRunner:
             lines.append(result.summary)
 
         return "\n".join(lines)
+
+    def run_tools(
+        self,
+        target: Path,
+        tools: list[str] | None = None,
+        artifact_dir: Path | None = None,
+        tool_configs: dict[str, Any] | None = None
+    ) -> dict[str, QualityResult]:
+        """Run specific quality tools on the target.
+
+        Args:
+            target: Path to analyze
+            tools: List of tool names to run (None for all available)
+            artifact_dir: Directory for artifacts (overrides default)
+            tool_configs: Configuration for tools
+
+        Returns:
+            Dictionary mapping tool names to their results
+        """
+        if artifact_dir:
+            original_artifact_root = self.artifact_root
+            self.artifact_root = artifact_dir
+
+        if tool_configs:
+            original_config = self.config
+            self.config = tool_configs
+            # Re-initialize tools with new config
+            self._initialize_tools()
+
+        # Filter tools if specified
+        if tools:
+            filtered_instances = {name: tool for name, tool in self.tool_instances.items() if name in tools}
+            original_instances = self.tool_instances
+            self.tool_instances = filtered_instances
+
+        try:
+            results = self.run_all(target)
+            return results
+        finally:
+            # Restore original state
+            if artifact_dir:
+                self.artifact_root = original_artifact_root
+            if tool_configs:
+                self.config = original_config
+                self._initialize_tools()
+            if tools:
+                self.tool_instances = original_instances
+
+    def run_with_gates(
+        self,
+        target: Path,
+        gates: dict[str, Any],
+        artifact_dir: Path | None = None,
+        fail_fast: bool = False
+    ) -> QualityGateResults:
+        """Run quality tools and check against quality gates.
+
+        Args:
+            target: Path to analyze
+            gates: Quality gate requirements
+            artifact_dir: Directory for artifacts
+            fail_fast: Stop on first failure
+
+        Returns:
+            QualityGateResults with overall pass/fail and detailed results
+        """
+        if artifact_dir:
+            original_artifact_root = self.artifact_root
+            self.artifact_root = artifact_dir
+
+        try:
+            # Run only the tools specified in gates
+            tools_to_run = list(gates.keys())
+            results = self.run_tools(target, tools_to_run)
+
+            # Check gates
+            overall_passed = True
+            failed_gates = []
+
+            for gate_name, requirement in gates.items():
+                if gate_name not in results:
+                    overall_passed = False
+                    failed_gates.append(gate_name)
+                    if fail_fast:
+                        break
+                    continue
+
+                result = results[gate_name]
+                gate_passed = self._check_single_gate(result, requirement)
+
+                if not gate_passed:
+                    overall_passed = False
+                    failed_gates.append(gate_name)
+                    if fail_fast:
+                        break
+
+            return QualityGateResults(
+                passed=overall_passed,
+                results=results,
+                failed_gates=failed_gates
+            )
+        finally:
+            if artifact_dir:
+                self.artifact_root = original_artifact_root
+
+    def _check_single_gate(self, result: QualityResult, requirement: Any) -> bool:
+        """Check if a single result meets a gate requirement."""
+        if isinstance(requirement, dict):
+            # Complex gate requirements
+            if requirement.get("enabled", True):
+                if not result.passed:
+                    return False
+                if "min_score" in requirement and result.score is not None:
+                    if result.score < requirement["min_score"]:
+                        return False
+        elif isinstance(requirement, bool):
+            # Boolean requirement - must pass if True (check before int/float!)
+            if requirement and not result.passed:
+                return False
+        elif isinstance(requirement, (int, float)):
+            # Simple score requirement
+            if result.score is None or result.score < requirement:
+                return False
+        elif isinstance(requirement, str):
+            # String requirements (e.g., complexity grades)
+            if not self._check_grade_requirement(result, requirement):
+                return False
+
+        return True
+
+
+@dataclass
+class QualityGateResults:
+    """Results from running quality gates."""
+    passed: bool
+    results: dict[str, QualityResult]
+    failed_gates: list[str] = None
+
+    def __post_init__(self):
+        if self.failed_gates is None:
+            self.failed_gates = []
