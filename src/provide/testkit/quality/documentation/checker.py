@@ -114,7 +114,9 @@ class DocumentationChecker:
             "*/venv/*"
         ])
         if ignore_patterns:
-            config["ignore_regex"] = [str(pattern) for pattern in ignore_patterns]
+            # Convert list to regex pattern for interrogate
+            pattern_string = "|".join(str(pattern) for pattern in ignore_patterns)
+            config["ignore_regex"] = pattern_string
 
         # Set what to check
         config["ignore_init_method"] = self.config.get("ignore_init_method", True)
@@ -203,16 +205,20 @@ class DocumentationChecker:
         }
 
         # Add file-level details if available
-        if hasattr(results, 'detailed_coverage'):
+        if hasattr(results, 'detailed_coverage') and results.detailed_coverage:
             file_details = []
-            for file_info in results.detailed_coverage:
-                file_details.append({
-                    "file": str(file_info.filename),
-                    "coverage": file_info.perc_covered,
-                    "covered": file_info.covered_count,
-                    "missing": file_info.missing_count
-                })
-            details["file_coverage"] = file_details
+            try:
+                for file_info in results.detailed_coverage:
+                    file_details.append({
+                        "file": str(file_info.filename),
+                        "coverage": file_info.perc_covered,
+                        "covered": file_info.covered_count,
+                        "missing": file_info.missing_count
+                    })
+                details["file_coverage"] = file_details
+            except (TypeError, AttributeError):
+                # Skip file details if not properly formed
+                pass
 
         return QualityResult(
             tool="documentation",
