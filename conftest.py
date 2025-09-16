@@ -15,7 +15,7 @@ def pytest_report_header(config):
     that testing helpers are active.
     """
     # Check if warnings should be suppressed
-    if os.getenv("FOUNDATION_SUPPRESS_TESTING_WARNINGS"):
+    if os.getenv("TESTKIT_SUPPRESS_WARNINGS"):
         return None
 
     # Only show if we appear to be in a testing context
@@ -28,7 +28,7 @@ def pytest_report_header(config):
         "🚨                    PROVIDE-TESTKIT ACTIVE                    🚨",
         "🔧 Testing helpers are enabled - production behavior may differ 🔧",
         "💡 Fixtures provide automatic cleanup and isolation             💡",
-        "🔇 To suppress this notice: FOUNDATION_SUPPRESS_TESTING_WARNINGS=1",
+        "🔇 To suppress this notice: TESTKIT_SUPPRESS_WARNINGS=1",
         "⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️",
         ""
     ]
@@ -41,7 +41,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     reminders and links.
     """
     # Check if warnings should be suppressed
-    if os.getenv("FOUNDATION_SUPPRESS_TESTING_WARNINGS"):
+    if os.getenv("TESTKIT_SUPPRESS_WARNINGS"):
         return
 
     # Only show if we appear to be in a testing context

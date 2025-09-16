@@ -385,7 +385,7 @@ TestKit respects several environment variables:
 
 ```bash
 # Suppress testing warnings
-export FOUNDATION_SUPPRESS_TESTING_WARNINGS=1
+export TESTKIT_SUPPRESS_WARNINGS=1
 
 # Enable testing mode explicitly
 export TESTING=true
