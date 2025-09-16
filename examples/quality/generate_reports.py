@@ -10,11 +10,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import sys
 import time
-
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from provide.testkit.quality.artifacts import ArtifactManager
 from provide.testkit.quality.report import ReportGenerator

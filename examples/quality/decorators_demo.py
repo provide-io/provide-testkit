@@ -8,12 +8,7 @@ and demonstrating both passing and failing scenarios.
 
 from __future__ import annotations
 
-from pathlib import Path
-import sys
 import time
-
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from provide.testkit.quality.decorators import performance_gate, quality_check
 
