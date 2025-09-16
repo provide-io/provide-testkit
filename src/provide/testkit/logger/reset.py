@@ -206,6 +206,7 @@ def reset_foundation_setup_for_testing() -> None:
     # Re-register HTTP transport for tests that need it
     try:
         from provide.foundation.transport.http import _register_http_transport
+
         _register_http_transport()
     except ImportError:
         # Transport module not available
@@ -214,6 +215,7 @@ def reset_foundation_setup_for_testing() -> None:
     # Final reset of lazy setup state (after transport registration)
     try:
         from provide.foundation.logger.core import _LAZY_SETUP_STATE
+
         _LAZY_SETUP_STATE.update({"done": False, "error": None, "in_progress": False})
     except ImportError:
         # Legacy state not available, skip

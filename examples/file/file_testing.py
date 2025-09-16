@@ -19,10 +19,6 @@ Learning objectives:
 
 from pathlib import Path
 
-import pytest
-
-from provide.testkit import temp_directory, test_files_structure
-
 
 def test_basic_file_operations(temp_directory):
     """Test basic file creation and content operations."""
@@ -108,8 +104,8 @@ def test_file_content_patterns(temp_directory):
 
     # Act: Write different content types
     json_file.write_text('{"items": [1, 2, 3], "total": 3}')
-    csv_file.write_text('name,age,city\nAlice,30,NYC\nBob,25,LA')
-    log_file.write_text('INFO: Application started\nERROR: Database connection failed')
+    csv_file.write_text("name,age,city\nAlice,30,NYC\nBob,25,LA")
+    log_file.write_text("INFO: Application started\nERROR: Database connection failed")
 
     # Assert: Verify content patterns
     json_content = json_file.read_text()
@@ -117,12 +113,12 @@ def test_file_content_patterns(temp_directory):
     assert '"total": 3' in json_content
 
     csv_content = csv_file.read_text()
-    assert csv_content.startswith('name,age,city')
-    assert 'Alice,30,NYC' in csv_content
+    assert csv_content.startswith("name,age,city")
+    assert "Alice,30,NYC" in csv_content
 
     log_content = log_file.read_text()
-    assert 'INFO:' in log_content
-    assert 'ERROR:' in log_content
+    assert "INFO:" in log_content
+    assert "ERROR:" in log_content
 
 
 def test_file_modification_tracking(temp_directory):
@@ -136,6 +132,7 @@ def test_file_modification_tracking(temp_directory):
 
     # Act: Modify file content
     import time
+
     time.sleep(0.1)  # Ensure timestamp difference
 
     modified_content = "Modified content"
@@ -189,7 +186,6 @@ def test_file_with_predefined_structure(test_files_structure):
 
 if __name__ == "__main__":
     # Run examples directly for demonstration
-    import shutil
     import tempfile
 
     print("🧪 File Testing Examples")
@@ -213,7 +209,7 @@ if __name__ == "__main__":
         print(f"✅ Created: {demo_dir.name}/ structure")
 
         # Show file listing
-        print(f"📋 Files created:")
+        print("📋 Files created:")
         for item in temp_path.rglob("*"):
             relative_path = item.relative_to(temp_path)
             file_type = "📁" if item.is_dir() else "📄"

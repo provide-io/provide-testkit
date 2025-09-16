@@ -20,6 +20,7 @@ class QualityResult:
         artifacts: List of artifact files created
         execution_time: Time taken to run the analysis in seconds
     """
+
     tool: str
     passed: bool
     score: float | None = None
@@ -71,11 +72,7 @@ class BaseQualityFixture(ABC):
     configuration management, artifact handling, and result tracking.
     """
 
-    def __init__(
-        self,
-        config: dict[str, Any] | None = None,
-        artifact_dir: Path | None = None
-    ):
+    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None):
         """Initialize the fixture.
 
         Args:
@@ -151,9 +148,11 @@ class QualityError(Exception):
 
 class QualityConfigError(QualityError):
     """Exception for configuration errors."""
+
     pass
 
 
 class QualityToolError(QualityError):
     """Exception for tool execution errors."""
+
     pass

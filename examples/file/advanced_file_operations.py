@@ -20,13 +20,9 @@ Learning objectives:
 import json
 from pathlib import Path
 import shutil
-import stat
 import time
-from unittest.mock import Mock, patch
 
 import pytest
-
-from provide.testkit import temp_directory
 
 
 # Example classes for file operations
@@ -37,7 +33,7 @@ class FileManager:
         self.base_directory = Path(base_directory)
         self.base_directory.mkdir(parents=True, exist_ok=True)
 
-    def create_file_with_content(self, filename: str, content: str, encoding: str = 'utf-8') -> Path:
+    def create_file_with_content(self, filename: str, content: str, encoding: str = "utf-8") -> Path:
         """Create a file with specific content."""
         file_path = self.base_directory / filename
         file_path.write_text(content, encoding=encoding)
@@ -83,12 +79,12 @@ class FileManager:
 
         stat_info = file_path.stat()
         return {
-            'size': stat_info.st_size,
-            'modified_time': stat_info.st_mtime,
-            'permissions': oct(stat_info.st_mode)[-3:],
-            'is_file': file_path.is_file(),
-            'is_directory': file_path.is_dir(),
-            'exists': True
+            "size": stat_info.st_size,
+            "modified_time": stat_info.st_mtime,
+            "permissions": oct(stat_info.st_mode)[-3:],
+            "is_file": file_path.is_file(),
+            "is_directory": file_path.is_dir(),
+            "exists": True,
         }
 
 
@@ -132,12 +128,13 @@ class ConfigManager:
         """List all configuration files."""
         configs = []
         for file_path in self.config_directory.glob("*.json"):
-            if not file_path.name.endswith('.backup.json'):
+            if not file_path.name.endswith(".backup.json"):
                 configs.append(file_path.stem)
         return sorted(configs)
 
 
 # Test Patterns
+
 
 def test_basic_file_operations(temp_directory):
     """Pattern 1: Basic file creation and manipulation."""
@@ -150,9 +147,9 @@ def test_basic_file_operations(temp_directory):
 
     # Test file info
     info = file_manager.get_file_info("test.txt")
-    assert info['size'] == len("Hello, World!")
-    assert info['is_file'] is True
-    assert info['is_directory'] is False
+    assert info["size"] == len("Hello, World!")
+    assert info["is_file"] is True
+    assert info["is_directory"] is False
 
     # Test file deletion
     assert file_manager.delete_file("test.txt") is True
@@ -165,7 +162,7 @@ def test_binary_file_operations(temp_directory):
     file_manager = FileManager(temp_directory)
 
     # Create binary data
-    binary_data = b'\x00\x01\x02\x03\xFF\xFE\xFD'
+    binary_data = b"\x00\x01\x02\x03\xff\xfe\xfd"
     binary_file = file_manager.create_binary_file("data.bin", binary_data)
 
     # Verify binary content
@@ -188,12 +185,12 @@ def test_file_permissions(temp_directory):
     # Test readable permissions
     file_manager.set_permissions("permissions_test.txt", 0o644)
     info = file_manager.get_file_info("permissions_test.txt")
-    assert info['permissions'] == '644'
+    assert info["permissions"] == "644"
 
     # Test executable permissions
     file_manager.set_permissions("permissions_test.txt", 0o755)
     info = file_manager.get_file_info("permissions_test.txt")
-    assert info['permissions'] == '755'
+    assert info["permissions"] == "755"
 
     # Verify file is still readable
     assert test_file.read_text() == "test content"
@@ -225,10 +222,10 @@ def test_directory_structure_creation(temp_directory):
 
     # Create nested directory structure
     structure = {
-        'config': ['app.json', 'database.json'],
-        'data': ['users.csv', 'logs.txt'],
-        'scripts': ['deploy.sh', 'backup.py'],
-        'docs': ['README.md', 'API.md']
+        "config": ["app.json", "database.json"],
+        "data": ["users.csv", "logs.txt"],
+        "scripts": ["deploy.sh", "backup.py"],
+        "docs": ["README.md", "API.md"],
     }
 
     for directory, files in structure.items():
@@ -256,9 +253,9 @@ def test_configuration_management(temp_directory):
 
     # Test JSON configuration
     app_config = {
-        'database': {'host': 'localhost', 'port': 5432},
-        'api': {'timeout': 30, 'retries': 3},
-        'features': ['auth', 'logging', 'metrics']
+        "database": {"host": "localhost", "port": 5432},
+        "api": {"timeout": 30, "retries": 3},
+        "features": ["auth", "logging", "metrics"],
     }
 
     json_path = config_manager.save_json_config("app", app_config)
@@ -319,15 +316,15 @@ def test_large_file_operations(temp_directory):
 
     # Verify size
     info = file_manager.get_file_info("large.txt")
-    assert info['size'] > 1000000  # At least 1MB
+    assert info["size"] > 1000000  # At least 1MB
 
     # Test reading chunks
-    with open(large_file, 'r') as f:
+    with open(large_file) as f:
         first_chunk = f.read(1000)
         assert first_chunk.startswith("This is a test line.")
 
     # Test file truncation
-    with open(large_file, 'r+') as f:
+    with open(large_file, "r+") as f:
         f.truncate(1000)
 
     # Verify truncation
@@ -359,7 +356,7 @@ def test_concurrent_file_access_simulation(temp_directory):
     final_content = shared_file.read_text()
     assert "Process 0" in final_content
     assert "Process 4" in final_content
-    assert final_content.count('\n') >= 5
+    assert final_content.count("\n") >= 5
 
 
 def test_file_system_edge_cases(temp_directory):
@@ -422,7 +419,7 @@ def test_file_timestamps_and_metadata(temp_directory):
     # Create file and record creation time
     test_file = file_manager.create_file_with_content("timestamp_test.txt", "initial")
     initial_info = file_manager.get_file_info("timestamp_test.txt")
-    initial_mtime = initial_info['modified_time']
+    initial_mtime = initial_info["modified_time"]
 
     # Wait a bit and modify the file
     time.sleep(0.1)
@@ -430,10 +427,10 @@ def test_file_timestamps_and_metadata(temp_directory):
 
     # Check that modification time changed
     updated_info = file_manager.get_file_info("timestamp_test.txt")
-    updated_mtime = updated_info['modified_time']
+    updated_mtime = updated_info["modified_time"]
 
     assert updated_mtime > initial_mtime
-    assert updated_info['size'] != initial_info['size']
+    assert updated_info["size"] != initial_info["size"]
 
 
 if __name__ == "__main__":

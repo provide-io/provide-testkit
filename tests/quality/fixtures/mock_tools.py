@@ -10,8 +10,6 @@ This file contains various patterns that quality tools would analyze:
 """
 
 import subprocess
-import os
-from pathlib import Path
 
 
 def well_documented_function(param1: str, param2: int) -> str:
@@ -51,9 +49,9 @@ def complex_function(data):
         if item is None:
             continue
         elif isinstance(item, str):
-            if item.startswith('prefix'):
+            if item.startswith("prefix"):
                 result.append(item.upper())
-            elif item.endswith('suffix'):
+            elif item.endswith("suffix"):
                 result.append(item.lower())
             else:
                 result.append(item.title())

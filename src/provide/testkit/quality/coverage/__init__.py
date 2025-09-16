@@ -29,8 +29,8 @@ from .tracker import CoverageTracker
 
 __all__ = [
     "CoverageFixture",
+    "CoverageReporter",
+    "CoverageTracker",
     "coverage_tracker",
     "session_coverage",
-    "CoverageTracker",
-    "CoverageReporter",
 ]

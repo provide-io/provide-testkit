@@ -25,8 +25,9 @@ def binary_file() -> Generator[Path, None, None]:
     """
     with foundation_temp_file(suffix=".bin", text=False, cleanup=False) as path:
         # Write some binary data
-        path.write_bytes(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09" +
-                        b"\xff\xfe\xfd\xfc\xfb\xfa\xf9\xf8\xf7\xf6")
+        path.write_bytes(
+            b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09" + b"\xff\xfe\xfd\xfc\xfb\xfa\xf9\xf8\xf7\xf6"
+        )
 
     yield path
     safe_delete(path, missing_ok=True)

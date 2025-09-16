@@ -23,7 +23,7 @@ from typing import Any
 
 import pytest
 
-from provide.testkit import async_timeout, clean_event_loop
+from provide.testkit import async_timeout
 
 
 @pytest.mark.asyncio
@@ -225,10 +225,7 @@ async def test_async_lock_and_synchronization():
                 shared_resource["counter"] = current + 1
 
     # Act: Run multiple workers concurrently
-    workers = [
-        increment_counter(worker_id=i, increments=10)
-        for i in range(3)
-    ]
+    workers = [increment_counter(worker_id=i, increments=10) for i in range(3)]
     await asyncio.gather(*workers)
 
     # Assert: Counter incremented correctly (no race conditions)

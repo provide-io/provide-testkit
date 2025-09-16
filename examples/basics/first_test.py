@@ -15,9 +15,7 @@ Learning objectives:
 - Build confidence with testing
 """
 
-import pytest
 
-from provide.testkit import temp_directory
 
 
 def test_my_first_testkit_test(temp_directory):
@@ -96,17 +94,18 @@ def test_what_happens_without_fixture():
     try:
         # Now we can work with files (but we need to handle paths manually)
         file_path = os.path.join(temp_dir, "manual_file.txt")
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
             f.write("Manual file handling")
 
         # Verify the file
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             content = f.read()
         assert content == "Manual file handling"
 
     finally:
         # IMPORTANT: We must manually clean up!
         import shutil
+
         shutil.rmtree(temp_dir)
 
     # This shows why fixtures are better:
