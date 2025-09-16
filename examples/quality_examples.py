@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Examples demonstrating the quality module functionality."""
 
 from __future__ import annotations
