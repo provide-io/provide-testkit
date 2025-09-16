@@ -8,6 +8,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from provide.foundation.file import atomic_write_text, ensure_dir
+
 try:
     import interrogate  # type: ignore[import-untyped]
     from interrogate import coverage
@@ -247,7 +249,7 @@ class DocumentationChecker:
         if not self.artifact_dir:
             return
 
-        self.artifact_dir.mkdir(parents=True, exist_ok=True)
+        ensure_dir(self.artifact_dir)
 
         try:
             # Generate JSON report
@@ -259,20 +261,20 @@ class DocumentationChecker:
                 "details": result.details,
                 "execution_time": result.execution_time
             }
-            json_file.write_text(json.dumps(json_data, indent=2))
+            atomic_write_text(json_file, json.dumps(json_data, indent=2))
             result.artifacts.append(json_file)
 
             # Generate text summary
             summary_file = self.artifact_dir / "documentation_summary.txt"
             summary_report = self._generate_text_report(result)
-            summary_file.write_text(summary_report)
+            atomic_write_text(summary_file, summary_report)
             result.artifacts.append(summary_file)
 
             # Generate detailed coverage report if available
             if result.details.get("file_coverage"):
                 detail_file = self.artifact_dir / "documentation_details.txt"
                 detail_report = self._generate_detail_report(result)
-                detail_file.write_text(detail_report)
+                atomic_write_text(detail_file, detail_report)
                 result.artifacts.append(detail_file)
 
         except Exception as e:

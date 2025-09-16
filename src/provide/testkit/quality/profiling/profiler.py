@@ -5,12 +5,13 @@ from __future__ import annotations
 import cProfile
 import json
 import pstats
-import tempfile
 import time
 import tracemalloc
 from io import StringIO
 from pathlib import Path
 from typing import Any, Callable
+
+from provide.foundation.file import temp_file
 
 try:
     import memray
@@ -98,8 +99,7 @@ class PerformanceProfiler:
         if not MEMRAY_AVAILABLE:
             raise QualityToolError("Memray not available", tool="profiling")
 
-        with tempfile.NamedTemporaryFile(suffix=".bin", delete=False) as tmp_file:
-            output_path = Path(tmp_file.name)
+        with temp_file(suffix=".bin", cleanup=False) as output_path:
 
         try:
             # Run function with memray profiling

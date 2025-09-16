@@ -8,6 +8,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from provide.foundation.file import atomic_write_text, ensure_dir
+
 try:
     import bandit  # type: ignore[import-untyped]
     from bandit.core import config as bandit_config  # type: ignore[import-untyped]
@@ -221,7 +223,7 @@ class SecurityScanner:
         if not self.artifact_dir:
             return
 
-        self.artifact_dir.mkdir(parents=True, exist_ok=True)
+        ensure_dir(self.artifact_dir)
 
         try:
             # Generate JSON report
@@ -233,20 +235,20 @@ class SecurityScanner:
                 "details": result.details,
                 "execution_time": result.execution_time
             }
-            json_file.write_text(json.dumps(json_data, indent=2))
+            atomic_write_text(json_file, json.dumps(json_data, indent=2))
             result.artifacts.append(json_file)
 
             # Generate text summary
             summary_file = self.artifact_dir / "security_summary.txt"
             summary_report = self._generate_text_report(result)
-            summary_file.write_text(summary_report)
+            atomic_write_text(summary_file, summary_report)
             result.artifacts.append(summary_file)
 
             # Generate detailed issues report if there are issues
             if result.details.get("issues"):
                 issues_file = self.artifact_dir / "security_issues.txt"
                 issues_report = self._generate_issues_report(result)
-                issues_file.write_text(issues_report)
+                atomic_write_text(issues_file, issues_report)
                 result.artifacts.append(issues_file)
 
         except Exception as e:
