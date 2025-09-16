@@ -1,0 +1,422 @@
+#!/usr/bin/env python3
+"""
+Example: Mocking and Test Double Patterns
+
+This example demonstrates common mocking patterns and test doubles
+using provide-testkit's mocking utilities and fixtures.
+
+Key fixtures used:
+- temp_directory: For file-based mocking scenarios
+- mock_server: HTTP server mocking (if available)
+- Various mock fixtures from common module
+
+Learning objectives:
+- Understand different types of test doubles
+- Learn when to use mocks vs real objects
+- Practice mocking external dependencies
+- See fixture composition for complex scenarios
+"""
+
+import json
+import pytest
+from unittest.mock import Mock, patch, MagicMock
+from pathlib import Path
+
+from provide.testkit import temp_directory
+
+
+# Example classes to demonstrate mocking patterns
+class DatabaseConnection:
+    """Example database connection class."""
+
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
+        self.connected = False
+
+    def connect(self):
+        """Simulate database connection."""
+        # In real code, this would connect to a database
+        self.connected = True
+        return "Connected successfully"
+
+    def execute(self, query):
+        """Simulate query execution."""
+        if not self.connected:
+            raise RuntimeError("Not connected to database")
+        return f"Executed: {query}"
+
+    def disconnect(self):
+        """Simulate disconnection."""
+        self.connected = False
+
+
+class UserService:
+    """Example service that depends on external resources."""
+
+    def __init__(self, db_connection, config_file):
+        self.db = db_connection
+        self.config_file = Path(config_file)
+
+    def get_user(self, user_id):
+        """Get user from database."""
+        self.db.connect()
+        result = self.db.execute(f"SELECT * FROM users WHERE id = {user_id}")
+        self.db.disconnect()
+        return result
+
+    def load_config(self):
+        """Load configuration from file."""
+        if not self.config_file.exists():
+            raise FileNotFoundError(f"Config file not found: {self.config_file}")
+        return json.loads(self.config_file.read_text())
+
+
+# Test Patterns
+
+def test_mock_object_pattern():
+    """Pattern 1: Using Mock objects to replace dependencies."""
+    # Arrange: Create a mock database connection
+    mock_db = Mock(spec=DatabaseConnection)
+    mock_db.connect.return_value = "Connected successfully"
+    mock_db.execute.return_value = "User data: John Doe"
+
+    # Create a temporary config file
+    import tempfile
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        json.dump({"debug": True}, f)
+        config_path = f.name
+
+    try:
+        # Act: Use the service with mocked dependency
+        service = UserService(mock_db, config_path)
+        result = service.get_user(123)
+
+        # Assert: Verify the mock was called correctly
+        mock_db.connect.assert_called_once()
+        mock_db.execute.assert_called_once_with("SELECT * FROM users WHERE id = 123")
+        mock_db.disconnect.assert_called_once()
+        assert result == "User data: John Doe"
+
+    finally:
+        Path(config_path).unlink()
+
+
+def test_stub_pattern(temp_directory):
+    """Pattern 2: Using stubs for simple return values."""
+    # Arrange: Create a stub that always returns the same thing
+    class DatabaseStub:
+        def connect(self):
+            return "Connected successfully"
+
+        def execute(self, query):
+            return "Stubbed result"
+
+        def disconnect(self):
+            pass
+
+    # Create real config file using temp_directory fixture
+    config_file = temp_directory / "config.json"
+    config_file.write_text('{"debug": true, "timeout": 30}')
+
+    # Act: Use the service with stub
+    service = UserService(DatabaseStub(), config_file)
+    result = service.get_user(456)
+    config = service.load_config()
+
+    # Assert: Verify expected behavior
+    assert result == "Stubbed result"
+    assert config["debug"] is True
+    assert config["timeout"] == 30
+
+
+def test_spy_pattern():
+    """Pattern 3: Using spies to observe behavior."""
+    # Arrange: Create a spy that records calls
+    class DatabaseSpy:
+        def __init__(self):
+            self.calls = []
+
+        def connect(self):
+            self.calls.append("connect")
+            return "Connected successfully"
+
+        def execute(self, query):
+            self.calls.append(f"execute:{query}")
+            return "Spy result"
+
+        def disconnect(self):
+            self.calls.append("disconnect")
+
+    import tempfile
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        json.dump({"app": "test"}, f)
+        config_path = f.name
+
+    try:
+        # Act: Use the service with spy
+        spy_db = DatabaseSpy()
+        service = UserService(spy_db, config_path)
+        service.get_user(789)
+
+        # Assert: Verify the sequence of calls
+        expected_calls = [
+            "connect",
+            "execute:SELECT * FROM users WHERE id = 789",
+            "disconnect"
+        ]
+        assert spy_db.calls == expected_calls
+
+    finally:
+        Path(config_path).unlink()
+
+
+def test_fake_pattern(temp_directory):
+    """Pattern 4: Using fakes with working implementations."""
+    # Arrange: Create a fake with simple in-memory implementation
+    class InMemoryDatabase:
+        def __init__(self):
+            self.data = {
+                1: "Alice",
+                2: "Bob",
+                3: "Charlie"
+            }
+            self.connected = False
+
+        def connect(self):
+            self.connected = True
+            return "Connected successfully"
+
+        def execute(self, query):
+            if not self.connected:
+                raise RuntimeError("Not connected")
+
+            # Simple parsing for demo
+            if "WHERE id = " in query:
+                user_id = int(query.split("WHERE id = ")[1])
+                return f"User data: {self.data.get(user_id, 'Not found')}"
+            return "Unknown query"
+
+        def disconnect(self):
+            self.connected = False
+
+    # Create config file
+    config_file = temp_directory / "config.json"
+    config_file.write_text('{"env": "test", "features": ["auth", "logging"]}')
+
+    # Act: Use service with fake database
+    fake_db = InMemoryDatabase()
+    service = UserService(fake_db, config_file)
+
+    result1 = service.get_user(1)
+    result2 = service.get_user(2)
+    result3 = service.get_user(999)  # Non-existent user
+
+    # Assert: Verify fake behavior
+    assert result1 == "User data: Alice"
+    assert result2 == "User data: Bob"
+    assert result3 == "User data: Not found"
+
+
+@patch('__main__.DatabaseConnection')
+def test_patch_decorator_pattern(mock_db_class, temp_directory):
+    """Pattern 5: Using @patch decorator for mocking."""
+    # Arrange: Configure the patched class
+    mock_db_instance = Mock()
+    mock_db_instance.connect.return_value = "Patched connection"
+    mock_db_instance.execute.return_value = "Patched result"
+    mock_db_class.return_value = mock_db_instance
+
+    config_file = temp_directory / "config.json"
+    config_file.write_text('{"database": {"host": "localhost", "port": 5432}}')
+
+    # Act: Create service (DatabaseConnection will be mocked)
+    service = UserService(DatabaseConnection("localhost", 5432), config_file)
+    result = service.get_user(100)
+
+    # Assert: Verify patch worked
+    mock_db_class.assert_called_once_with("localhost", 5432)
+    assert result == "Patched result"
+
+
+def test_context_manager_mocking(temp_directory):
+    """Pattern 6: Mocking with context managers."""
+    # Arrange: Create config file
+    config_file = temp_directory / "config.json"
+    config_file.write_text('{"mock_test": true}')
+
+    # Act & Assert: Use patch as context manager
+    with patch.object(DatabaseConnection, 'execute') as mock_execute:
+        mock_execute.return_value = "Context manager result"
+
+        db = DatabaseConnection("test", 1234)
+        service = UserService(db, config_file)
+        result = service.get_user(200)
+
+        assert result == "Context manager result"
+        mock_execute.assert_called_once_with("SELECT * FROM users WHERE id = 200")
+
+
+def test_partial_mocking(temp_directory):
+    """Pattern 7: Mocking only part of an object."""
+    # Arrange: Use real object but mock specific methods
+    real_db = DatabaseConnection("real_host", 5432)
+    config_file = temp_directory / "config.json"
+    config_file.write_text('{"partial_mock": true}')
+
+    # Act: Mock only the execute method
+    with patch.object(real_db, 'execute') as mock_execute:
+        mock_execute.return_value = "Partially mocked result"
+
+        service = UserService(real_db, config_file)
+        result = service.get_user(300)
+
+        # Assert: Real methods work, mocked method returns mock value
+        assert real_db.host == "real_host"  # Real attribute
+        assert real_db.port == 5432         # Real attribute
+        assert result == "Partially mocked result"  # Mocked method
+
+
+def test_mock_side_effects(temp_directory):
+    """Pattern 8: Using side_effects for complex mock behavior."""
+    # Arrange: Create mock with side effects
+    mock_db = Mock(spec=DatabaseConnection)
+
+    # Configure side effects for different scenarios
+    def execute_side_effect(query):
+        if "id = 1" in query:
+            return "Admin user"
+        elif "id = 2" in query:
+            return "Regular user"
+        else:
+            raise ValueError("User not found")
+
+    mock_db.connect.return_value = "Connected"
+    mock_db.execute.side_effect = execute_side_effect
+
+    config_file = temp_directory / "config.json"
+    config_file.write_text('{"side_effects": true}')
+
+    # Act & Assert: Test different scenarios
+    service = UserService(mock_db, config_file)
+
+    # Test admin user
+    result1 = service.get_user(1)
+    assert result1 == "Admin user"
+
+    # Test regular user
+    result2 = service.get_user(2)
+    assert result2 == "Regular user"
+
+    # Test error case
+    with pytest.raises(ValueError, match="User not found"):
+        service.get_user(999)
+
+
+def test_mock_configuration_patterns(temp_directory):
+    """Pattern 9: Different ways to configure mocks."""
+    config_file = temp_directory / "config.json"
+    config_file.write_text('{"config_patterns": true}')
+
+    # Method 1: Configure mock after creation
+    mock_db1 = Mock(spec=DatabaseConnection)
+    mock_db1.connect.return_value = "Method 1"
+    mock_db1.execute.return_value = "Config after creation"
+
+    # Method 2: Configure mock at creation
+    mock_db2 = Mock(
+        spec=DatabaseConnection,
+        connect=Mock(return_value="Method 2"),
+        execute=Mock(return_value="Config at creation")
+    )
+
+    # Method 3: Using configure_mock
+    mock_db3 = Mock(spec=DatabaseConnection)
+    mock_db3.configure_mock(**{
+        'connect.return_value': 'Method 3',
+        'execute.return_value': 'Config with configure_mock'
+    })
+
+    # Test all configurations work
+    for i, mock_db in enumerate([mock_db1, mock_db2, mock_db3], 1):
+        service = UserService(mock_db, config_file)
+        result = service.get_user(i)
+        assert f"Method {i}" in mock_db.connect.return_value
+        assert "Config" in result
+
+
+def test_mock_assertion_patterns():
+    """Pattern 10: Different ways to assert mock calls."""
+    # Arrange
+    mock_db = Mock(spec=DatabaseConnection)
+    mock_db.connect.return_value = "Connected"
+    mock_db.execute.return_value = "Result"
+
+    import tempfile
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        json.dump({"assertions": True}, f)
+        config_path = f.name
+
+    try:
+        # Act
+        service = UserService(mock_db, config_path)
+        service.get_user(42)
+
+        # Different assertion patterns:
+
+        # Assert method was called
+        mock_db.connect.assert_called()
+
+        # Assert method was called once
+        mock_db.execute.assert_called_once()
+
+        # Assert method was called with specific arguments
+        mock_db.execute.assert_called_with("SELECT * FROM users WHERE id = 42")
+
+        # Assert method was called once with specific arguments
+        mock_db.execute.assert_called_once_with("SELECT * FROM users WHERE id = 42")
+
+        # Assert method was not called
+        assert not mock_db.reset_mock.called
+
+        # Check call count
+        assert mock_db.connect.call_count == 1
+        assert mock_db.disconnect.call_count == 1
+
+        # Check all calls
+        expected_calls = [('SELECT * FROM users WHERE id = 42',)]
+        actual_calls = [call.args for call in mock_db.execute.call_args_list]
+        assert actual_calls == expected_calls
+
+    finally:
+        Path(config_path).unlink()
+
+
+if __name__ == "__main__":
+    print("🎭 Mocking Patterns with provide-testkit")
+    print("=" * 50)
+    print("This example demonstrates various mocking patterns:")
+    print("")
+    print("🔧 Test Double Types:")
+    print("  • Mock - Programmable objects that verify behavior")
+    print("  • Stub - Simple objects that return fixed values")
+    print("  • Spy - Objects that record how they were used")
+    print("  • Fake - Objects with working but simplified implementations")
+    print("")
+    print("📋 Key Patterns Covered:")
+    print("  ✓ Basic mocking with unittest.mock")
+    print("  ✓ Using @patch decorators")
+    print("  ✓ Context manager mocking")
+    print("  ✓ Partial mocking")
+    print("  ✓ Side effects and complex behavior")
+    print("  ✓ Mock configuration techniques")
+    print("  ✓ Assertion patterns")
+    print("")
+    print("🚀 Run with pytest to see examples:")
+    print("   pytest examples/patterns/mocking_patterns.py -v")
+    print("")
+    print("💡 When to use each pattern:")
+    print("  • Mocks: When you need to verify interactions")
+    print("  • Stubs: When you just need consistent return values")
+    print("  • Spies: When you need to observe behavior")
+    print("  • Fakes: When you need working test implementations")
