@@ -114,7 +114,7 @@ class DocumentationChecker:
             "*/venv/*"
         ])
         if ignore_patterns:
-            config["ignore_regex"] = ignore_patterns
+            config["ignore_regex"] = [str(pattern) for pattern in ignore_patterns]
 
         # Set what to check
         config["ignore_init_method"] = self.config.get("ignore_init_method", True)
