@@ -76,57 +76,108 @@ class UserService:
 # Test Patterns
 
 def test_mock_object_pattern():
-    """Pattern 1: Using Mock objects to replace dependencies."""
-    # Arrange: Create a mock database connection
+    """Pattern 1: Using Mock objects to replace dependencies.
+
+    This demonstrates the most common mocking pattern - replacing external
+    dependencies with controllable mock objects that can verify interactions.
+
+    When to use: When you need to verify that your code calls external
+    dependencies correctly and in the right order.
+    """
+    # === SETUP: Create a mock database connection ===
+    # Mock(spec=DatabaseConnection) ensures the mock has the same interface
+    # as the real DatabaseConnection class, catching attribute errors early
     mock_db = Mock(spec=DatabaseConnection)
+
+    # Configure what the mock should return when methods are called
+    # This simulates successful database operations without a real database
     mock_db.connect.return_value = "Connected successfully"
     mock_db.execute.return_value = "User data: John Doe"
+    # Note: disconnect() doesn't need a return value since it returns None
 
-    # Create a temporary config file
+    # Create a temporary config file for the service
+    # Using tempfile ensures we don't interfere with the real filesystem
     import tempfile
     with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
         json.dump({"debug": True}, f)
         config_path = f.name
 
     try:
-        # Act: Use the service with mocked dependency
+        # === ACTION: Use the service with our mocked dependency ===
+        # The UserService will use our mock instead of a real database
         service = UserService(mock_db, config_path)
-        result = service.get_user(123)
+        result = service.get_user(123)  # This should trigger database calls
 
-        # Assert: Verify the mock was called correctly
+        # === VERIFICATION: Check that interactions happened correctly ===
+        # This is the key benefit of mocks - we can verify behavior
+
+        # Verify connect() was called exactly once
         mock_db.connect.assert_called_once()
+
+        # Verify execute() was called with the exact SQL we expect
         mock_db.execute.assert_called_once_with("SELECT * FROM users WHERE id = 123")
+
+        # Verify disconnect() was called (good resource management)
         mock_db.disconnect.assert_called_once()
+
+        # Verify the service returned what our mock provided
         assert result == "User data: John Doe"
 
     finally:
+        # Clean up the temporary file we created
         Path(config_path).unlink()
 
 
 def test_stub_pattern(temp_directory):
-    """Pattern 2: Using stubs for simple return values."""
-    # Arrange: Create a stub that always returns the same thing
+    """Pattern 2: Using stubs for simple return values.
+
+    Stubs are simpler than mocks - they just return fixed values without
+    verification. Use when you only care about the return value, not the
+    interaction details.
+
+    When to use: When you need predictable responses but don't need to
+    verify how your code interacts with the dependency.
+    """
+    # === SETUP: Create a stub that always returns the same values ===
+    # Unlike mocks, stubs are often simple classes with hardcoded responses
     class DatabaseStub:
+        """A simple stub that always returns the same values.
+
+        This is faster to write than configuring mocks when you only
+        need consistent return values.
+        """
         def connect(self):
+            # Always succeeds - no complex connection logic needed
             return "Connected successfully"
 
         def execute(self, query):
+            # Always returns the same result regardless of query
+            # This is useful when testing business logic that processes results
             return "Stubbed result"
 
         def disconnect(self):
+            # No-op - stubs often have empty implementations
             pass
 
-    # Create real config file using temp_directory fixture
+    # === SETUP: Create real config file using temp_directory fixture ===
+    # Notice how we use temp_directory instead of manual tempfile management
+    # This shows how provide-testkit fixtures simplify test setup
     config_file = temp_directory / "config.json"
     config_file.write_text('{"debug": true, "timeout": 30}')
 
-    # Act: Use the service with stub
+    # === ACTION: Use the service with our stub ===
+    # The service gets predictable responses from our stub
     service = UserService(DatabaseStub(), config_file)
-    result = service.get_user(456)
-    config = service.load_config()
+    result = service.get_user(456)  # User ID doesn't matter for stubs
+    config = service.load_config()  # This uses real file I/O
 
-    # Assert: Verify expected behavior
+    # === VERIFICATION: Check the outcomes, not the interactions ===
+    # With stubs, we verify results rather than method calls
+
+    # The stub always returns this value, regardless of user ID
     assert result == "Stubbed result"
+
+    # The config loading uses real file operations (not stubbed)
     assert config["debug"] is True
     assert config["timeout"] == 30
 
