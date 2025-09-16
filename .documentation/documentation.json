@@ -1,0 +1,26 @@
+{
+  "tool": "documentation",
+  "passed": false,
+  "score": 80.0,
+  "details": {
+    "total_coverage": 75.0,
+    "covered_count": 3,
+    "missing_count": 1,
+    "total_count": 4,
+    "grade": "B-",
+    "thresholds": {
+      "min_coverage": 80.0,
+      "min_grade": "C",
+      "min_score": 70.0
+    },
+    "file_coverage": [
+      {
+        "file": "test.py",
+        "coverage": 75.0,
+        "covered": 3,
+        "missing": 1
+      }
+    ]
+  },
+  "execution_time": 3.504753112792969e-05
+}
