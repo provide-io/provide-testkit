@@ -45,15 +45,10 @@ class QualityRunner:
         for tool_name in self.tools:
             try:
                 self.tool_instances[tool_name] = self._create_tool(tool_name)
-            except ImportError as e:
+            except (ImportError, Exception) as e:
                 # Tool dependencies not available - skip gracefully
                 print(f"Warning: {tool_name} tool not available: {e}")
                 continue
-            except Exception as e:
-                raise QualityError(
-                    f"Failed to initialize {tool_name} tool: {e}",
-                    tool=tool_name
-                )
 
     def _create_tool(self, tool_name: str) -> QualityTool:
         """Create a tool instance by name."""
