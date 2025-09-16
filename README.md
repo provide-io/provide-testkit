@@ -51,14 +51,116 @@ pip install -e ".[all,dev]"
 
 ## 🚀 Quick Start
 
-### Basic Foundation Testing
+### Essential Fixtures
+TestKit provides three main categories of fixtures you'll use in almost every test:
+
 ```python
 import pytest
 from provide.testkit import (
+    # Core foundation fixtures
     reset_foundation_setup_for_testing,
-    set_log_stream_for_testing, 
-    MockContext
+
+    # File system fixtures
+    temp_directory,
+
+    # CLI testing fixtures
+    isolated_cli_runner,
+
+    # Async testing fixtures
+    clean_event_loop
 )
+```
+
+### File Testing Patterns
+Most tests need temporary files and directories:
+
+```python
+from provide.testkit import temp_directory, test_files_structure
+
+def test_file_operations(temp_directory):
+    """Test basic file creation and validation."""
+    # Create test file in temporary directory
+    config_file = temp_directory / "config.json"
+    config_file.write_text('{"debug": true}')
+
+    assert config_file.exists()
+    assert '"debug": true' in config_file.read_text()
+
+def test_project_structure(test_files_structure):
+    """Test with predefined project structure."""
+    # test_files_structure provides common files like README.md, pyproject.toml
+    readme = test_files_structure["README.md"]
+    assert readme.exists()
+    assert len(readme.read_text()) > 0
+```
+
+### CLI Application Testing
+Test Click-based CLI applications with isolation:
+
+```python
+from provide.testkit import isolated_cli_runner, temp_directory
+import click
+
+@click.command()
+@click.argument('name')
+@click.option('--greeting', default='Hello')
+def greet(name, greeting):
+    """Greet someone."""
+    click.echo(f"{greeting}, {name}!")
+
+def test_cli_command(isolated_cli_runner):
+    """Test CLI command execution."""
+    result = isolated_cli_runner.invoke(greet, ['Alice', '--greeting', 'Hi'])
+
+    assert result.exit_code == 0
+    assert "Hi, Alice!" in result.output
+
+def test_file_processing_cli(isolated_cli_runner, temp_directory):
+    """Test CLI commands that work with files."""
+    input_file = temp_directory / "input.txt"
+    input_file.write_text("test data")
+
+    result = isolated_cli_runner.invoke(process_file, [str(input_file)])
+    assert result.exit_code == 0
+```
+
+### Async Testing Patterns
+Test async/await code with proper event loop management:
+
+```python
+import asyncio
+import pytest
+from provide.testkit import clean_event_loop, async_timeout
+
+@pytest.mark.asyncio
+async def test_async_operation(clean_event_loop):
+    """Test basic async function."""
+    async def fetch_data():
+        await asyncio.sleep(0.1)
+        return "data"
+
+    result = await fetch_data()
+    assert result == "data"
+
+@pytest.mark.asyncio
+async def test_concurrent_operations(clean_event_loop):
+    """Test multiple async operations."""
+    async def worker(worker_id):
+        await asyncio.sleep(0.1)
+        return f"worker_{worker_id}_done"
+
+    tasks = [worker(i) for i in range(3)]
+    results = await asyncio.gather(*tasks)
+
+    assert len(results) == 3
+    assert all("done" in result for result in results)
+```
+
+### Foundation Integration Testing
+Reset Foundation state between tests:
+
+```python
+from provide.testkit import reset_foundation_setup_for_testing
 
 @pytest.fixture(autouse=True)
 def reset_foundation():
@@ -67,60 +169,30 @@ def reset_foundation():
 
 def test_foundation_logger():
     """Test Foundation logger functionality."""
-    import sys
     from provide.foundation import logger
-    
-    # Capture Foundation logs to stderr for testing
-    set_log_stream_for_testing(sys.stderr)
-    
+
+    # Foundation is now in clean state for testing
     logger.info("Test message", component="test")
     # Test assertions here...
 ```
 
-### CLI Testing
-```python
-from provide.testkit import MockContext, isolated_cli_runner, temp_config_file
-import click
+## 📋 Common Testing Patterns
 
-@click.command()
-@click.pass_context  
-def my_command(ctx):
-    """Sample CLI command."""
-    click.echo(f"Profile: {ctx.obj.profile}")
+### See Complete Examples
+Check out the comprehensive examples in the `examples/` directory:
 
-def test_cli_command():
-    """Test CLI command with mock context."""
-    # Create isolated CLI runner with temporary environment
-    with isolated_cli_runner() as runner:
-        # Create mock context
-        mock_ctx = MockContext(profile="test-profile")
-        
-        # Run command with mock context
-        result = runner.invoke(my_command, obj=mock_ctx)
-        
-        assert result.exit_code == 0
-        assert "Profile: test-profile" in result.output
-```
+- **[examples/file_testing.py](examples/file_testing.py)** - File operations, permissions, directory structures
+- **[examples/async_testing.py](examples/async_testing.py)** - Async/await patterns, event loops, timeouts
+- **[examples/cli_testing.py](examples/cli_testing.py)** - CLI commands, file I/O, interactive prompts
 
-### Configuration Testing
-```python
-from provide.testkit import temp_config_file
-from provide.foundation.config import TelemetryConfig
+Each example includes both test functions and standalone demo code you can run directly:
 
-def test_config_loading():
-    """Test configuration loading from file."""
-    config_data = {
-        "service_name": "test-service",
-        "logging": {
-            "default_level": "DEBUG"
-        }
-    }
-    
-    # Create temporary config file
-    with temp_config_file(config_data, format="toml") as config_path:
-        config = TelemetryConfig.from_file(config_path)
-        assert config.service_name == "test-service"
-        assert config.logging.default_level == "DEBUG"
+```bash
+# Run example with live demonstration
+python examples/file_testing.py
+
+# Run example tests with pytest
+pytest examples/file_testing.py -v
 ```
 
 ## 📚 Core Components
