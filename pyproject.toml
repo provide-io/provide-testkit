@@ -195,6 +195,11 @@ dev = [
     "provide-testkit[quality]",
 ]
 
+# Self-referential docs for testkit itself
+docs-standalone = [
+    "provide-testkit[docs]",
+]
+
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
