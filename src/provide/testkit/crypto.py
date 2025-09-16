@@ -12,7 +12,7 @@ from provide.foundation.crypto import Certificate
 
 
 @pytest.fixture(scope="module")
-def client_cert():
+def client_cert() -> Certificate:
     """Create a client certificate for testing."""
     cert_pem = """-----BEGIN CERTIFICATE-----
 MIIB+jCCAYGgAwIBAgIJAPsxOr78BIU0MAoGCCqGSM49BAMEMCgxEjAQBgNVBAoM
@@ -40,7 +40,7 @@ zvpvL+mfy1c5oHQhh6KPnxpoo1WyDJGYplwPTGS68DvvWmolrPAtC7I7r7spgyJS
 
 
 @pytest.fixture(scope="module")
-def server_cert():
+def server_cert() -> Certificate:
     """Create a server certificate for testing."""
     cert_pem = """-----BEGIN CERTIFICATE-----
 MIIB+jCCAYGgAwIBAgIJAKrIoEQw7N9LMAoGCCqGSM49BAMEMCgxEjAQBgNVBAoM
@@ -68,7 +68,7 @@ VXHTAdc/bLFFy9kybQqo300Rv6ViW2I=
 
 
 @pytest.fixture(scope="module")
-def ca_cert():
+def ca_cert() -> Certificate:
     """Create a self-signed CA certificate for testing."""
     return Certificate.create_ca(
         common_name="Test CA", organization_name="Test Organization", validity_days=365
@@ -76,13 +76,13 @@ def ca_cert():
 
 
 @pytest.fixture(scope="module")
-def valid_key_pem(client_cert):
+def valid_key_pem(client_cert: Certificate) -> str:
     """Get a valid key PEM from the client cert fixture."""
     return client_cert.key
 
 
 @pytest.fixture
-def valid_cert_pem(client_cert):
+def valid_cert_pem(client_cert: Certificate) -> str:
     """Get a valid certificate PEM from the client cert fixture."""
     return client_cert.cert
 
