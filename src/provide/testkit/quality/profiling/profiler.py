@@ -100,37 +100,36 @@ class PerformanceProfiler:
             raise QualityToolError("Memray not available", tool="profiling")
 
         with temp_file(suffix=".bin", cleanup=False) as output_path:
+            try:
+                # Run function with memray profiling
+                with memray.Tracker(output_path):
+                    result = func(*args, **kwargs)
 
-        try:
-            # Run function with memray profiling
-            with memray.Tracker(output_path):
-                result = func(*args, **kwargs)
+                # Generate basic statistics
+                stats = memray.FileReader(output_path).get_memory_snapshots()
+                if stats:
+                    peak_memory = max(snapshot.heap_size for snapshot in stats)
+                    avg_memory = sum(snapshot.heap_size for snapshot in stats) / len(stats)
+                else:
+                    peak_memory = 0
+                    avg_memory = 0
 
-            # Generate basic statistics
-            stats = memray.FileReader(output_path).get_memory_snapshots()
-            if stats:
-                peak_memory = max(snapshot.heap_size for snapshot in stats)
-                avg_memory = sum(snapshot.heap_size for snapshot in stats) / len(stats)
-            else:
-                peak_memory = 0
-                avg_memory = 0
-
-            return {
-                "memory_profiling": {
-                    "tool": "memray",
-                    "peak_memory_bytes": peak_memory,
-                    "average_memory_bytes": avg_memory,
-                    "peak_memory_mb": peak_memory / (1024 * 1024),
-                    "average_memory_mb": avg_memory / (1024 * 1024),
-                    "profile_file": str(output_path),
-                    "function_result": result
+                return {
+                    "memory_profiling": {
+                        "tool": "memray",
+                        "peak_memory_bytes": peak_memory,
+                        "average_memory_bytes": avg_memory,
+                        "peak_memory_mb": peak_memory / (1024 * 1024),
+                        "average_memory_mb": avg_memory / (1024 * 1024),
+                        "profile_file": str(output_path),
+                        "function_result": result
+                    }
                 }
-            }
 
-        finally:
-            # Clean up temp file
-            if output_path.exists():
-                output_path.unlink()
+            finally:
+                # Clean up temp file
+                if output_path.exists():
+                    output_path.unlink()
 
     def _profile_memory_tracemalloc(
         self,
