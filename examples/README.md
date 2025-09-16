@@ -9,6 +9,12 @@ This directory contains practical examples demonstrating how to use provide-test
 - **[first_test.py](first_test.py)**: Your first test using provide-testkit
 - **[fixture_discovery.py](fixture_discovery.py)**: How to discover and use available fixtures
 
+### 🔍 Quality Analysis
+- **[quality/quality_examples.py](quality/quality_examples.py)**: Comprehensive quality module usage examples
+- **[quality/framework_demo.py](quality/framework_demo.py)**: Quality framework demonstration
+- **[quality/decorators_demo.py](quality/decorators_demo.py)**: Quality decorators examples
+- **[quality/generate_reports.py](quality/generate_reports.py)**: Report generation examples
+
 ### 📁 File and Directory Testing
 - **[file_operations.py](file_operations.py)**: Testing file creation, reading, and manipulation
 - **[directory_structures.py](directory_structures.py)**: Working with complex directory structures
