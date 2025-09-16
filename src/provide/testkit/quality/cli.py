@@ -161,62 +161,89 @@ def gates_command(
 ) -> None:
     """Run quality gates on the given path."""
     try:
-        # Build gates configuration
-        gates = {}
-
-        if coverage is not None:
-            gates["coverage"] = coverage
-
-        if security is not None:
-            gates["security"] = security
-
-        if complexity is not None:
-            gates["complexity"] = {"max_complexity": complexity}
-
-        if documentation is not None:
-            gates["documentation"] = documentation
-
-        # Load from config file if provided
-        if config:
-            config_gates = json.loads(config.read_text())
-            gates.update(config_gates)
-
-        if not gates:
-            click.echo("Error: No quality gates specified", err=True)
-            sys.exit(1)
+        # Build and validate gates configuration
+        gates = _build_gates_config(coverage, security, complexity, documentation, config)
 
         if verbose:
-            click.echo(f"Running quality gates on {path}")
-            click.echo(f"Gates: {gates}")
+            _print_gate_info(path, gates)
 
-        # Run quality gates
-        runner = QualityRunner()
-        results = runner.run_with_gates(
-            path,
-            gates,
-            artifact_dir=artifact_dir
-        )
-
-        # Print results
-        if results.passed:
-            click.echo("✅ All quality gates passed!", fg="green")
-        else:
-            click.echo("❌ Quality gates failed!", fg="red")
-
-        if verbose:
-            click.echo("\nDetailed Results:")
-            for tool, result in results.results.items():
-                status = "✅ PASS" if result.passed else "❌ FAIL"
-                score_text = f" (Score: {result.score:.1f}%)" if result.score is not None else ""
-                click.echo(f"  {tool}: {status}{score_text}")
-
-        # Exit with error code if gates failed
-        if not results.passed:
-            sys.exit(1)
+        # Run quality gates and handle results
+        results = _execute_quality_gates(path, gates, artifact_dir)
+        _handle_gate_results(results, verbose)
 
     except Exception as e:
         click.echo(f"Error: {e}", err=True)
         sys.exit(1)
+
+
+def _build_gates_config(
+    coverage: float | None,
+    security: float | None,
+    complexity: int | None,
+    documentation: float | None,
+    config: Path | None
+) -> dict[str, Any]:
+    """Build gates configuration from CLI arguments and config file."""
+    gates = {}
+
+    # Add CLI-specified gates
+    if coverage is not None:
+        gates["coverage"] = coverage
+    if security is not None:
+        gates["security"] = security
+    if complexity is not None:
+        gates["complexity"] = {"max_complexity": complexity}
+    if documentation is not None:
+        gates["documentation"] = documentation
+
+    # Load from config file if provided
+    if config:
+        config_gates = json.loads(config.read_text())
+        gates.update(config_gates)
+
+    if not gates:
+        click.echo("Error: No quality gates specified", err=True)
+        sys.exit(1)
+
+    return gates
+
+
+def _print_gate_info(path: Path, gates: dict[str, Any]) -> None:
+    """Print verbose information about gates being run."""
+    click.echo(f"Running quality gates on {path}")
+    click.echo(f"Gates: {gates}")
+
+
+def _execute_quality_gates(path: Path, gates: dict[str, Any], artifact_dir: Path) -> Any:
+    """Execute quality gates and return results."""
+    runner = QualityRunner()
+    return runner.run_with_gates(path, gates, artifact_dir=artifact_dir)
+
+
+def _handle_gate_results(results: Any, verbose: bool) -> None:
+    """Handle and display gate results, exit on failure."""
+    # Print summary
+    if results.passed:
+        click.echo("✅ All quality gates passed!", fg="green")
+    else:
+        click.echo("❌ Quality gates failed!", fg="red")
+
+    # Print detailed results if verbose
+    if verbose:
+        _print_detailed_results(results)
+
+    # Exit with error code if gates failed
+    if not results.passed:
+        sys.exit(1)
+
+
+def _print_detailed_results(results: Any) -> None:
+    """Print detailed results for each tool."""
+    click.echo("\nDetailed Results:")
+    for tool, result in results.results.items():
+        status = "✅ PASS" if result.passed else "❌ FAIL"
+        score_text = f" (Score: {result.score:.1f}%)" if result.score is not None else ""
+        click.echo(f"  {tool}: {status}{score_text}")
 
 
 @quality_cli.command("coverage")

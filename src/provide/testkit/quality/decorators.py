@@ -224,55 +224,80 @@ def performance_gate(
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             from .profiling.profiler import PerformanceProfiler
 
-            # Configure profiler
-            config = {
-                "profile_memory": True,
-                "profile_cpu": True
-            }
+            # Configure and run profiler
+            profiler = _create_performance_profiler(max_memory_mb, max_execution_time, min_score)
+            result = profiler.profile_function(lambda: func(*args, **kwargs))
 
-            if max_memory_mb is not None:
-                config["max_memory_mb"] = max_memory_mb
-            if max_execution_time is not None:
-                config["max_execution_time"] = max_execution_time
-            if min_score is not None:
-                config["min_score"] = min_score
+            # Check requirements and handle failures
+            _validate_performance_requirements(result, max_memory_mb, max_execution_time, min_score)
 
-            profiler = PerformanceProfiler(config)
-
-            # Profile function execution
-            def target_func() -> Any:
-                return func(*args, **kwargs)
-
-            result = profiler.profile_function(target_func)
-
-            # Check performance requirements
-            if not result.passed:
-                failure_reasons = []
-
-                memory_data = result.details.get("memory", {})
-                cpu_data = result.details.get("cpu", {})
-
-                if max_memory_mb and memory_data.get("peak_memory_mb", 0) > max_memory_mb:
-                    actual_mb = memory_data["peak_memory_mb"]
-                    failure_reasons.append(f"Memory usage {actual_mb:.2f}MB exceeds limit {max_memory_mb}MB")
-
-                if max_execution_time and cpu_data.get("execution_time", 0) > max_execution_time:
-                    actual_time = cpu_data["execution_time"]
-                    failure_reasons.append(f"Execution time {actual_time:.4f}s exceeds limit {max_execution_time}s")
-
-                if min_score and result.score < min_score:
-                    failure_reasons.append(f"Performance score {result.score:.1f}% below minimum {min_score}%")
-
-                raise AssertionError(f"Performance requirements not met: {'; '.join(failure_reasons)}")
-
-            # Return the actual function result
-            return (
-                result.details.get("memory", {}).get("function_result") or
-                result.details.get("cpu", {}).get("function_result")
-            )
+            # Extract and return the actual function result
+            return _extract_function_result(result)
 
         return wrapper
     return decorator
+
+
+def _create_performance_profiler(
+    max_memory_mb: float | None,
+    max_execution_time: float | None,
+    min_score: float | None
+) -> Any:
+    """Create and configure a performance profiler."""
+    from .profiling.profiler import PerformanceProfiler
+
+    config = {
+        "profile_memory": True,
+        "profile_cpu": True
+    }
+
+    if max_memory_mb is not None:
+        config["max_memory_mb"] = max_memory_mb
+    if max_execution_time is not None:
+        config["max_execution_time"] = max_execution_time
+    if min_score is not None:
+        config["min_score"] = min_score
+
+    return PerformanceProfiler(config)
+
+
+def _validate_performance_requirements(
+    result: Any,
+    max_memory_mb: float | None,
+    max_execution_time: float | None,
+    min_score: float | None
+) -> None:
+    """Validate performance requirements and raise error if not met."""
+    if result.passed:
+        return
+
+    failure_reasons = []
+    memory_data = result.details.get("memory", {})
+    cpu_data = result.details.get("cpu", {})
+
+    # Check memory requirement
+    if max_memory_mb and memory_data.get("peak_memory_mb", 0) > max_memory_mb:
+        actual_mb = memory_data["peak_memory_mb"]
+        failure_reasons.append(f"Memory usage {actual_mb:.2f}MB exceeds limit {max_memory_mb}MB")
+
+    # Check execution time requirement
+    if max_execution_time and cpu_data.get("execution_time", 0) > max_execution_time:
+        actual_time = cpu_data["execution_time"]
+        failure_reasons.append(f"Execution time {actual_time:.4f}s exceeds limit {max_execution_time}s")
+
+    # Check score requirement
+    if min_score and result.score < min_score:
+        failure_reasons.append(f"Performance score {result.score:.1f}% below minimum {min_score}%")
+
+    raise AssertionError(f"Performance requirements not met: {'; '.join(failure_reasons)}")
+
+
+def _extract_function_result(result: Any) -> Any:
+    """Extract the actual function result from profiling data."""
+    return (
+        result.details.get("memory", {}).get("function_result") or
+        result.details.get("cpu", {}).get("function_result")
+    )
 
 
 def quality_check(
