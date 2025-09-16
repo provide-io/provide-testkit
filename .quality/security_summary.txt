@@ -1,6 +1,0 @@
-Security Analysis Report - security
-==================================================
-Status: ✅ PASSED
-Security Score: 100.0%
-
-Execution Time: 0.00s
