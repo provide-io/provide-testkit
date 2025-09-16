@@ -130,7 +130,7 @@ class TestDocumentationChecker:
         assert config["ignore_magic"] is False
         assert config["ignore_private"] is True
         assert config["verbose"] == 2
-        assert config["ignore_regex"] == ["custom_pattern"]
+        assert config["ignore_regex"] == "custom_pattern"
 
     def test_grade_calculation(self):
         """Test documentation coverage grade calculation."""

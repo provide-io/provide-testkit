@@ -44,6 +44,11 @@ class DocumentationFixture(BaseQualityFixture):
         self.analyzer = DocumentationChecker(self.config)
         self._setup_complete = True
 
+    def teardown(self) -> None:
+        """Clean up documentation analyzer."""
+        self.analyzer = None
+        self._setup_complete = False
+
     def analyze(self, path: Path) -> dict[str, Any]:
         """Run documentation coverage analysis.
 

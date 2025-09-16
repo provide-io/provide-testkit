@@ -85,10 +85,8 @@ class DocumentationChecker:
             config_args = self._build_interrogate_config()
 
             # Create config object
-            config = InterrogateConfig(
-                paths=[str(path)],
-                **config_args
-            )
+            config_args["paths"] = [str(path)]
+            config = InterrogateConfig(**config_args)
 
             # Run interrogate analysis
             cov = coverage.InterrogateCoverage(config=config)
