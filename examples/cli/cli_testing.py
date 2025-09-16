@@ -18,9 +18,11 @@ Learning objectives:
 - Test CLI error conditions
 """
 
+from pathlib import Path
+
 import click
 import pytest
-from pathlib import Path
+
 from provide.testkit import isolated_cli_runner, temp_directory
 
 

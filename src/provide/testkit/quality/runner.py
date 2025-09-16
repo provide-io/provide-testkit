@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-import time
 from dataclasses import dataclass
 from pathlib import Path
+import time
 from typing import Any
 
 from provide.foundation.file import atomic_write_text, ensure_dir
-from .base import QualityResult, QualityTool, QualityError
+
+from .base import QualityError, QualityResult, QualityTool
 
 
 class QualityRunner:

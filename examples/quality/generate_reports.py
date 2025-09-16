@@ -9,16 +9,16 @@ comprehensive reports in multiple formats to prove the implementation works.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 import sys
 import time
-from pathlib import Path
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from provide.testkit.quality.runner import QualityRunner
-from provide.testkit.quality.report import ReportGenerator
 from provide.testkit.quality.artifacts import ArtifactManager
+from provide.testkit.quality.report import ReportGenerator
+from provide.testkit.quality.runner import QualityRunner
 
 
 def install_quality_tools():

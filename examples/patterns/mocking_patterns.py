@@ -18,9 +18,10 @@ Learning objectives:
 """
 
 import json
-import pytest
-from unittest.mock import Mock, patch, MagicMock
 from pathlib import Path
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 from provide.testkit import temp_directory
 

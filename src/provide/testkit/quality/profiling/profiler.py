@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import cProfile
+from io import StringIO
 import json
+from pathlib import Path
 import pstats
 import time
 import tracemalloc
-from io import StringIO
-from pathlib import Path
 from typing import Any, Callable
 
 from provide.foundation.file import temp_file
@@ -20,7 +20,7 @@ except ImportError:
     MEMRAY_AVAILABLE = False
     memray = None
 
-from ..base import QualityResult, QualityTool, QualityToolError
+from ..base import QualityResult, QualityToolError
 
 
 class PerformanceProfiler:

@@ -19,11 +19,12 @@ Learning objectives:
 
 import asyncio
 import json
-import pytest
-import click
 from pathlib import Path
 
-from provide.testkit import temp_directory, isolated_cli_runner, clean_event_loop
+import click
+import pytest
+
+from provide.testkit import clean_event_loop, isolated_cli_runner, temp_directory
 
 
 def test_temp_directory_basic_usage(temp_directory):

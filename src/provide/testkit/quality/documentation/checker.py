@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import json
-import subprocess
-import time
 from pathlib import Path
+import time
 from typing import Any
 
 from provide.foundation.file import atomic_write_text, ensure_dir
@@ -21,7 +20,7 @@ except ImportError:
     coverage = None
     InterrogateConfig = None
 
-from ..base import QualityResult, QualityTool, QualityToolError
+from ..base import QualityResult, QualityToolError
 
 
 class DocumentationChecker:

@@ -27,9 +27,9 @@ Usage:
 """
 
 # Core exports
-from .base import QualityResult, QualityTool, BaseQualityFixture
-from .runner import QualityRunner
+from .base import BaseQualityFixture, QualityResult, QualityTool
 from .report import ReportGenerator
+from .runner import QualityRunner
 
 # Lazy imports for performance - only import when used
 __all__ = [
@@ -66,10 +66,19 @@ def __getattr__(name: str):
         "documentation_required", "performance_required", "quality_required"
     ]:
         from .decorators import (
-            quality_gate, coverage_gate, security_gate, complexity_gate,
-            documentation_gate, performance_gate, quality_check,
-            coverage_required, security_required, complexity_required,
-            documentation_required, performance_required, quality_required
+            complexity_gate,
+            complexity_required,
+            coverage_gate,
+            coverage_required,
+            documentation_gate,
+            documentation_required,
+            performance_gate,
+            performance_required,
+            quality_check,
+            quality_gate,
+            quality_required,
+            security_gate,
+            security_required,
         )
         return locals()[name]
 

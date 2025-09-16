@@ -18,13 +18,14 @@ Learning objectives:
 """
 
 import json
-import pytest
-import requests
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
 from urllib.parse import urljoin
 
-from provide.testkit import temp_directory, isolated_cli_runner
+import pytest
+import requests
+
+from provide.testkit import isolated_cli_runner, temp_directory
 
 
 # Example HTTP client to demonstrate testing patterns

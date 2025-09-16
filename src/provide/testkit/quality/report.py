@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from provide.foundation.file import atomic_write_text, ensure_dir
+
 from .base import QualityResult
 
 

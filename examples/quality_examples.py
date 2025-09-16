@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+
 # Example 1: Basic Quality Fixtures
 def test_with_coverage_fixture(coverage_tracker):
     """Example using the coverage fixture."""
@@ -52,8 +53,12 @@ def test_with_complexity_fixture(complexity_analyzer):
 
 # Example 2: Quality Decorators
 from provide.testkit.quality import (
-    quality_check, coverage_gate, security_gate,
-    complexity_gate, documentation_gate, performance_gate
+    complexity_gate,
+    coverage_gate,
+    documentation_gate,
+    performance_gate,
+    quality_check,
+    security_gate,
 )
 
 
@@ -149,6 +154,7 @@ def example_quality_runner():
 def example_with_configuration():
     """Example using configuration files for quality settings."""
     import json
+
     from provide.testkit.quality.runner import QualityRunner
 
     # Create configuration
@@ -240,9 +246,10 @@ def example_artifact_management():
 # Example 6: Custom Quality Tool Integration
 def example_custom_quality_tool():
     """Example of creating a custom quality tool."""
-    from provide.testkit.quality.base import QualityTool, QualityResult
     import json
     import time
+
+    from provide.testkit.quality.base import QualityResult, QualityTool
 
     class CustomLintTool(QualityTool):
         """Custom linting tool example."""

@@ -3,16 +3,15 @@
 from __future__ import annotations
 
 import json
-import subprocess
-import time
 from pathlib import Path
+import time
 from typing import Any
 
 from provide.foundation.file import atomic_write_text, ensure_dir
 
 try:
     import radon  # type: ignore[import-untyped]
-    from radon.complexity import cc_visit, cc_rank  # type: ignore[import-untyped]
+    from radon.complexity import cc_rank, cc_visit  # type: ignore[import-untyped]
     from radon.metrics import mi_visit  # type: ignore[import-untyped]
     from radon.raw import analyze  # type: ignore[import-untyped]
     RADON_AVAILABLE = True
@@ -24,7 +23,7 @@ except ImportError:
     mi_visit = None
     analyze = None
 
-from ..base import QualityResult, QualityTool, QualityToolError
+from ..base import QualityResult, QualityToolError
 
 
 class ComplexityAnalyzer:

@@ -222,7 +222,6 @@ def performance_gate(
     def decorator(func: F) -> F:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            from .profiling.profiler import PerformanceProfiler
 
             # Configure and run profiler
             profiler = _create_performance_profiler(max_memory_mb, max_execution_time, min_score)

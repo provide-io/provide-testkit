@@ -19,9 +19,11 @@ Learning objectives:
 """
 
 import asyncio
-import pytest
 from typing import Any
-from provide.testkit import clean_event_loop, async_timeout
+
+import pytest
+
+from provide.testkit import async_timeout, clean_event_loop
 
 
 @pytest.mark.asyncio

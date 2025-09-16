@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-import pytest
 from pathlib import Path
 from typing import Any, Generator
 
+import pytest
+
 from ..base import BaseQualityFixture
-from .tracker import CoverageTracker, COVERAGE_AVAILABLE
+from .tracker import COVERAGE_AVAILABLE, CoverageTracker
 
 
 class CoverageFixture(BaseQualityFixture):

@@ -3,17 +3,18 @@
 from __future__ import annotations
 
 import json
-import subprocess
-import time
 from pathlib import Path
+import time
 from typing import Any
 
 from provide.foundation.file import atomic_write_text, ensure_dir
 
 try:
     import bandit  # type: ignore[import-untyped]
-    from bandit.core import config as bandit_config  # type: ignore[import-untyped]
-    from bandit.core import manager as bandit_manager
+    from bandit.core import (
+        config as bandit_config,  # type: ignore[import-untyped]
+        manager as bandit_manager,
+    )
     BANDIT_AVAILABLE = True
 except ImportError:
     BANDIT_AVAILABLE = False
@@ -21,7 +22,7 @@ except ImportError:
     bandit_config = None
     bandit_manager = None
 
-from ..base import QualityResult, QualityTool, QualityToolError
+from ..base import QualityResult, QualityToolError
 
 
 class SecurityScanner:

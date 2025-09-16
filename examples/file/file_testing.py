@@ -17,8 +17,10 @@ Learning objectives:
 - Handle file content assertions
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from provide.testkit import temp_directory, test_files_structure
 
 
@@ -187,8 +189,8 @@ def test_file_with_predefined_structure(test_files_structure):
 
 if __name__ == "__main__":
     # Run examples directly for demonstration
-    import tempfile
     import shutil
+    import tempfile
 
     print("🧪 File Testing Examples")
     print("=" * 50)

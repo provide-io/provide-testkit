@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 import shutil
 import time
-from pathlib import Path
 from typing import Any
 
 from provide.foundation.file import ensure_dir
+
 from .base import QualityResult
 
 

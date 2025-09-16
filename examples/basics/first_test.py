@@ -16,6 +16,7 @@ Learning objectives:
 """
 
 import pytest
+
 from provide.testkit import temp_directory
 
 
@@ -86,8 +87,8 @@ def test_what_happens_without_fixture():
     Notice this test doesn't use temp_directory as a parameter.
     We have to handle file paths manually and be careful about cleanup.
     """
-    import tempfile
     import os
+    import tempfile
 
     # Without the fixture, we need to create our own temporary directory
     temp_dir = tempfile.mkdtemp()
