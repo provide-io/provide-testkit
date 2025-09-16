@@ -13,7 +13,7 @@ import time
 from pathlib import Path
 
 # Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from provide.testkit.quality.decorators import (
     performance_gate,
@@ -107,7 +107,10 @@ def demonstrate_manual_profiling():
     result = profiler.profile_function(example_function)
 
     print(f"Status: {'✅ PASSED' if result.passed else '❌ FAILED'}")
-    print(f"Score: {result.score:.1f}%")
+    if result.score is not None:
+        print(f"Score: {result.score:.1f}%")
+    else:
+        print("Score: N/A")
 
     memory_data = result.details.get('memory', {})
     cpu_data = result.details.get('cpu', {})
