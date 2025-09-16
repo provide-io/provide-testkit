@@ -142,29 +142,52 @@ class QualityRunner:
                 return False
 
             result = results[gate_name]
-
-            if isinstance(requirement, dict):
-                # Complex gate requirements
-                if requirement.get("enabled", True):
-                    if not result.passed:
-                        return False
-                    if "min_score" in requirement and result.score is not None:
-                        if result.score < requirement["min_score"]:
-                            return False
-            elif isinstance(requirement, bool):
-                # Boolean requirement - must pass if True (check before int/float!)
-                if requirement and not result.passed:
-                    return False
-            elif isinstance(requirement, (int, float)):
-                # Simple score requirement
-                if result.score is None or result.score < requirement:
-                    return False
-            elif isinstance(requirement, str):
-                # String requirements (e.g., complexity grades)
-                if not self._check_grade_requirement(result, requirement):
-                    return False
+            if not self._check_single_gate(result, requirement):
+                return False
 
         return True
+
+    def _check_single_gate(self, result: QualityResult, requirement: Any) -> bool:
+        """Check a single gate requirement against a result.
+
+        Args:
+            result: Result to check
+            requirement: Gate requirement to validate against
+
+        Returns:
+            True if gate requirement is met
+        """
+        if isinstance(requirement, dict):
+            return self._check_dict_requirement(result, requirement)
+        elif isinstance(requirement, bool):
+            return self._check_bool_requirement(result, requirement)
+        elif isinstance(requirement, (int, float)):
+            return self._check_score_requirement(result, requirement)
+        elif isinstance(requirement, str):
+            return self._check_grade_requirement(result, requirement)
+        else:
+            return True
+
+    def _check_dict_requirement(self, result: QualityResult, requirement: dict[str, Any]) -> bool:
+        """Check dictionary-based gate requirements."""
+        if not requirement.get("enabled", True):
+            return True
+
+        if not result.passed:
+            return False
+
+        if "min_score" in requirement and result.score is not None:
+            return result.score >= requirement["min_score"]
+
+        return True
+
+    def _check_bool_requirement(self, result: QualityResult, requirement: bool) -> bool:
+        """Check boolean gate requirements."""
+        return not requirement or result.passed
+
+    def _check_score_requirement(self, result: QualityResult, requirement: float) -> bool:
+        """Check numeric score requirements."""
+        return result.score is not None and result.score >= requirement
 
     def _check_grade_requirement(self, result: QualityResult, requirement: str) -> bool:
         """Check grade-based requirements (A, B, C, etc.).
