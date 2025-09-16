@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from provide.foundation.file import atomic_write_text, ensure_dir
 from .base import QualityResult
 
 
@@ -267,5 +268,5 @@ class ReportGenerator:
                 format = "terminal"
 
         report_content = self.generate(results, format)
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(report_content)
+        ensure_dir(output_path.parent)
+        atomic_write_text(output_path, report_content)

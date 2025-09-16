@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from provide.foundation.file import atomic_write_text, ensure_dir
 from .base import QualityResult, QualityTool, QualityError
 
 
@@ -85,7 +86,7 @@ class QualityRunner:
 
         for tool_name, tool in self.tool_instances.items():
             artifact_dir = self.artifact_root / tool_name
-            artifact_dir.mkdir(parents=True, exist_ok=True)
+            ensure_dir(artifact_dir)
 
             try:
                 start_time = time.time()
@@ -217,14 +218,14 @@ class QualityRunner:
         """
         # Save result summary
         summary_file = artifact_dir / "summary.txt"
-        summary_file.write_text(result.summary)
+        atomic_write_text(summary_file, result.summary)
         result.artifacts.append(summary_file)
 
         # Save detailed results if available
         if result.details:
             import json
             details_file = artifact_dir / "details.json"
-            details_file.write_text(json.dumps(result.details, indent=2, default=str))
+            atomic_write_text(details_file, json.dumps(result.details, indent=2, default=str))
             result.artifacts.append(details_file)
 
     def get_available_tools(self) -> list[str]:
