@@ -30,31 +30,56 @@ from provide.testkit import clean_event_loop, isolated_cli_runner, temp_director
 def test_temp_directory_basic_usage(temp_directory):
     """Basic usage of temp_directory fixture.
 
-    Shows how temp_directory provides a clean, isolated directory
-    for each test with automatic cleanup.
-    """
-    # Arrange: The temp_directory fixture provides a clean Path object
-    assert temp_directory.exists()
-    assert temp_directory.is_dir()
+    This demonstrates the most fundamental testkit fixture - temp_directory.
+    It provides complete isolation between tests and automatic cleanup.
 
-    # Act: Create some test files
+    Key benefits:
+    - Each test gets a fresh, empty directory
+    - No interference between test runs
+    - Automatic cleanup when test finishes
+    - Works with pathlib.Path for modern file operations
+    """
+    # === VERIFICATION: Confirm we got a clean, isolated directory ===
+    # The temp_directory fixture provides a pathlib.Path object
+    # pointing to a unique temporary directory for this test
+    assert temp_directory.exists()     # Directory was created
+    assert temp_directory.is_dir()     # It's actually a directory
+
+    # Verify it's empty (fresh start for every test)
+    assert list(temp_directory.iterdir()) == []  # No files yet
+
+    # === SETUP: Create test files to simulate real scenarios ===
+    # Using the / operator with Path objects is the modern way
+    # to construct file paths (works on Windows, macOS, Linux)
     config_file = temp_directory / "config.json"
+
+    # Write JSON configuration data
+    # This simulates testing with configuration files
     config_file.write_text('{"debug": true, "version": "1.0"}')
 
+    # Create a simple text file
+    # This demonstrates basic file operations in tests
     data_file = temp_directory / "data.txt"
     data_file.write_text("Hello, testkit!")
 
-    # Assert: Verify our files exist and have correct content
-    assert config_file.exists()
-    assert data_file.exists()
+    # === VERIFICATION: Check our file operations worked correctly ===
+    # Verify files were created successfully
+    assert config_file.exists()        # JSON config file exists
+    assert data_file.exists()          # Text data file exists
 
+    # Verify we can read and parse the JSON content
+    # This is a common pattern when testing configuration loading
     config_data = json.loads(config_file.read_text())
-    assert config_data["debug"] is True
-    assert config_data["version"] == "1.0"
+    assert config_data["debug"] is True        # Boolean values work
+    assert config_data["version"] == "1.0"     # String values work
 
+    # Verify text file content is exactly what we wrote
     assert data_file.read_text() == "Hello, testkit!"
 
-    # Note: Cleanup happens automatically - no need to delete files!
+    # === KEY BENEFIT: No manual cleanup required! ===
+    # When this function ends, the temp_directory fixture automatically
+    # deletes the entire directory and all files we created.
+    # This prevents test pollution and keeps your filesystem clean.
 
 
 def test_multiple_files_and_directories(temp_directory):
