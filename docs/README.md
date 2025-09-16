@@ -50,12 +50,14 @@ docs/
 - **[Archive Testing](api/archive.md)**: Archive creation, extraction, validation
 - **[Time Testing](api/time.md)**: Clock mocking, time manipulation
 - **[CLI Testing](api/cli.md)**: Command-line interface testing utilities
+- **[Quality Analysis](quality/quality_guide.md)**: Code quality analysis and gates
 
 ### 💡 Examples
 - **[File Operations](examples/file-operations.md)**: Testing file and directory operations
 - **[Async Patterns](examples/async-patterns.md)**: Async testing patterns and examples
 - **[Network Testing](examples/network-testing.md)**: HTTP clients, servers, and protocols
 - **[Integration Tests](examples/integration-tests.md)**: Cross-component testing
+- **[Quality Examples](../examples/quality/)**: Quality analysis demonstrations
 
 ### 🛠️ Advanced Topics
 - **[Custom Fixtures](guides/custom-fixtures.md)**: Creating domain-specific fixtures
