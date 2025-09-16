@@ -9,10 +9,10 @@ from pathlib import Path
 from typing import Any
 
 try:
-    import radon
-    from radon.complexity import cc_visit, cc_rank
-    from radon.metrics import mi_visit
-    from radon.raw import analyze
+    import radon  # type: ignore[import-untyped]
+    from radon.complexity import cc_visit, cc_rank  # type: ignore[import-untyped]
+    from radon.metrics import mi_visit  # type: ignore[import-untyped]
+    from radon.raw import analyze  # type: ignore[import-untyped]
     RADON_AVAILABLE = True
 except ImportError:
     RADON_AVAILABLE = False

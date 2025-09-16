@@ -95,7 +95,7 @@ class ReportGenerator:
 
     def _generate_json_report(self, results: dict[str, QualityResult]) -> str:
         """Generate JSON report."""
-        report_data = {
+        report_data: dict[str, Any] = {
             "summary": {
                 "total_tools": len(results),
                 "passed": sum(1 for r in results.values() if r.passed),

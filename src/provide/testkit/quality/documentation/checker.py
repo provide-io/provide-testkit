@@ -9,9 +9,9 @@ from pathlib import Path
 from typing import Any
 
 try:
-    import interrogate
+    import interrogate  # type: ignore[import-untyped]
     from interrogate import coverage
-    from interrogate.config import InterrogateConfig
+    from interrogate.config import InterrogateConfig  # type: ignore[import-untyped]
     INTERROGATE_AVAILABLE = True
 except ImportError:
     INTERROGATE_AVAILABLE = False

@@ -9,8 +9,8 @@ from pathlib import Path
 from typing import Any
 
 try:
-    import bandit
-    from bandit.core import config as bandit_config
+    import bandit  # type: ignore[import-untyped]
+    from bandit.core import config as bandit_config  # type: ignore[import-untyped]
     from bandit.core import manager as bandit_manager
     BANDIT_AVAILABLE = True
 except ImportError:
