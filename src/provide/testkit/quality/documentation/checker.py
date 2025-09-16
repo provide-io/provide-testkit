@@ -137,66 +137,80 @@ class DocumentationChecker:
 
     def _process_interrogate_results(self, results: Any, config: Any) -> QualityResult:
         """Process interrogate results into QualityResult."""
-
         # Extract coverage metrics
         total_coverage = results.perc_covered
-
-        # Get detailed breakdown
         missing_count = results.missing_count
         covered_count = results.covered_count
         total_count = missing_count + covered_count
 
-        # Calculate grade based on coverage
-        if total_coverage >= 95:
-            grade = "A"
-            score = 100.0
-        elif total_coverage >= 90:
-            grade = "A-"
-            score = 95.0
-        elif total_coverage >= 85:
-            grade = "B+"
-            score = 90.0
-        elif total_coverage >= 80:
-            grade = "B"
-            score = 85.0
-        elif total_coverage >= 75:
-            grade = "B-"
-            score = 80.0
-        elif total_coverage >= 70:
-            grade = "C+"
-            score = 75.0
-        elif total_coverage >= 65:
-            grade = "C"
-            score = 70.0
-        elif total_coverage >= 60:
-            grade = "C-"
-            score = 65.0
-        elif total_coverage >= 50:
-            grade = "D"
-            score = 55.0
-        else:
-            grade = "F"
-            score = 40.0
+        # Calculate grade and score
+        grade, score = self._calculate_grade_and_score(total_coverage)
 
-        # Determine if passed based on configuration
+        # Check if passed based on configuration
+        passed = self._check_documentation_requirements(total_coverage, grade, score)
+
+        # Create detailed results
+        details = self._build_documentation_details(
+            total_coverage, covered_count, missing_count, total_count, grade
+        )
+
+        # Add file-level details if available
+        self._add_file_coverage_details(results, details)
+
+        return QualityResult(
+            tool="documentation",
+            passed=passed,
+            score=score,
+            details=details
+        )
+
+    def _calculate_grade_and_score(self, coverage: float) -> tuple[str, float]:
+        """Calculate grade and score based on coverage percentage."""
+        grade_thresholds = [
+            (95, "A", 100.0),
+            (90, "A-", 95.0),
+            (85, "B+", 90.0),
+            (80, "B", 85.0),
+            (75, "B-", 80.0),
+            (70, "C+", 75.0),
+            (65, "C", 70.0),
+            (60, "C-", 65.0),
+            (50, "D", 55.0),
+        ]
+
+        for threshold, grade, score in grade_thresholds:
+            if coverage >= threshold:
+                return grade, score
+
+        return "F", 40.0
+
+    def _check_documentation_requirements(self, coverage: float, grade: str, score: float) -> bool:
+        """Check if documentation meets the configured requirements."""
         min_coverage = self.config.get("min_coverage", 80.0)
         min_grade = self.config.get("min_grade", "C")
         required_score = self.config.get("min_score", 70.0)
 
         grade_values = {"A": 9, "A-": 8, "B+": 7, "B": 6, "B-": 5, "C+": 4, "C": 3, "C-": 2, "D": 1, "F": 0}
 
-        passed = (
-            total_coverage >= min_coverage and
+        return (
+            coverage >= min_coverage and
             grade_values.get(grade, 0) >= grade_values.get(min_grade, 0) and
             score >= required_score
         )
 
-        # Create detailed results
-        details = {
-            "total_coverage": round(total_coverage, 2),
-            "covered_count": covered_count,
-            "missing_count": missing_count,
-            "total_count": total_count,
+    def _build_documentation_details(
+        self, coverage: float, covered: int, missing: int, total: int, grade: str
+    ) -> dict[str, Any]:
+        """Build the details dictionary for documentation results."""
+        min_coverage = self.config.get("min_coverage", 80.0)
+        min_grade = self.config.get("min_grade", "C")
+        required_score = self.config.get("min_score", 70.0)
+
+        return {
+            "total_coverage": round(coverage, 2),
+            "covered_count": covered,
+            "missing_count": missing,
+            "total_count": total,
             "grade": grade,
             "thresholds": {
                 "min_coverage": min_coverage,
@@ -205,28 +219,24 @@ class DocumentationChecker:
             }
         }
 
-        # Add file-level details if available
-        if hasattr(results, 'detailed_coverage') and results.detailed_coverage:
-            file_details = []
-            try:
-                for file_info in results.detailed_coverage:
-                    file_details.append({
-                        "file": str(file_info.filename),
-                        "coverage": file_info.perc_covered,
-                        "covered": file_info.covered_count,
-                        "missing": file_info.missing_count
-                    })
-                details["file_coverage"] = file_details
-            except (TypeError, AttributeError):
-                # Skip file details if not properly formed
-                pass
+    def _add_file_coverage_details(self, results: Any, details: dict[str, Any]) -> None:
+        """Add file-level coverage details if available."""
+        if not (hasattr(results, 'detailed_coverage') and results.detailed_coverage):
+            return
 
-        return QualityResult(
-            tool="documentation",
-            passed=passed,
-            score=score,
-            details=details
-        )
+        file_details = []
+        try:
+            for file_info in results.detailed_coverage:
+                file_details.append({
+                    "file": str(file_info.filename),
+                    "coverage": file_info.perc_covered,
+                    "covered": file_info.covered_count,
+                    "missing": file_info.missing_count
+                })
+            details["file_coverage"] = file_details
+        except (TypeError, AttributeError):
+            # Skip file details if not properly formed
+            pass
 
     def _generate_artifacts(self, result: QualityResult) -> None:
         """Generate documentation analysis artifacts.
