@@ -1,11 +1,10 @@
 """Tests for quality runner orchestration."""
 
 import json
-import pytest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from provide.testkit.quality.base import QualityResult, QualityTool
+from provide.testkit.quality.base import QualityResult
 from provide.testkit.quality.runner import QualityRunner
 
 
@@ -20,12 +19,7 @@ class MockQualityTool:
 
     def analyze(self, path: Path, **kwargs) -> QualityResult:
         self.analyze_calls.append((path, kwargs))
-        return QualityResult(
-            tool=self.name,
-            passed=self.should_pass,
-            score=self.score,
-            details={"mock": True}
-        )
+        return QualityResult(tool=self.name, passed=self.should_pass, score=self.score, details={"mock": True})
 
     def report(self, result: QualityResult, format: str = "terminal") -> str:
         return f"{self.name} report for {result.tool}"
@@ -36,7 +30,7 @@ class TestQualityRunner:
 
     def test_initialization_default_tools(self, tmp_path):
         """Test runner initialization with default tools."""
-        with patch.object(QualityRunner, '_initialize_tools'):
+        with patch.object(QualityRunner, "_initialize_tools"):
             runner = QualityRunner(artifact_root=tmp_path)
 
         assert runner.artifact_root == tmp_path
@@ -48,12 +42,8 @@ class TestQualityRunner:
         tools = ["security", "complexity"]
         config = {"security": {"level": "high"}}
 
-        with patch.object(QualityRunner, '_initialize_tools'):
-            runner = QualityRunner(
-                artifact_root=tmp_path,
-                tools=tools,
-                config=config
-            )
+        with patch.object(QualityRunner, "_initialize_tools"):
+            runner = QualityRunner(artifact_root=tmp_path, tools=tools, config=config)
 
         assert runner.tools == tools
         assert runner.config == config
@@ -133,7 +123,7 @@ class TestQualityRunner:
 
         gates = {
             "coverage": 90.0,  # Score requirement
-            "security": True   # Must pass
+            "security": True,  # Must pass
         }
 
         passed, results = runner.run_with_gates(target, gates)
@@ -171,10 +161,7 @@ class TestQualityRunner:
         target = tmp_path / "src"
         target.mkdir()
 
-        gates = {
-            "coverage": {"enabled": True, "min_score": 90.0},
-            "security": {"enabled": True}
-        }
+        gates = {"coverage": {"enabled": True, "min_score": 90.0}, "security": {"enabled": True}}
 
         passed, results = runner.run_with_gates(target, gates)
 
@@ -205,12 +192,7 @@ class TestQualityRunner:
         """Test artifact saving functionality."""
         runner = QualityRunner(artifact_root=tmp_path, tools=[])
 
-        result = QualityResult(
-            tool="test",
-            passed=True,
-            score=95.0,
-            details={"issues": 2, "lines": 100}
-        )
+        result = QualityResult(tool="test", passed=True, score=95.0, details={"issues": 2, "lines": 100})
 
         artifact_dir = tmp_path / "test"
         artifact_dir.mkdir()
@@ -240,7 +222,7 @@ class TestQualityRunner:
         results = {
             "coverage": QualityResult(tool="coverage", passed=True, score=95.0),
             "security": QualityResult(tool="security", passed=False),
-            "complexity": QualityResult(tool="complexity", passed=True, score=88.0)
+            "complexity": QualityResult(tool="complexity", passed=True, score=88.0),
         }
 
         report = runner.generate_summary_report(results)

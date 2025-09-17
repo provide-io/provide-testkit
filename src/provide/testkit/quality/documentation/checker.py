@@ -13,6 +13,7 @@ try:
     import interrogate  # type: ignore[import-untyped]
     from interrogate import coverage
     from interrogate.config import InterrogateConfig  # type: ignore[import-untyped]
+
     INTERROGATE_AVAILABLE = True
 except ImportError:
     INTERROGATE_AVAILABLE = False
@@ -38,8 +39,7 @@ class DocumentationChecker:
         """
         if not INTERROGATE_AVAILABLE:
             raise QualityToolError(
-                "Interrogate not available. Install with: pip install interrogate",
-                tool="documentation"
+                "Interrogate not available. Install with: pip install interrogate", tool="documentation"
             )
 
         self.config = config or {}
@@ -73,7 +73,7 @@ class DocumentationChecker:
                 tool="documentation",
                 passed=False,
                 details={"error": str(e), "error_type": type(e).__name__},
-                execution_time=time.time() - start_time
+                execution_time=time.time() - start_time,
             )
 
     def _run_interrogate_analysis(self, path: Path) -> QualityResult:
@@ -89,7 +89,14 @@ class DocumentationChecker:
             supported_args = {}
             for key, value in config_args.items():
                 # Only include basic supported parameters for InterrogateConfig
-                if key in ["ignore_init_method", "ignore_magic", "ignore_private", "verbose", "quiet", "paths"]:
+                if key in [
+                    "ignore_init_method",
+                    "ignore_magic",
+                    "ignore_private",
+                    "verbose",
+                    "quiet",
+                    "paths",
+                ]:
                     supported_args[key] = value
 
             supported_args["paths"] = [str(path)]
@@ -110,14 +117,9 @@ class DocumentationChecker:
         config = {}
 
         # Set ignore patterns
-        ignore_patterns = self.config.get("ignore", [
-            "__pycache__",
-            "*.pyc",
-            "test_*",
-            "tests/*",
-            "*/.venv/*",
-            "*/venv/*"
-        ])
+        ignore_patterns = self.config.get(
+            "ignore", ["__pycache__", "*.pyc", "test_*", "tests/*", "*/.venv/*", "*/venv/*"]
+        )
         if ignore_patterns:
             # Convert list to regex pattern for interrogate
             pattern_string = "|".join(str(pattern) for pattern in ignore_patterns)
@@ -158,12 +160,7 @@ class DocumentationChecker:
         # Add file-level details if available
         self._add_file_coverage_details(results, details)
 
-        return QualityResult(
-            tool="documentation",
-            passed=passed,
-            score=score,
-            details=details
-        )
+        return QualityResult(tool="documentation", passed=passed, score=score, details=details)
 
     def _calculate_grade_and_score(self, coverage: float) -> tuple[str, float]:
         """Calculate grade and score based on coverage percentage."""
@@ -194,9 +191,9 @@ class DocumentationChecker:
         grade_values = {"A": 9, "A-": 8, "B+": 7, "B": 6, "B-": 5, "C+": 4, "C": 3, "C-": 2, "D": 1, "F": 0}
 
         return (
-            coverage >= min_coverage and
-            grade_values.get(grade, 0) >= grade_values.get(min_grade, 0) and
-            score >= required_score
+            coverage >= min_coverage
+            and grade_values.get(grade, 0) >= grade_values.get(min_grade, 0)
+            and score >= required_score
         )
 
     def _build_documentation_details(
@@ -213,27 +210,25 @@ class DocumentationChecker:
             "missing_count": missing,
             "total_count": total,
             "grade": grade,
-            "thresholds": {
-                "min_coverage": min_coverage,
-                "min_grade": min_grade,
-                "min_score": required_score
-            }
+            "thresholds": {"min_coverage": min_coverage, "min_grade": min_grade, "min_score": required_score},
         }
 
     def _add_file_coverage_details(self, results: Any, details: dict[str, Any]) -> None:
         """Add file-level coverage details if available."""
-        if not (hasattr(results, 'detailed_coverage') and results.detailed_coverage):
+        if not (hasattr(results, "detailed_coverage") and results.detailed_coverage):
             return
 
         file_details = []
         try:
             for file_info in results.detailed_coverage:
-                file_details.append({
-                    "file": str(file_info.filename),
-                    "coverage": file_info.perc_covered,
-                    "covered": file_info.covered_count,
-                    "missing": file_info.missing_count
-                })
+                file_details.append(
+                    {
+                        "file": str(file_info.filename),
+                        "coverage": file_info.perc_covered,
+                        "covered": file_info.covered_count,
+                        "missing": file_info.missing_count,
+                    }
+                )
             details["file_coverage"] = file_details
         except (TypeError, AttributeError):
             # Skip file details if not properly formed
@@ -258,7 +253,7 @@ class DocumentationChecker:
                 "passed": result.passed,
                 "score": result.score,
                 "details": result.details,
-                "execution_time": result.execution_time
+                "execution_time": result.execution_time,
             }
             atomic_write_text(json_file, json.dumps(json_data, indent=2))
             result.artifacts.append(json_file)
@@ -293,25 +288,29 @@ class DocumentationChecker:
 
         details = result.details
         if "covered_count" in details:
-            covered = details['covered_count']
-            missing = details['missing_count']
-            total = details.get('total_count', covered + missing)
-            lines.extend([
-                "",
-                f"Documented Items: {covered}",
-                f"Missing Documentation: {missing}",
-                f"Total Items: {total}",
-            ])
+            covered = details["covered_count"]
+            missing = details["missing_count"]
+            total = details.get("total_count", covered + missing)
+            lines.extend(
+                [
+                    "",
+                    f"Documented Items: {covered}",
+                    f"Missing Documentation: {missing}",
+                    f"Total Items: {total}",
+                ]
+            )
 
         thresholds = details.get("thresholds", {})
         if thresholds:
-            lines.extend([
-                "",
-                "Thresholds:",
-                f"  Minimum Coverage: {thresholds.get('min_coverage', 0)}%",
-                f"  Minimum Grade: {thresholds.get('min_grade', 'N/A')}",
-                f"  Minimum Score: {thresholds.get('min_score', 0)}%",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "Thresholds:",
+                    f"  Minimum Coverage: {thresholds.get('min_coverage', 0)}%",
+                    f"  Minimum Grade: {thresholds.get('min_grade', 'N/A')}",
+                    f"  Minimum Score: {thresholds.get('min_score', 0)}%",
+                ]
+            )
 
         if result.execution_time:
             lines.append(f"\nExecution Time: {result.execution_time:.2f}s")
@@ -320,11 +319,7 @@ class DocumentationChecker:
 
     def _generate_detail_report(self, result: QualityResult) -> str:
         """Generate detailed file coverage report."""
-        lines = [
-            "Documentation Coverage by File",
-            "=" * 50,
-            ""
-        ]
+        lines = ["Documentation Coverage by File", "=" * 50, ""]
 
         file_coverage = result.details.get("file_coverage", [])
 
@@ -334,7 +329,9 @@ class DocumentationChecker:
         for file_info in sorted_files:
             coverage = file_info["coverage"]
             status = "✅" if coverage >= 80 else "⚠️" if coverage >= 60 else "❌"
-            lines.append(f"{status} {file_info['file']}: {coverage:.1f}% ({file_info['covered']}/{file_info['covered'] + file_info['missing']})")
+            lines.append(
+                f"{status} {file_info['file']}: {coverage:.1f}% ({file_info['covered']}/{file_info['covered'] + file_info['missing']})"
+            )
 
         return "\n".join(lines)
 
@@ -351,11 +348,14 @@ class DocumentationChecker:
         if format == "terminal":
             return self._generate_text_report(result)
         elif format == "json":
-            return json.dumps({
-                "tool": result.tool,
-                "passed": result.passed,
-                "score": result.score,
-                "details": result.details
-            }, indent=2)
+            return json.dumps(
+                {
+                    "tool": result.tool,
+                    "passed": result.passed,
+                    "score": result.score,
+                    "details": result.details,
+                },
+                indent=2,
+            )
         else:
             return str(result.details)

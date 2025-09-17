@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any
 
 import pytest
 
@@ -173,11 +174,13 @@ def coverage_config():
 
 
 # Parametrized fixtures for different coverage configurations
-@pytest.fixture(params=[
-    {"fail_under": 80, "branch": True},
-    {"fail_under": 90, "branch": False},
-    {"fail_under": 95, "branch": True, "show_missing": True}
-])
+@pytest.fixture(
+    params=[
+        {"fail_under": 80, "branch": True},
+        {"fail_under": 90, "branch": False},
+        {"fail_under": 95, "branch": True, "show_missing": True},
+    ]
+)
 def parametrized_coverage(request, tmp_path) -> Generator[CoverageFixture, None, None]:
     """Parametrized coverage fixture for testing different configurations.
 
@@ -204,14 +207,8 @@ def parametrized_coverage(request, tmp_path) -> Generator[CoverageFixture, None,
 # Pytest hooks for automatic coverage integration
 def pytest_configure(config):
     """Configure pytest with coverage markers."""
-    config.addinivalue_line(
-        "markers",
-        "coverage: mark test to run with coverage tracking"
-    )
-    config.addinivalue_line(
-        "markers",
-        "no_coverage: mark test to skip coverage tracking"
-    )
+    config.addinivalue_line("markers", "coverage: mark test to run with coverage tracking")
+    config.addinivalue_line("markers", "no_coverage: mark test to skip coverage tracking")
 
 
 @pytest.fixture(autouse=True)

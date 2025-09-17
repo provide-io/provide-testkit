@@ -1,15 +1,13 @@
 """Tests for quality analysis base classes and protocols."""
 
-import pytest
 from pathlib import Path
-from unittest.mock import Mock
 
 from provide.testkit.quality.base import (
-    QualityResult,
     BaseQualityFixture,
-    QualityError,
     QualityConfigError,
-    QualityToolError
+    QualityError,
+    QualityResult,
+    QualityToolError,
 )
 
 
@@ -32,12 +30,7 @@ class TestQualityResult:
         details = {"issues": 3}
 
         result = QualityResult(
-            tool="bandit",
-            passed=False,
-            score=85.5,
-            details=details,
-            artifacts=artifacts,
-            execution_time=1.23
+            tool="bandit", passed=False, score=85.5, details=details, artifacts=artifacts, execution_time=1.23
         )
 
         assert result.tool == "bandit"

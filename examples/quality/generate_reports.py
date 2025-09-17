@@ -25,7 +25,7 @@ def install_quality_tools():
         "coverage[toml]",
         "bandit[toml]",
         "radon",
-        "interrogate"
+        "interrogate",
         # Note: memray is optional and complex to install
     ]
 
@@ -33,8 +33,9 @@ def install_quality_tools():
     for tool in tools:
         try:
             print(f"  Installing {tool}...")
-            subprocess.run([sys.executable, "-m", "pip", "install", tool],
-                         check=True, capture_output=True, text=True)
+            subprocess.run(
+                [sys.executable, "-m", "pip", "install", tool], check=True, capture_output=True, text=True
+            )
             print(f"  ✅ {tool} installed successfully")
         except subprocess.CalledProcessError as e:
             print(f"  ⚠️  Failed to install {tool}: {e}")
@@ -49,28 +50,20 @@ def create_quality_config() -> dict[str, any]:
             "min_coverage": 70.0,
             "generate_html": True,
             "generate_xml": True,
-            "exclude": [
-                "*/tests/*",
-                "*/test_*",
-                "*/__pycache__/*",
-                "*/examples/*"
-            ]
+            "exclude": ["*/tests/*", "*/test_*", "*/__pycache__/*", "*/examples/*"],
         },
         "security": {
             "min_score": 85.0,
             "ignore_issues": [
                 "B101",  # assert_used - OK in tests
-                "B603"   # subprocess_without_shell_equals_true
-            ]
+                "B603",  # subprocess_without_shell_equals_true
+            ],
         },
         "complexity": {
             "max_complexity": 15,
             "min_grade": "C",
             "min_score": 70.0,
-            "exclude": [
-                "*/tests/*",
-                "*/examples/*"
-            ]
+            "exclude": ["*/tests/*", "*/examples/*"],
         },
         "documentation": {
             "min_coverage": 60.0,
@@ -87,9 +80,9 @@ def create_quality_config() -> dict[str, any]:
                 "*/.venv/*",
                 "*/venv/*",
                 "*/workenv/*",
-                "*/examples/*"
-            ]
-        }
+                "*/examples/*",
+            ],
+        },
     }
 
 
@@ -98,15 +91,7 @@ def setup_reports_directory() -> Path:
     reports_dir = Path("quality-reports")
 
     # Create directory structure
-    subdirs = [
-        "summary",
-        "coverage",
-        "security",
-        "complexity",
-        "documentation",
-        "profiling",
-        "artifacts"
-    ]
+    subdirs = ["summary", "coverage", "security", "complexity", "documentation", "profiling", "artifacts"]
 
     for subdir in subdirs:
         (reports_dir / subdir).mkdir(parents=True, exist_ok=True)
@@ -124,10 +109,7 @@ def run_quality_analysis(reports_dir: Path) -> dict[str, any]:
 
     # Setup quality runner with configuration
     config = create_quality_config()
-    runner = QualityRunner(
-        artifact_root=reports_dir / "artifacts",
-        config=config
-    )
+    runner = QualityRunner(artifact_root=reports_dir / "artifacts", config=config)
 
     # Available tools (some may not be installed)
     tools_to_try = ["coverage", "security", "complexity", "documentation"]
@@ -138,11 +120,7 @@ def run_quality_analysis(reports_dir: Path) -> dict[str, any]:
 
     # Run analysis
     start_time = time.time()
-    results = runner.run_tools(
-        source_path,
-        tools=tools_to_try,
-        artifact_dir=reports_dir / "artifacts"
-    )
+    results = runner.run_tools(source_path, tools=tools_to_try, artifact_dir=reports_dir / "artifacts")
 
     analysis_time = time.time() - start_time
 
@@ -218,11 +196,9 @@ def generate_comprehensive_reports(results: dict[str, any], reports_dir: Path):
             "score": result.score,
             "execution_time": result.execution_time,
             "details": result.details,
-            "artifacts": [str(p) for p in result.artifacts]
+            "artifacts": [str(p) for p in result.artifacts],
         }
-        (tool_dir / f"{tool_name}_report.json").write_text(
-            json.dumps(tool_json, indent=2)
-        )
+        (tool_dir / f"{tool_name}_report.json").write_text(json.dumps(tool_json, indent=2))
 
         # Tool-specific analysis
         if tool_name == "coverage":
@@ -245,13 +221,13 @@ def generate_coverage_analysis(result: any, output_dir: Path):
     summary = f"""# Coverage Analysis Report
 
 ## Summary
-- **Overall Coverage**: {details.get('coverage_percentage', 0):.1f}%
-- **Lines Covered**: {details.get('lines_covered', 0)}
-- **Lines Missing**: {details.get('lines_missing', 0)}
-- **Total Lines**: {details.get('total_lines', 0)}
+- **Overall Coverage**: {details.get("coverage_percentage", 0):.1f}%
+- **Lines Covered**: {details.get("lines_covered", 0)}
+- **Lines Missing**: {details.get("lines_missing", 0)}
+- **Total Lines**: {details.get("total_lines", 0)}
 
 ## Status
-- **Passed**: {'✅' if result.passed else '❌'}
+- **Passed**: {"✅" if result.passed else "❌"}
 - **Score**: {result.score:.1f}%
 
 ## Artifacts
@@ -272,8 +248,8 @@ def generate_security_analysis(result: any, output_dir: Path):
 
 ## Summary
 - **Security Score**: {result.score:.1f}%
-- **Total Issues**: {details.get('total_issues', 0)}
-- **Status**: {'✅ PASSED' if result.passed else '❌ FAILED'}
+- **Total Issues**: {details.get("total_issues", 0)}
+- **Status**: {"✅ PASSED" if result.passed else "❌ FAILED"}
 
 ## Issue Breakdown
 """
@@ -282,7 +258,7 @@ def generate_security_analysis(result: any, output_dir: Path):
         for severity, count in details["severity_counts"].items():
             summary += f"- **{severity}**: {count} issues\n"
 
-    if "issues" in details and details["issues"]:
+    if details.get("issues"):
         summary += "\n## Top Issues\n"
         for i, issue in enumerate(details["issues"][:5], 1):
             summary += f"{i}. **{issue.get('test_id', 'Unknown')}** ({issue.get('severity', 'Unknown')})\n"
@@ -300,10 +276,10 @@ def generate_complexity_analysis(result: any, output_dir: Path):
     summary = f"""# Complexity Analysis Report
 
 ## Summary
-- **Overall Grade**: {details.get('overall_grade', 'N/A')}
-- **Average Complexity**: {details.get('average_complexity', 0):.1f}
-- **Max Complexity**: {details.get('max_complexity', 0)}
-- **Total Functions**: {details.get('total_functions', 0)}
+- **Overall Grade**: {details.get("overall_grade", "N/A")}
+- **Average Complexity**: {details.get("average_complexity", 0):.1f}
+- **Max Complexity**: {details.get("max_complexity", 0)}
+- **Total Functions**: {details.get("total_functions", 0)}
 - **Score**: {result.score:.1f}%
 
 ## Grade Breakdown
@@ -331,14 +307,14 @@ def generate_documentation_analysis(result: any, output_dir: Path):
     summary = f"""# Documentation Coverage Report
 
 ## Summary
-- **Documentation Coverage**: {details.get('total_coverage', 0):.1f}%
-- **Grade**: {details.get('grade', 'N/A')}
-- **Documented Items**: {details.get('covered_count', 0)}
-- **Missing Documentation**: {details.get('missing_count', 0)}
-- **Total Items**: {details.get('total_count', 0)}
+- **Documentation Coverage**: {details.get("total_coverage", 0):.1f}%
+- **Grade**: {details.get("grade", "N/A")}
+- **Documented Items**: {details.get("covered_count", 0)}
+- **Missing Documentation**: {details.get("missing_count", 0)}
+- **Total Items**: {details.get("total_count", 0)}
 
 ## Status
-- **Passed**: {'✅' if result.passed else '❌'}
+- **Passed**: {"✅" if result.passed else "❌"}
 - **Score**: {result.score:.1f}%
 
 ## File Coverage
@@ -380,7 +356,7 @@ def create_master_index(reports_dir: Path):
     """Create master index of all reports."""
     index_content = f"""# Quality Analysis Reports
 
-Generated on: {time.strftime('%Y-%m-%d %H:%M:%S')}
+Generated on: {time.strftime("%Y-%m-%d %H:%M:%S")}
 
 ## 📊 Summary Reports
 - [HTML Dashboard](summary/dashboard.html) - Interactive overview
@@ -460,10 +436,10 @@ def main():
     total_tools = len(results)
     passed_tools = sum(1 for r in results.values() if r.passed)
 
-    print(f"\n📊 Final Statistics:")
+    print("\n📊 Final Statistics:")
     print(f"   Tools run: {total_tools}")
     print(f"   Tools passed: {passed_tools}")
-    print(f"   Success rate: {(passed_tools/total_tools)*100:.1f}%")
+    print(f"   Success rate: {(passed_tools / total_tools) * 100:.1f}%")
 
 
 if __name__ == "__main__":

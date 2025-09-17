@@ -18,7 +18,7 @@ class TestEnvironment:
     def __init__(self, env_vars: dict[str, str] | None = None):
         """
         Initialize test environment manager.
-        
+
         Args:
             env_vars: Dictionary of environment variables to set during the test
         """

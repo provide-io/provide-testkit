@@ -23,7 +23,7 @@ class QualityRunner:
         self,
         artifact_root: Path | None = None,
         tools: list[str] | None = None,
-        config: dict[str, Any] | None = None
+        config: dict[str, Any] | None = None,
     ):
         """Initialize the quality runner.
 
@@ -56,18 +56,23 @@ class QualityRunner:
         """Create a tool instance by name."""
         if tool_name == "coverage":
             from .coverage import CoverageTracker
+
             return CoverageTracker(self.config.get("coverage", {}))
         elif tool_name == "security":
             from .security import SecurityScanner
+
             return SecurityScanner(self.config.get("security", {}))
         elif tool_name == "complexity":
             from .complexity import ComplexityAnalyzer
+
             return ComplexityAnalyzer(self.config.get("complexity", {}))
         elif tool_name == "profiling":
             from .profiling import PerformanceProfiler
+
             return PerformanceProfiler(self.config.get("profiling", {}))
         elif tool_name == "documentation":
             from .documentation import DocumentationChecker
+
             return DocumentationChecker(self.config.get("documentation", {}))
         else:
             raise QualityError(f"Unknown tool: {tool_name}")
@@ -101,18 +106,13 @@ class QualityRunner:
             except Exception as e:
                 # Create failed result for tool
                 results[tool_name] = QualityResult(
-                    tool=tool_name,
-                    passed=False,
-                    details={"error": str(e), "error_type": type(e).__name__}
+                    tool=tool_name, passed=False, details={"error": str(e), "error_type": type(e).__name__}
                 )
 
         return results
 
     def run_with_gates(
-        self,
-        target: Path,
-        gates: dict[str, Any],
-        **kwargs: Any
+        self, target: Path, gates: dict[str, Any], **kwargs: Any
     ) -> tuple[bool, dict[str, QualityResult]]:
         """Run quality tools and check against quality gates.
 
@@ -225,6 +225,7 @@ class QualityRunner:
         # Save detailed results if available
         if result.details:
             import json
+
             details_file = artifact_dir / "details.json"
             atomic_write_text(details_file, json.dumps(result.details, indent=2, default=str))
             result.artifacts.append(details_file)
@@ -262,7 +263,7 @@ class QualityRunner:
         target: Path,
         tools: list[str] | None = None,
         artifact_dir: Path | None = None,
-        tool_configs: dict[str, Any] | None = None
+        tool_configs: dict[str, Any] | None = None,
     ) -> dict[str, QualityResult]:
         """Run specific quality tools on the target.
 
@@ -308,6 +309,7 @@ class QualityRunner:
 @dataclass
 class QualityGateResults:
     """Results from running quality gates."""
+
     passed: bool
     results: dict[str, QualityResult]
     failed_gates: list[str] = None

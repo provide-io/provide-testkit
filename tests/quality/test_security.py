@@ -1,13 +1,14 @@
 """Tests for security scanning functionality."""
 
 import json
-import pytest
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
-from provide.testkit.quality.security.scanner import SecurityScanner, BANDIT_AVAILABLE
-from provide.testkit.quality.security.fixture import SecurityFixture
+import pytest
+
 from provide.testkit.quality.base import QualityResult
+from provide.testkit.quality.security.fixture import SecurityFixture
+from provide.testkit.quality.security.scanner import BANDIT_AVAILABLE, SecurityScanner
 
 
 @pytest.mark.skipif(not BANDIT_AVAILABLE, reason="bandit not available")
@@ -22,16 +23,12 @@ class TestSecurityScanner:
 
     def test_initialization_custom_config(self):
         """Test scanner initialization with custom config."""
-        config = {
-            "confidence": "high",
-            "severity": "medium",
-            "max_high_severity": 0
-        }
+        config = {"confidence": "high", "severity": "medium", "max_high_severity": 0}
         scanner = SecurityScanner(config)
         assert scanner.config == config
 
-    @patch('provide.testkit.quality.security.scanner.bandit_manager')
-    @patch('provide.testkit.quality.security.scanner.bandit_config')
+    @patch("provide.testkit.quality.security.scanner.bandit_manager")
+    @patch("provide.testkit.quality.security.scanner.bandit_config")
     def test_analyze_success(self, mock_config_class, mock_manager_class, tmp_path):
         """Test successful security analysis."""
         # Mock bandit components
@@ -58,8 +55,8 @@ class TestSecurityScanner:
         assert result.execution_time is not None
         assert "total_files" in result.details
 
-    @patch('provide.testkit.quality.security.scanner.bandit_manager')
-    @patch('provide.testkit.quality.security.scanner.bandit_config')
+    @patch("provide.testkit.quality.security.scanner.bandit_manager")
+    @patch("provide.testkit.quality.security.scanner.bandit_config")
     def test_analyze_with_issues(self, mock_config_class, mock_manager_class, tmp_path):
         """Test analysis with security issues found."""
         # Mock bandit components
@@ -142,8 +139,8 @@ class TestSecurityScanner:
                 "total_files": 10,
                 "total_issues": 2,
                 "severity_breakdown": {"HIGH": 0, "MEDIUM": 2, "LOW": 0},
-                "confidence_breakdown": {"HIGH": 1, "MEDIUM": 1, "LOW": 0}
-            }
+                "confidence_breakdown": {"HIGH": 1, "MEDIUM": 1, "LOW": 0},
+            },
         )
 
         report = scanner._generate_text_report(result)
@@ -163,10 +160,7 @@ class TestSecurityScanner:
             tool="security",
             passed=False,
             score=75.0,
-            details={
-                "total_issues": 5,
-                "severity_breakdown": {"HIGH": 1, "MEDIUM": 2, "LOW": 2}
-            }
+            details={"total_issues": 5, "severity_breakdown": {"HIGH": 1, "MEDIUM": 2, "LOW": 2}},
         )
 
         report = scanner.report(result, "terminal")
@@ -193,8 +187,8 @@ class TestSecurityFixture:
         assert fixture.artifact_dir == tmp_path
         assert fixture.scanner is None
 
-    @patch('provide.testkit.quality.security.fixture.BANDIT_AVAILABLE', True)
-    @patch('provide.testkit.quality.security.fixture.SecurityScanner')
+    @patch("provide.testkit.quality.security.fixture.BANDIT_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.fixture.SecurityScanner")
     def test_setup_success(self, mock_scanner_class):
         """Test successful fixture setup."""
         mock_scanner = Mock()
@@ -206,7 +200,7 @@ class TestSecurityFixture:
         assert fixture.scanner == mock_scanner
         mock_scanner_class.assert_called_once_with({})
 
-    @patch('provide.testkit.quality.security.fixture.BANDIT_AVAILABLE', False)
+    @patch("provide.testkit.quality.security.fixture.BANDIT_AVAILABLE", False)
     def test_setup_bandit_unavailable(self):
         """Test setup when bandit is unavailable."""
         fixture = SecurityFixture()
@@ -214,17 +208,12 @@ class TestSecurityFixture:
         with pytest.raises(pytest.skip.Exception):
             fixture.setup()
 
-    @patch('provide.testkit.quality.security.fixture.BANDIT_AVAILABLE', True)
-    @patch('provide.testkit.quality.security.fixture.SecurityScanner')
+    @patch("provide.testkit.quality.security.fixture.BANDIT_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.fixture.SecurityScanner")
     def test_scan_functionality(self, mock_scanner_class, tmp_path):
         """Test scanning functionality."""
         mock_scanner = Mock()
-        mock_result = QualityResult(
-            tool="security",
-            passed=True,
-            score=95.0,
-            details={"total_issues": 1}
-        )
+        mock_result = QualityResult(tool="security", passed=True, score=95.0, details={"total_issues": 1})
         mock_scanner.analyze.return_value = mock_result
         mock_scanner_class.return_value = mock_scanner
 
@@ -255,8 +244,8 @@ class TestSecurityFixture:
 
         assert report == "No security scanner available"
 
-    @patch('provide.testkit.quality.security.fixture.BANDIT_AVAILABLE', True)
-    @patch('provide.testkit.quality.security.fixture.SecurityScanner')
+    @patch("provide.testkit.quality.security.fixture.BANDIT_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.fixture.SecurityScanner")
     def test_generate_report_success(self, mock_scanner_class):
         """Test successful report generation."""
         mock_scanner = Mock()
@@ -307,7 +296,7 @@ def another_unsafe():
         "severity": "medium",
         "max_high_severity": 2,
         "max_medium_severity": 5,
-        "min_score": 50.0
+        "min_score": 50.0,
     }
 
     scanner = SecurityScanner(config)

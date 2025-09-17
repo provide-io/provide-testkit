@@ -19,11 +19,9 @@ Learning objectives:
 
 import json
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
-
-from provide.testkit import temp_directory
 
 
 # Example classes to demonstrate mocking patterns
@@ -75,6 +73,7 @@ class UserService:
 
 # Test Patterns
 
+
 def test_mock_object_pattern():
     """Pattern 1: Using Mock objects to replace dependencies.
 
@@ -98,7 +97,8 @@ def test_mock_object_pattern():
     # Create a temporary config file for the service
     # Using tempfile ensures we don't interfere with the real filesystem
     import tempfile
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         json.dump({"debug": True}, f)
         config_path = f.name
 
@@ -138,6 +138,7 @@ def test_stub_pattern(temp_directory):
     When to use: When you need predictable responses but don't need to
     verify how your code interacts with the dependency.
     """
+
     # === SETUP: Create a stub that always returns the same values ===
     # Unlike mocks, stubs are often simple classes with hardcoded responses
     class DatabaseStub:
@@ -146,6 +147,7 @@ def test_stub_pattern(temp_directory):
         This is faster to write than configuring mocks when you only
         need consistent return values.
         """
+
         def connect(self):
             # Always succeeds - no complex connection logic needed
             return "Connected successfully"
@@ -184,6 +186,7 @@ def test_stub_pattern(temp_directory):
 
 def test_spy_pattern():
     """Pattern 3: Using spies to observe behavior."""
+
     # Arrange: Create a spy that records calls
     class DatabaseSpy:
         def __init__(self):
@@ -201,7 +204,8 @@ def test_spy_pattern():
             self.calls.append("disconnect")
 
     import tempfile
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         json.dump({"app": "test"}, f)
         config_path = f.name
 
@@ -212,11 +216,7 @@ def test_spy_pattern():
         service.get_user(789)
 
         # Assert: Verify the sequence of calls
-        expected_calls = [
-            "connect",
-            "execute:SELECT * FROM users WHERE id = 789",
-            "disconnect"
-        ]
+        expected_calls = ["connect", "execute:SELECT * FROM users WHERE id = 789", "disconnect"]
         assert spy_db.calls == expected_calls
 
     finally:
@@ -225,14 +225,11 @@ def test_spy_pattern():
 
 def test_fake_pattern(temp_directory):
     """Pattern 4: Using fakes with working implementations."""
+
     # Arrange: Create a fake with simple in-memory implementation
     class InMemoryDatabase:
         def __init__(self):
-            self.data = {
-                1: "Alice",
-                2: "Bob",
-                3: "Charlie"
-            }
+            self.data = {1: "Alice", 2: "Bob", 3: "Charlie"}
             self.connected = False
 
         def connect(self):
@@ -270,7 +267,7 @@ def test_fake_pattern(temp_directory):
     assert result3 == "User data: Not found"
 
 
-@patch('__main__.DatabaseConnection')
+@patch("__main__.DatabaseConnection")
 def test_patch_decorator_pattern(mock_db_class, temp_directory):
     """Pattern 5: Using @patch decorator for mocking."""
     # Arrange: Configure the patched class
@@ -298,7 +295,7 @@ def test_context_manager_mocking(temp_directory):
     config_file.write_text('{"mock_test": true}')
 
     # Act & Assert: Use patch as context manager
-    with patch.object(DatabaseConnection, 'execute') as mock_execute:
+    with patch.object(DatabaseConnection, "execute") as mock_execute:
         mock_execute.return_value = "Context manager result"
 
         db = DatabaseConnection("test", 1234)
@@ -317,7 +314,7 @@ def test_partial_mocking(temp_directory):
     config_file.write_text('{"partial_mock": true}')
 
     # Act: Mock only the execute method
-    with patch.object(real_db, 'execute') as mock_execute:
+    with patch.object(real_db, "execute") as mock_execute:
         mock_execute.return_value = "Partially mocked result"
 
         service = UserService(real_db, config_file)
@@ -325,7 +322,7 @@ def test_partial_mocking(temp_directory):
 
         # Assert: Real methods work, mocked method returns mock value
         assert real_db.host == "real_host"  # Real attribute
-        assert real_db.port == 5432         # Real attribute
+        assert real_db.port == 5432  # Real attribute
         assert result == "Partially mocked result"  # Mocked method
 
 
@@ -379,15 +376,14 @@ def test_mock_configuration_patterns(temp_directory):
     mock_db2 = Mock(
         spec=DatabaseConnection,
         connect=Mock(return_value="Method 2"),
-        execute=Mock(return_value="Config at creation")
+        execute=Mock(return_value="Config at creation"),
     )
 
     # Method 3: Using configure_mock
     mock_db3 = Mock(spec=DatabaseConnection)
-    mock_db3.configure_mock(**{
-        'connect.return_value': 'Method 3',
-        'execute.return_value': 'Config with configure_mock'
-    })
+    mock_db3.configure_mock(
+        **{"connect.return_value": "Method 3", "execute.return_value": "Config with configure_mock"}
+    )
 
     # Test all configurations work
     for i, mock_db in enumerate([mock_db1, mock_db2, mock_db3], 1):
@@ -405,7 +401,8 @@ def test_mock_assertion_patterns():
     mock_db.execute.return_value = "Result"
 
     import tempfile
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         json.dump({"assertions": True}, f)
         config_path = f.name
 
@@ -436,7 +433,7 @@ def test_mock_assertion_patterns():
         assert mock_db.disconnect.call_count == 1
 
         # Check all calls
-        expected_calls = [('SELECT * FROM users WHERE id = 42',)]
+        expected_calls = [("SELECT * FROM users WHERE id = 42",)]
         actual_calls = [call.args for call in mock_db.execute.call_args_list]
         assert actual_calls == expected_calls
 

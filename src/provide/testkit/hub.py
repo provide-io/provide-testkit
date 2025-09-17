@@ -5,7 +5,6 @@ Provides pytest fixtures for testing hub and component functionality,
 including container directories and component registration scenarios.
 """
 
-
 import pytest
 
 from provide.foundation.file import temp_dir as foundation_temp_dir

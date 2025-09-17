@@ -24,8 +24,6 @@ from pathlib import Path
 import click
 import pytest
 
-from provide.testkit import clean_event_loop, isolated_cli_runner, temp_directory
-
 
 def test_temp_directory_basic_usage(temp_directory):
     """Basic usage of temp_directory fixture.
@@ -42,8 +40,8 @@ def test_temp_directory_basic_usage(temp_directory):
     # === VERIFICATION: Confirm we got a clean, isolated directory ===
     # The temp_directory fixture provides a pathlib.Path object
     # pointing to a unique temporary directory for this test
-    assert temp_directory.exists()     # Directory was created
-    assert temp_directory.is_dir()     # It's actually a directory
+    assert temp_directory.exists()  # Directory was created
+    assert temp_directory.is_dir()  # It's actually a directory
 
     # Verify it's empty (fresh start for every test)
     assert list(temp_directory.iterdir()) == []  # No files yet
@@ -64,14 +62,14 @@ def test_temp_directory_basic_usage(temp_directory):
 
     # === VERIFICATION: Check our file operations worked correctly ===
     # Verify files were created successfully
-    assert config_file.exists()        # JSON config file exists
-    assert data_file.exists()          # Text data file exists
+    assert config_file.exists()  # JSON config file exists
+    assert data_file.exists()  # Text data file exists
 
     # Verify we can read and parse the JSON content
     # This is a common pattern when testing configuration loading
     config_data = json.loads(config_file.read_text())
-    assert config_data["debug"] is True        # Boolean values work
-    assert config_data["version"] == "1.0"     # String values work
+    assert config_data["debug"] is True  # Boolean values work
+    assert config_data["version"] == "1.0"  # String values work
 
     # Verify text file content is exactly what we wrote
     assert data_file.read_text() == "Hello, testkit!"
@@ -96,7 +94,7 @@ def test_multiple_files_and_directories(temp_directory):
     main_file.write_text('print("Hello, World!")')
 
     test_file = tests_dir / "test_main.py"
-    test_file.write_text('def test_main():\n    assert True')
+    test_file.write_text("def test_main():\n    assert True")
 
     readme = temp_directory / "README.md"
     readme.write_text("# My Project\n\nA test project.")
@@ -116,8 +114,8 @@ def test_multiple_files_and_directories(temp_directory):
 
 # Example CLI command for testing
 @click.command()
-@click.option('--name', default='World', help='Name to greet')
-@click.option('--uppercase', is_flag=True, help='Use uppercase')
+@click.option("--name", default="World", help="Name to greet")
+@click.option("--uppercase", is_flag=True, help="Use uppercase")
 def greet(name, uppercase):
     """Simple greeting command."""
     message = f"Hello, {name}!"
@@ -132,7 +130,7 @@ def test_cli_basic_usage(isolated_cli_runner):
     # in an isolated filesystem environment
 
     # Act: Run the CLI command
-    result = isolated_cli_runner.invoke(greet, ['--name', 'testkit'])
+    result = isolated_cli_runner.invoke(greet, ["--name", "testkit"])
 
     # Assert: Check the command ran successfully
     assert result.exit_code == 0
@@ -142,7 +140,7 @@ def test_cli_basic_usage(isolated_cli_runner):
 def test_cli_with_flags(isolated_cli_runner):
     """Testing CLI commands with different flags."""
     # Arrange & Act: Test with uppercase flag
-    result = isolated_cli_runner.invoke(greet, ['--name', 'testkit', '--uppercase'])
+    result = isolated_cli_runner.invoke(greet, ["--name", "testkit", "--uppercase"])
 
     # Assert: Verify uppercase output
     assert result.exit_code == 0
@@ -162,6 +160,7 @@ def test_cli_default_behavior(isolated_cli_runner):
 @pytest.mark.asyncio
 async def test_async_basic_usage(clean_event_loop):
     """Basic async testing with clean_event_loop fixture."""
+
     # Arrange: Define an async function to test
     async def fetch_data(delay=0.1):
         """Simulate async data fetching."""
@@ -179,6 +178,7 @@ async def test_async_basic_usage(clean_event_loop):
 @pytest.mark.asyncio
 async def test_multiple_async_operations(clean_event_loop):
     """Testing multiple concurrent async operations."""
+
     # Arrange: Define async operations
     async def task(task_id, delay=0.1):
         await asyncio.sleep(delay)
@@ -208,8 +208,8 @@ def test_combining_fixtures(temp_directory, isolated_cli_runner):
 
     # Create a CLI command that reads the config
     @click.command()
-    @click.option('--config', type=click.Path(exists=True))
-    @click.argument('name')
+    @click.option("--config", type=click.Path(exists=True))
+    @click.argument("name")
     def greet_from_config(config, name):
         """Greet using config file."""
         config_data = json.loads(Path(config).read_text())
@@ -219,9 +219,7 @@ def test_combining_fixtures(temp_directory, isolated_cli_runner):
             click.echo("Debug mode enabled")
 
     # Act: Use isolated_cli_runner to test the command
-    result = isolated_cli_runner.invoke(greet_from_config, [
-        '--config', str(config_file), 'testkit'
-    ])
+    result = isolated_cli_runner.invoke(greet_from_config, ["--config", str(config_file), "testkit"])
 
     # Assert: Verify both the greeting and debug output
     assert result.exit_code == 0
@@ -250,7 +248,7 @@ def test_parametrized_example(temp_directory):
     test_cases = [
         ("config.json", '{"key": "value"}', lambda f: json.loads(f.read_text())),
         ("config.txt", "key=value", lambda f: f.read_text().strip()),
-        ("data.csv", "name,value\ntest,123", lambda f: f.read_text().split('\n')),
+        ("data.csv", "name,value\ntest,123", lambda f: f.read_text().split("\n")),
     ]
 
     for filename, content, parser in test_cases:

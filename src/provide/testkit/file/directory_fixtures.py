@@ -73,7 +73,6 @@ def nested_directory_structure() -> Generator[Path, None, None]:
         Path to the root of the structure.
     """
     with foundation_temp_dir() as root:
-
         # Create nested structure
         deep_dir = root / "level1" / "level2" / "level3"
         deep_dir.mkdir(parents=True)

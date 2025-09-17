@@ -1,6 +1,5 @@
 """Placeholder test file for provide-testkit."""
 
-import pytest
 
 
 def test_placeholder():

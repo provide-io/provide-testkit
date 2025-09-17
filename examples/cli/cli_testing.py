@@ -21,45 +21,41 @@ Learning objectives:
 from pathlib import Path
 
 import click
-import pytest
-
-from provide.testkit import isolated_cli_runner, temp_directory
 
 
 # Example CLI application for testing
 @click.group()
-@click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 @click.pass_context
 def cli(ctx, verbose):
     """Example CLI application for testing purposes."""
     ctx.ensure_object(dict)
-    ctx.obj['verbose'] = verbose
+    ctx.obj["verbose"] = verbose
 
 
 @cli.command()
-@click.argument('name')
-@click.option('--greeting', default='Hello', help='Greeting to use')
+@click.argument("name")
+@click.option("--greeting", default="Hello", help="Greeting to use")
 @click.pass_context
 def greet(ctx, name, greeting):
     """Greet someone with a customizable greeting."""
-    if ctx.obj['verbose']:
+    if ctx.obj["verbose"]:
         click.echo(f"Verbose mode: Greeting {name}")
     click.echo(f"{greeting}, {name}!")
 
 
 @cli.command()
-@click.argument('input_file', type=click.Path(exists=True, path_type=Path))
-@click.argument('output_file', type=click.Path(path_type=Path))
-@click.option('--format', 'output_format', default='json',
-              type=click.Choice(['json', 'yaml', 'txt']))
+@click.argument("input_file", type=click.Path(exists=True, path_type=Path))
+@click.argument("output_file", type=click.Path(path_type=Path))
+@click.option("--format", "output_format", default="json", type=click.Choice(["json", "yaml", "txt"]))
 def convert(input_file, output_file, output_format):
     """Convert file from one format to another."""
     # Simulate file conversion
     content = input_file.read_text()
 
-    if output_format == 'json':
+    if output_format == "json":
         converted = f'{{"content": "{content.strip()}"}}'
-    elif output_format == 'yaml':
+    elif output_format == "yaml":
         converted = f'content: "{content.strip()}"'
     else:  # txt
         converted = content.upper()
@@ -69,8 +65,8 @@ def convert(input_file, output_file, output_format):
 
 
 @cli.command()
-@click.option('--count', default=1, help='Number of items to process')
-@click.confirmation_option(prompt='Are you sure you want to proceed?')
+@click.option("--count", default=1, help="Number of items to process")
+@click.confirmation_option(prompt="Are you sure you want to proceed?")
 def process(count):
     """Process items with confirmation."""
     for i in range(count):
@@ -79,7 +75,7 @@ def process(count):
 
 
 @cli.command()
-@click.option('--fail', is_flag=True, help='Force command to fail')
+@click.option("--fail", is_flag=True, help="Force command to fail")
 def status(fail):
     """Check application status."""
     if fail:
@@ -92,7 +88,7 @@ def status(fail):
 def test_basic_command_execution(isolated_cli_runner):
     """Test basic CLI command execution."""
     # Act: Run simple greet command
-    result = isolated_cli_runner.invoke(cli, ['greet', 'Alice'])
+    result = isolated_cli_runner.invoke(cli, ["greet", "Alice"])
 
     # Assert: Command succeeded and output is correct
     assert result.exit_code == 0
@@ -102,9 +98,7 @@ def test_basic_command_execution(isolated_cli_runner):
 def test_command_with_options(isolated_cli_runner):
     """Test CLI command with options."""
     # Act: Run greet command with custom greeting
-    result = isolated_cli_runner.invoke(cli, [
-        'greet', 'Bob', '--greeting', 'Hi'
-    ])
+    result = isolated_cli_runner.invoke(cli, ["greet", "Bob", "--greeting", "Hi"])
 
     # Assert: Custom greeting was used
     assert result.exit_code == 0
@@ -114,9 +108,7 @@ def test_command_with_options(isolated_cli_runner):
 def test_verbose_flag(isolated_cli_runner):
     """Test global verbose flag."""
     # Act: Run command with verbose flag
-    result = isolated_cli_runner.invoke(cli, [
-        '--verbose', 'greet', 'Charlie'
-    ])
+    result = isolated_cli_runner.invoke(cli, ["--verbose", "greet", "Charlie"])
 
     # Assert: Verbose output is included
     assert result.exit_code == 0
@@ -133,14 +125,14 @@ def test_file_input_output(isolated_cli_runner, temp_directory):
     output_file = temp_directory / "output.json"
 
     # Act: Run convert command
-    result = isolated_cli_runner.invoke(cli, [
-        'convert', str(input_file), str(output_file), '--format', 'json'
-    ])
+    result = isolated_cli_runner.invoke(
+        cli, ["convert", str(input_file), str(output_file), "--format", "json"]
+    )
 
     # Assert: Command succeeded and file was created
     assert result.exit_code == 0
     assert output_file.exists()
-    assert '{"content": "Hello World"}' == output_file.read_text()
+    assert output_file.read_text() == '{"content": "Hello World"}'
     assert f"Converted {input_file} to {output_file} (json)" in result.output
 
 
@@ -152,35 +144,31 @@ def test_different_output_formats(isolated_cli_runner, temp_directory):
 
     # Test JSON format
     json_output = temp_directory / "output.json"
-    result = isolated_cli_runner.invoke(cli, [
-        'convert', str(input_file), str(json_output), '--format', 'json'
-    ])
+    result = isolated_cli_runner.invoke(
+        cli, ["convert", str(input_file), str(json_output), "--format", "json"]
+    )
     assert result.exit_code == 0
-    assert '{"content": "test data"}' == json_output.read_text()
+    assert json_output.read_text() == '{"content": "test data"}'
 
     # Test YAML format
     yaml_output = temp_directory / "output.yaml"
-    result = isolated_cli_runner.invoke(cli, [
-        'convert', str(input_file), str(yaml_output), '--format', 'yaml'
-    ])
+    result = isolated_cli_runner.invoke(
+        cli, ["convert", str(input_file), str(yaml_output), "--format", "yaml"]
+    )
     assert result.exit_code == 0
-    assert 'content: "test data"' == yaml_output.read_text()
+    assert yaml_output.read_text() == 'content: "test data"'
 
     # Test TXT format
     txt_output = temp_directory / "output.txt"
-    result = isolated_cli_runner.invoke(cli, [
-        'convert', str(input_file), str(txt_output), '--format', 'txt'
-    ])
+    result = isolated_cli_runner.invoke(cli, ["convert", str(input_file), str(txt_output), "--format", "txt"])
     assert result.exit_code == 0
-    assert 'TEST DATA' == txt_output.read_text()
+    assert txt_output.read_text() == "TEST DATA"
 
 
 def test_interactive_confirmation(isolated_cli_runner):
     """Test CLI command with interactive confirmation."""
     # Act: Run process command with automatic 'yes' response
-    result = isolated_cli_runner.invoke(cli, [
-        'process', '--count', '3'
-    ], input='y\n')
+    result = isolated_cli_runner.invoke(cli, ["process", "--count", "3"], input="y\n")
 
     # Assert: Command executed after confirmation
     assert result.exit_code == 0
@@ -193,9 +181,7 @@ def test_interactive_confirmation(isolated_cli_runner):
 def test_interactive_cancellation(isolated_cli_runner):
     """Test CLI command cancellation through interactive prompt."""
     # Act: Run process command with 'no' response
-    result = isolated_cli_runner.invoke(cli, [
-        'process', '--count', '2'
-    ], input='n\n')
+    result = isolated_cli_runner.invoke(cli, ["process", "--count", "2"], input="n\n")
 
     # Assert: Command was cancelled
     assert result.exit_code == 1  # Click confirmation aborts with exit code 1
@@ -205,7 +191,7 @@ def test_interactive_cancellation(isolated_cli_runner):
 def test_error_handling(isolated_cli_runner):
     """Test CLI error handling."""
     # Act: Run status command with failure flag
-    result = isolated_cli_runner.invoke(cli, ['status', '--fail'])
+    result = isolated_cli_runner.invoke(cli, ["status", "--fail"])
 
     # Assert: Command failed with expected error
     assert result.exit_code != 0
@@ -219,9 +205,7 @@ def test_missing_file_error(isolated_cli_runner, temp_directory):
     output_file = temp_directory / "output.json"
 
     # Act: Run convert command with missing input file
-    result = isolated_cli_runner.invoke(cli, [
-        'convert', str(missing_file), str(output_file)
-    ])
+    result = isolated_cli_runner.invoke(cli, ["convert", str(missing_file), str(output_file)])
 
     # Assert: Command failed due to missing file
     assert result.exit_code != 0
@@ -236,9 +220,9 @@ def test_invalid_option_value(isolated_cli_runner, temp_directory):
     output_file = temp_directory / "output.txt"
 
     # Act: Run convert command with invalid format
-    result = isolated_cli_runner.invoke(cli, [
-        'convert', str(input_file), str(output_file), '--format', 'invalid'
-    ])
+    result = isolated_cli_runner.invoke(
+        cli, ["convert", str(input_file), str(output_file), "--format", "invalid"]
+    )
 
     # Assert: Command failed due to invalid format
     assert result.exit_code != 0
@@ -248,7 +232,7 @@ def test_invalid_option_value(isolated_cli_runner, temp_directory):
 def test_help_output(isolated_cli_runner):
     """Test CLI help output."""
     # Act: Get help for main command
-    result = isolated_cli_runner.invoke(cli, ['--help'])
+    result = isolated_cli_runner.invoke(cli, ["--help"])
 
     # Assert: Help is displayed
     assert result.exit_code == 0
@@ -257,7 +241,7 @@ def test_help_output(isolated_cli_runner):
     assert "convert" in result.output
 
     # Act: Get help for specific command
-    result = isolated_cli_runner.invoke(cli, ['greet', '--help'])
+    result = isolated_cli_runner.invoke(cli, ["greet", "--help"])
 
     # Assert: Command-specific help is displayed
     assert result.exit_code == 0
@@ -268,9 +252,7 @@ def test_help_output(isolated_cli_runner):
 def test_cli_with_environment_variables(isolated_cli_runner):
     """Test CLI behavior with environment variables."""
     # Act: Run command with environment variable
-    result = isolated_cli_runner.invoke(cli, [
-        'greet', 'Alice'
-    ], env={'GREETING_PREFIX': 'Hi there'})
+    result = isolated_cli_runner.invoke(cli, ["greet", "Alice"], env={"GREETING_PREFIX": "Hi there"})
 
     # Assert: Command executed (environment is isolated)
     assert result.exit_code == 0
@@ -288,20 +270,20 @@ if __name__ == "__main__":
     runner = CliRunner()
 
     print("Demo 1: Basic greeting")
-    result = runner.invoke(cli, ['greet', 'TestUser'])
+    result = runner.invoke(cli, ["greet", "TestUser"])
     print(f"   Output: {result.output.strip()}")
     print(f"   Exit code: {result.exit_code}")
 
     print("\nDemo 2: Custom greeting")
-    result = runner.invoke(cli, ['greet', 'TestUser', '--greeting', 'Welcome'])
+    result = runner.invoke(cli, ["greet", "TestUser", "--greeting", "Welcome"])
     print(f"   Output: {result.output.strip()}")
 
     print("\nDemo 3: Verbose mode")
-    result = runner.invoke(cli, ['--verbose', 'greet', 'TestUser'])
+    result = runner.invoke(cli, ["--verbose", "greet", "TestUser"])
     print(f"   Output: {result.output.strip()}")
 
     print("\nDemo 4: Status check")
-    result = runner.invoke(cli, ['status'])
+    result = runner.invoke(cli, ["status"])
     print(f"   Output: {result.output.strip()}")
 
     print("\n🎉 CLI examples completed!")

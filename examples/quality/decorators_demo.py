@@ -30,9 +30,7 @@ def potentially_slow_function():
     return result
 
 
-@quality_check(
-    performance={'max_memory_mb': 50.0, 'max_execution_time': 0.5}
-)
+@quality_check(performance={"max_memory_mb": 50.0, "max_execution_time": 0.5})
 def comprehensive_test_function():
     """A function with comprehensive quality requirements."""
     # Do some work
@@ -84,15 +82,12 @@ def demonstrate_manual_profiling():
 
     from provide.testkit.quality.profiling.profiler import PerformanceProfiler
 
-    profiler = PerformanceProfiler({
-        'max_memory_mb': 100.0,
-        'max_execution_time': 1.0
-    })
+    profiler = PerformanceProfiler({"max_memory_mb": 100.0, "max_execution_time": 1.0})
 
     def example_function():
         """Example function to profile."""
         data = list(range(10000))
-        result = sum(x ** 2 for x in data if x % 2 == 0)
+        result = sum(x**2 for x in data if x % 2 == 0)
         return result
 
     print("Profiling example function...")
@@ -104,8 +99,8 @@ def demonstrate_manual_profiling():
     else:
         print("Score: N/A")
 
-    memory_data = result.details.get('memory', {})
-    cpu_data = result.details.get('cpu', {})
+    memory_data = result.details.get("memory", {})
+    cpu_data = result.details.get("cpu", {})
 
     if memory_data:
         print(f"Peak Memory: {memory_data.get('peak_memory_mb', 0):.3f} MB")

@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any
 
 import pytest
 
@@ -58,7 +59,7 @@ class SecurityFixture(BaseQualityFixture):
             "passed": result.passed,
             "score": result.score,
             "issues": result.details.get("total_issues", 0),
-            "details": result.details
+            "details": result.details,
         }
 
     def generate_report(self, format: str = "terminal") -> str:
@@ -127,23 +128,18 @@ def security_config():
         "max_high_severity": 0,
         "max_medium_severity": 5,
         "min_score": 80.0,
-        "exclude": [
-            "*/tests/*",
-            "*/test_*",
-            "*/.venv/*",
-            "*/venv/*",
-            "*/__pycache__/*",
-            "*/migrations/*"
-        ]
+        "exclude": ["*/tests/*", "*/test_*", "*/.venv/*", "*/venv/*", "*/__pycache__/*", "*/migrations/*"],
     }
 
 
 # Parametrized fixtures for different security configurations
-@pytest.fixture(params=[
-    {"max_high_severity": 0, "max_medium_severity": 0, "min_score": 100.0},  # Strict
-    {"max_high_severity": 1, "max_medium_severity": 5, "min_score": 80.0},   # Normal
-    {"max_high_severity": 5, "max_medium_severity": 10, "min_score": 60.0}   # Lenient
-])
+@pytest.fixture(
+    params=[
+        {"max_high_severity": 0, "max_medium_severity": 0, "min_score": 100.0},  # Strict
+        {"max_high_severity": 1, "max_medium_severity": 5, "min_score": 80.0},  # Normal
+        {"max_high_severity": 5, "max_medium_severity": 10, "min_score": 60.0},  # Lenient
+    ]
+)
 def parametrized_security(request, tmp_path) -> Generator[SecurityFixture, None, None]:
     """Parametrized security fixture for testing different configurations.
 
@@ -171,14 +167,8 @@ def parametrized_security(request, tmp_path) -> Generator[SecurityFixture, None,
 # Pytest hooks for automatic security integration
 def pytest_configure(config):
     """Configure pytest with security markers."""
-    config.addinivalue_line(
-        "markers",
-        "security: mark test to run with security scanning"
-    )
-    config.addinivalue_line(
-        "markers",
-        "no_security: mark test to skip security scanning"
-    )
+    config.addinivalue_line("markers", "security: mark test to run with security scanning")
+    config.addinivalue_line("markers", "no_security: mark test to skip security scanning")
 
 
 @pytest.fixture(autouse=True)

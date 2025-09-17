@@ -5,11 +5,12 @@ Provides comprehensive testing support for CLI applications including
 context mocking, isolated runners, and configuration helpers.
 """
 
+from collections.abc import Generator
 from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any
 
 import click
 from click.testing import CliRunner, Result
@@ -95,7 +96,7 @@ def temp_config_file(
     suffix = f".{format}"
 
     with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as config_path:
-        with open(config_path, 'w') as f:
+        with open(config_path, "w") as f:
             if isinstance(content, dict):
                 if format == "json":
                     json.dump(content, f, indent=2)

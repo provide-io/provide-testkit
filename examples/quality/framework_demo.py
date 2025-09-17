@@ -13,7 +13,7 @@ from pathlib import Path
 import time
 
 from provide.testkit.quality.artifacts import ArtifactManager
-from provide.testkit.quality.base import QualityResult, QualityTool
+from provide.testkit.quality.base import QualityResult
 from provide.testkit.quality.report import ReportGenerator
 from provide.testkit.quality.runner import QualityRunner
 
@@ -38,7 +38,7 @@ class MockCoverageTool:
         passed = score >= self.config.get("min_coverage", 75.0)
 
         # Create mock artifacts
-        artifact_dir = kwargs.get("artifact_dir", Path("."))
+        artifact_dir = kwargs.get("artifact_dir", Path())
         if artifact_dir:
             artifact_dir.mkdir(parents=True, exist_ok=True)
 
@@ -50,8 +50,8 @@ class MockCoverageTool:
                 "files": [
                     {"file": "quality/base.py", "coverage": 85.2},
                     {"file": "quality/runner.py", "coverage": 92.1},
-                    {"file": "quality/report.py", "coverage": 67.8}
-                ]
+                    {"file": "quality/report.py", "coverage": 67.8},
+                ],
             }
             coverage_file = artifact_dir / "coverage.json"
             coverage_file.write_text(json.dumps(coverage_data, indent=2))
@@ -65,10 +65,10 @@ class MockCoverageTool:
                 "lines_covered": lines_covered,
                 "lines_missing": lines_missing,
                 "total_lines": total_lines,
-                "min_coverage_required": self.config.get("min_coverage", 75.0)
+                "min_coverage_required": self.config.get("min_coverage", 75.0),
             },
             artifacts=[coverage_file] if artifact_dir else [],
-            execution_time=time.time() - start_time
+            execution_time=time.time() - start_time,
         )
 
 
@@ -86,18 +86,24 @@ class MockSecurityTool:
         issues = [
             {"severity": "LOW", "test_id": "B101", "filename": "test_file.py", "line": 42},
             {"severity": "MEDIUM", "test_id": "B603", "filename": "cli.py", "line": 156},
-            {"severity": "LOW", "test_id": "B104", "filename": "config.py", "line": 23}
+            {"severity": "LOW", "test_id": "B104", "filename": "config.py", "line": 23},
         ]
 
         # Calculate score based on issues
-        score = max(0, 100 - (len([i for i in issues if i["severity"] == "HIGH"]) * 20 +
-                             len([i for i in issues if i["severity"] == "MEDIUM"]) * 10 +
-                             len([i for i in issues if i["severity"] == "LOW"]) * 2))
+        score = max(
+            0,
+            100
+            - (
+                len([i for i in issues if i["severity"] == "HIGH"]) * 20
+                + len([i for i in issues if i["severity"] == "MEDIUM"]) * 10
+                + len([i for i in issues if i["severity"] == "LOW"]) * 2
+            ),
+        )
 
         passed = score >= self.config.get("min_score", 85.0)
 
         # Create mock artifacts
-        artifact_dir = kwargs.get("artifact_dir", Path("."))
+        artifact_dir = kwargs.get("artifact_dir", Path())
         if artifact_dir:
             artifact_dir.mkdir(parents=True, exist_ok=True)
 
@@ -114,12 +120,12 @@ class MockSecurityTool:
                 "severity_counts": {
                     "HIGH": len([i for i in issues if i["severity"] == "HIGH"]),
                     "MEDIUM": len([i for i in issues if i["severity"] == "MEDIUM"]),
-                    "LOW": len([i for i in issues if i["severity"] == "LOW"])
+                    "LOW": len([i for i in issues if i["severity"] == "LOW"]),
                 },
-                "min_score_required": self.config.get("min_score", 85.0)
+                "min_score_required": self.config.get("min_score", 85.0),
             },
             artifacts=[security_file] if artifact_dir else [],
-            execution_time=time.time() - start_time
+            execution_time=time.time() - start_time,
         )
 
 
@@ -138,7 +144,7 @@ class MockComplexityTool:
             {"name": "analyze_quality", "complexity": 8, "rank": "B"},
             {"name": "generate_report", "complexity": 12, "rank": "C"},
             {"name": "complex_function", "complexity": 18, "rank": "D"},
-            {"name": "simple_function", "complexity": 3, "rank": "A"}
+            {"name": "simple_function", "complexity": 3, "rank": "A"},
         ]
 
         avg_complexity = sum(f["complexity"] for f in functions) / len(functions)
@@ -158,11 +164,12 @@ class MockComplexityTool:
             grade = "D"
             score = 55.0
 
-        passed = (avg_complexity <= self.config.get("max_complexity", 15) and
-                 score >= self.config.get("min_score", 70.0))
+        passed = avg_complexity <= self.config.get("max_complexity", 15) and score >= self.config.get(
+            "min_score", 70.0
+        )
 
         # Create mock artifacts
-        artifact_dir = kwargs.get("artifact_dir", Path("."))
+        artifact_dir = kwargs.get("artifact_dir", Path())
         if artifact_dir:
             artifact_dir.mkdir(parents=True, exist_ok=True)
 
@@ -183,11 +190,11 @@ class MockComplexityTool:
                     "A": len([f for f in functions if f["rank"] == "A"]),
                     "B": len([f for f in functions if f["rank"] == "B"]),
                     "C": len([f for f in functions if f["rank"] == "C"]),
-                    "D": len([f for f in functions if f["rank"] == "D"])
-                }
+                    "D": len([f for f in functions if f["rank"] == "D"]),
+                },
             },
             artifacts=[complexity_file] if artifact_dir else [],
-            execution_time=time.time() - start_time
+            execution_time=time.time() - start_time,
         )
 
 
@@ -199,15 +206,15 @@ def setup_mock_runner() -> QualityRunner:
         config={
             "coverage": {"min_coverage": 75.0},
             "security": {"min_score": 85.0},
-            "complexity": {"max_complexity": 15, "min_score": 70.0}
-        }
+            "complexity": {"max_complexity": 15, "min_score": 70.0},
+        },
     )
 
     # Manually add mock tools
     runner.tool_instances = {
         "coverage": MockCoverageTool(runner.config.get("coverage", {})),
         "security": MockSecurityTool(runner.config.get("security", {})),
-        "complexity": MockComplexityTool(runner.config.get("complexity", {}))
+        "complexity": MockComplexityTool(runner.config.get("complexity", {})),
     }
 
     return runner
@@ -250,9 +257,9 @@ def demonstrate_quality_gates():
 
     # Define quality gates
     gates = {
-        "coverage": 80.0,        # Require 80% coverage
-        "security": 90.0,        # Require 90% security score
-        "complexity": {"max_complexity": 12, "min_score": 75.0}  # Complex gate
+        "coverage": 80.0,  # Require 80% coverage
+        "security": 90.0,  # Require 90% security score
+        "complexity": {"max_complexity": 12, "min_score": 75.0},  # Complex gate
     }
 
     print(f"Gates: {gates}")
@@ -315,7 +322,7 @@ def demonstrate_artifact_management(results: dict[str, QualityResult]):
     artifact_manager = ArtifactManager("quality-reports/artifacts")
 
     # Create organized directories
-    for tool_name in results.keys():
+    for tool_name in results:
         session_dir = artifact_manager.create_session_dir(tool_name)
         timestamped_dir = artifact_manager.create_timestamped_dir(tool_name)
         print(f"  Created directories for {tool_name}")
@@ -396,7 +403,7 @@ The real implementation includes:
 - **interrogate** integration for documentation coverage
 - **memray/cProfile** integration for performance profiling
 
-Generated on: {time.strftime('%Y-%m-%d %H:%M:%S')}
+Generated on: {time.strftime("%Y-%m-%d %H:%M:%S")}
 """
 
     (reports_dir / "README.md").write_text(readme_content)

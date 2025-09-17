@@ -243,6 +243,6 @@ __all__ = [
     # Environment utilities
     "TestEnvironment",
     "get_example_dir",
-    "add_src_to_path", 
+    "add_src_to_path",
     "reset_test_environment",
 ]

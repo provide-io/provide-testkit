@@ -8,6 +8,7 @@ from typing import Any
 
 try:
     from coverage import Coverage
+
     COVERAGE_AVAILABLE = True
 except ImportError:
     COVERAGE_AVAILABLE = False
@@ -31,8 +32,7 @@ class CoverageTracker:
         """
         if not COVERAGE_AVAILABLE:
             raise QualityToolError(
-                "Coverage.py not available. Install with: pip install coverage",
-                tool="coverage"
+                "Coverage.py not available. Install with: pip install coverage", tool="coverage"
             )
 
         self.config = config or {}
@@ -79,7 +79,7 @@ class CoverageTracker:
                 tool="coverage",
                 passed=False,
                 details={"error": str(e), "error_type": type(e).__name__},
-                execution_time=time.time() - start_time
+                execution_time=time.time() - start_time,
             )
 
     def start(self) -> None:
@@ -168,11 +168,13 @@ class CoverageTracker:
 
             if "total_statements" in result.details:
                 details = result.details
-                lines.extend([
-                    f"Total Statements: {details.get('total_statements', 0)}",
-                    f"Missing Statements: {details.get('missing_statements', 0)}",
-                    f"Branch Coverage: {details.get('branch_coverage', 'N/A')}%"
-                ])
+                lines.extend(
+                    [
+                        f"Total Statements: {details.get('total_statements', 0)}",
+                        f"Missing Statements: {details.get('missing_statements', 0)}",
+                        f"Branch Coverage: {details.get('branch_coverage', 'N/A')}%",
+                    ]
+                )
 
             return "\n".join(lines)
 
@@ -183,13 +185,9 @@ class CoverageTracker:
         config = {
             "branch": self.config.get("branch", True),
             "source": self.config.get("source", ["src"]),
-            "omit": self.config.get("omit", [
-                "*/tests/*",
-                "*/test_*",
-                "*/.venv/*",
-                "*/venv/*",
-                "*/__pycache__/*"
-            ])
+            "omit": self.config.get(
+                "omit", ["*/tests/*", "*/test_*", "*/.venv/*", "*/venv/*", "*/__pycache__/*"]
+            ),
         }
 
         # Add data file configuration if artifact directory is set
@@ -214,11 +212,7 @@ class CoverageTracker:
     def _create_result(self) -> QualityResult:
         """Create QualityResult from current coverage data."""
         if not self.coverage:
-            return QualityResult(
-                tool="coverage",
-                passed=False,
-                details={"error": "No coverage instance"}
-            )
+            return QualityResult(tool="coverage", passed=False, details={"error": "No coverage instance"})
 
         try:
             # Get coverage percentage
@@ -240,7 +234,7 @@ class CoverageTracker:
                             total_statements += len(file_data)
 
                     # Get missing statements
-                    if hasattr(self.coverage, '_analyze'):
+                    if hasattr(self.coverage, "_analyze"):
                         for filename in data.measured_files():
                             try:
                                 analysis = self.coverage._analyze(filename)
@@ -263,16 +257,12 @@ class CoverageTracker:
                     "total_statements": total_statements,
                     "missing_statements": missing_statements,
                     "branch_coverage": branch_coverage,
-                    "threshold": threshold
-                }
+                    "threshold": threshold,
+                },
             )
 
         except Exception as e:
-            return QualityResult(
-                tool="coverage",
-                passed=False,
-                details={"error": str(e)}
-            )
+            return QualityResult(tool="coverage", passed=False, details={"error": str(e)})
 
     def _generate_terminal_report(self) -> str:
         """Generate terminal coverage report."""
@@ -281,6 +271,7 @@ class CoverageTracker:
 
         try:
             from io import StringIO
+
             output = StringIO()
             self.coverage.report(file=output, show_missing=True)
             return output.getvalue()

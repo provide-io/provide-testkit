@@ -14,6 +14,7 @@ try:
     from radon.complexity import cc_rank, cc_visit  # type: ignore[import-untyped]
     from radon.metrics import mi_visit  # type: ignore[import-untyped]
     from radon.raw import analyze  # type: ignore[import-untyped]
+
     RADON_AVAILABLE = True
 except ImportError:
     RADON_AVAILABLE = False
@@ -40,10 +41,7 @@ class ComplexityAnalyzer:
             config: Complexity analyzer configuration options
         """
         if not RADON_AVAILABLE:
-            raise QualityToolError(
-                "Radon not available. Install with: pip install radon",
-                tool="complexity"
-            )
+            raise QualityToolError("Radon not available. Install with: pip install radon", tool="complexity")
 
         self.config = config or {}
         self.artifact_dir: Path | None = None
@@ -76,7 +74,7 @@ class ComplexityAnalyzer:
                 tool="complexity",
                 passed=False,
                 details={"error": str(e), "error_type": type(e).__name__},
-                execution_time=time.time() - start_time
+                execution_time=time.time() - start_time,
             )
 
     def _run_radon_analysis(self, path: Path) -> QualityResult:
@@ -93,10 +91,7 @@ class ComplexityAnalyzer:
                     tool="complexity",
                     passed=True,
                     score=100.0,
-                    details={
-                        "message": "No Python files found to analyze",
-                        "grade": "A"
-                    }
+                    details={"message": "No Python files found to analyze", "grade": "A"},
                 )
 
             # Analyze each file
@@ -111,59 +106,56 @@ class ComplexityAnalyzer:
                     # Cyclomatic complexity
                     complexity_data = cc_visit(content)
                     for item in complexity_data:
-                        all_complexity.append({
-                            "file": str(file_path),
-                            "name": item.name,
-                            "complexity": item.complexity,
-                            "rank": cc_rank(item.complexity),
-                            "lineno": item.lineno
-                        })
+                        all_complexity.append(
+                            {
+                                "file": str(file_path),
+                                "name": item.name,
+                                "complexity": item.complexity,
+                                "rank": cc_rank(item.complexity),
+                                "lineno": item.lineno,
+                            }
+                        )
 
                     # Raw metrics
                     raw_data = analyze(content)
-                    all_raw_metrics.append({
-                        "file": str(file_path),
-                        "loc": raw_data.loc,
-                        "lloc": raw_data.lloc,
-                        "sloc": raw_data.sloc,
-                        "comments": raw_data.comments,
-                        "multi": raw_data.multi,
-                        "blank": raw_data.blank
-                    })
+                    all_raw_metrics.append(
+                        {
+                            "file": str(file_path),
+                            "loc": raw_data.loc,
+                            "lloc": raw_data.lloc,
+                            "sloc": raw_data.sloc,
+                            "comments": raw_data.comments,
+                            "multi": raw_data.multi,
+                            "blank": raw_data.blank,
+                        }
+                    )
 
                     # Maintainability index
                     try:
                         mi_data = mi_visit(content, multi=True)
-                        if hasattr(mi_data, 'mi'):
-                            all_maintainability.append({
-                                "file": str(file_path),
-                                "maintainability_index": mi_data.mi
-                            })
+                        if hasattr(mi_data, "mi"):
+                            all_maintainability.append(
+                                {"file": str(file_path), "maintainability_index": mi_data.mi}
+                            )
                     except Exception:
                         # MI calculation can fail on some files
                         pass
 
-                except Exception as e:
+                except Exception:
                     # Skip files that can't be analyzed
                     continue
 
             # Process results
-            return self._process_complexity_results(
-                all_complexity, all_raw_metrics, all_maintainability
-            )
+            return self._process_complexity_results(all_complexity, all_raw_metrics, all_maintainability)
 
         except Exception as e:
             raise QualityToolError(f"Radon analysis failed: {e}", tool="complexity")
 
     def _discover_python_files(self, path: Path) -> list[Path]:
         """Discover Python files to analyze."""
-        excludes = self.config.get("exclude", [
-            "*/tests/*",
-            "*/test_*",
-            "*/.venv/*",
-            "*/venv/*",
-            "*/__pycache__/*"
-        ])
+        excludes = self.config.get(
+            "exclude", ["*/tests/*", "*/test_*", "*/.venv/*", "*/venv/*", "*/__pycache__/*"]
+        )
 
         files = []
         if path.is_file() and path.suffix == ".py":
@@ -181,7 +173,7 @@ class ComplexityAnalyzer:
         self,
         complexity_data: list[dict[str, Any]],
         raw_metrics: list[dict[str, Any]],
-        maintainability_data: list[dict[str, Any]]
+        maintainability_data: list[dict[str, Any]],
     ) -> QualityResult:
         """Process complexity analysis results into QualityResult."""
 
@@ -236,9 +228,9 @@ class ComplexityAnalyzer:
         grade_values = {"A": 5, "B": 4, "C": 3, "D": 2, "E": 1, "F": 0}
 
         passed = (
-            grade_values.get(overall_grade, 0) >= grade_values.get(required_grade, 0) and
-            max_complexity <= max_complexity_threshold and
-            score >= min_score
+            grade_values.get(overall_grade, 0) >= grade_values.get(required_grade, 0)
+            and max_complexity <= max_complexity_threshold
+            and score >= min_score
         )
 
         # Create detailed results
@@ -256,8 +248,8 @@ class ComplexityAnalyzer:
             "thresholds": {
                 "min_grade": required_grade,
                 "max_complexity": max_complexity_threshold,
-                "min_score": min_score
-            }
+                "min_score": min_score,
+            },
         }
 
         if avg_maintainability is not None:
@@ -266,19 +258,10 @@ class ComplexityAnalyzer:
         # Add detailed complexity data (limited for readability)
         if complexity_data:
             # Sort by complexity (highest first) and take top 10
-            sorted_complexity = sorted(
-                complexity_data,
-                key=lambda x: x["complexity"],
-                reverse=True
-            )[:10]
+            sorted_complexity = sorted(complexity_data, key=lambda x: x["complexity"], reverse=True)[:10]
             details["most_complex_functions"] = sorted_complexity
 
-        return QualityResult(
-            tool="complexity",
-            passed=passed,
-            score=score,
-            details=details
-        )
+        return QualityResult(tool="complexity", passed=passed, score=score, details=details)
 
     def _generate_artifacts(self, result: QualityResult) -> None:
         """Generate complexity analysis artifacts.
@@ -299,7 +282,7 @@ class ComplexityAnalyzer:
                 "passed": result.passed,
                 "score": result.score,
                 "details": result.details,
-                "execution_time": result.execution_time
+                "execution_time": result.execution_time,
             }
             atomic_write_text(json_file, json.dumps(json_data, indent=2))
             result.artifacts.append(json_file)
@@ -333,26 +316,30 @@ class ComplexityAnalyzer:
 
         details = result.details
         if "total_files" in details:
-            lines.extend([
-                f"Files Analyzed: {details['total_files']}",
-                f"Total Functions: {details['total_functions']}",
-                f"Average Complexity: {details['average_complexity']}",
-                f"Max Complexity: {details['max_complexity']}",
-                "",
-                "Grade Breakdown:",
-            ])
+            lines.extend(
+                [
+                    f"Files Analyzed: {details['total_files']}",
+                    f"Total Functions: {details['total_functions']}",
+                    f"Average Complexity: {details['average_complexity']}",
+                    f"Max Complexity: {details['max_complexity']}",
+                    "",
+                    "Grade Breakdown:",
+                ]
+            )
 
             grade_breakdown = details.get("grade_breakdown", {})
             for grade, count in grade_breakdown.items():
                 if count > 0:
                     lines.append(f"  {grade}: {count} functions")
 
-            lines.extend([
-                "",
-                f"Lines of Code: {details['lines_of_code']}",
-                f"Logical Lines: {details['logical_lines']}",
-                f"Comment Lines: {details['comment_lines']}",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"Lines of Code: {details['lines_of_code']}",
+                    f"Logical Lines: {details['logical_lines']}",
+                    f"Comment Lines: {details['comment_lines']}",
+                ]
+            )
 
             if "average_maintainability" in details:
                 lines.append(f"Average Maintainability Index: {details['average_maintainability']}")
@@ -364,20 +351,18 @@ class ComplexityAnalyzer:
 
     def _generate_detail_report(self, result: QualityResult) -> str:
         """Generate detailed complexity report."""
-        lines = [
-            "Most Complex Functions",
-            "=" * 50,
-            ""
-        ]
+        lines = ["Most Complex Functions", "=" * 50, ""]
 
         functions = result.details.get("most_complex_functions", [])
         for i, func in enumerate(functions, 1):
-            lines.extend([
-                f"{i}. {func['name']} (Grade {func['rank']})",
-                f"   File: {func['file']}:{func['lineno']}",
-                f"   Complexity: {func['complexity']}",
-                ""
-            ])
+            lines.extend(
+                [
+                    f"{i}. {func['name']} (Grade {func['rank']})",
+                    f"   File: {func['file']}:{func['lineno']}",
+                    f"   Complexity: {func['complexity']}",
+                    "",
+                ]
+            )
 
         return "\n".join(lines)
 
@@ -394,11 +379,14 @@ class ComplexityAnalyzer:
         if format == "terminal":
             return self._generate_text_report(result)
         elif format == "json":
-            return json.dumps({
-                "tool": result.tool,
-                "passed": result.passed,
-                "score": result.score,
-                "details": result.details
-            }, indent=2)
+            return json.dumps(
+                {
+                    "tool": result.tool,
+                    "passed": result.passed,
+                    "score": result.score,
+                    "details": result.details,
+                },
+                indent=2,
+            )
         else:
             return str(result.details)

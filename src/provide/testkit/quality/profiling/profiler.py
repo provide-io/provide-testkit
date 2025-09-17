@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 import cProfile
 from io import StringIO
 import json
@@ -9,12 +10,13 @@ from pathlib import Path
 import pstats
 import time
 import tracemalloc
-from typing import Any, Callable
+from typing import Any
 
 from provide.foundation.file import temp_file
 
 try:
     import memray
+
     MEMRAY_AVAILABLE = True
 except ImportError:
     MEMRAY_AVAILABLE = False
@@ -39,12 +41,7 @@ class PerformanceProfiler:
         self.config = config or {}
         self.artifact_dir: Path | None = None
 
-    def profile_function(
-        self,
-        func: Callable[..., Any],
-        *args: Any,
-        **kwargs: Any
-    ) -> QualityResult:
+    def profile_function(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> QualityResult:
         """Profile a function's performance.
 
         Args:
@@ -86,15 +83,10 @@ class PerformanceProfiler:
                 tool="profiling",
                 passed=False,
                 details={"error": str(e), "error_type": type(e).__name__},
-                execution_time=time.time() - start_time
+                execution_time=time.time() - start_time,
             )
 
-    def _profile_memory_memray(
-        self,
-        func: Callable[..., Any],
-        *args: Any,
-        **kwargs: Any
-    ) -> dict[str, Any]:
+    def _profile_memory_memray(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> dict[str, Any]:
         """Profile memory usage using memray."""
         if not MEMRAY_AVAILABLE:
             raise QualityToolError("Memray not available", tool="profiling")
@@ -122,7 +114,7 @@ class PerformanceProfiler:
                         "peak_memory_mb": peak_memory / (1024 * 1024),
                         "average_memory_mb": avg_memory / (1024 * 1024),
                         "profile_file": str(output_path),
-                        "function_result": result
+                        "function_result": result,
                     }
                 }
 
@@ -132,10 +124,7 @@ class PerformanceProfiler:
                     output_path.unlink()
 
     def _profile_memory_tracemalloc(
-        self,
-        func: Callable[..., Any],
-        *args: Any,
-        **kwargs: Any
+        self, func: Callable[..., Any], *args: Any, **kwargs: Any
     ) -> dict[str, Any]:
         """Profile memory usage using tracemalloc."""
         tracemalloc.start()
@@ -152,17 +141,19 @@ class PerformanceProfiler:
 
             # Calculate memory usage
             current, peak = tracemalloc.get_traced_memory()
-            top_stats = snapshot2.compare_to(snapshot1, 'lineno')
+            top_stats = snapshot2.compare_to(snapshot1, "lineno")
 
             # Get top memory allocations
             top_allocations = []
             for stat in top_stats[:10]:  # Top 10 allocations
-                top_allocations.append({
-                    "file": stat.traceback.format()[0] if stat.traceback.format() else "unknown",
-                    "size_bytes": stat.size,
-                    "size_mb": stat.size / (1024 * 1024),
-                    "count": stat.count
-                })
+                top_allocations.append(
+                    {
+                        "file": stat.traceback.format()[0] if stat.traceback.format() else "unknown",
+                        "size_bytes": stat.size,
+                        "size_mb": stat.size / (1024 * 1024),
+                        "count": stat.count,
+                    }
+                )
 
             return {
                 "memory_profiling": {
@@ -172,19 +163,14 @@ class PerformanceProfiler:
                     "current_memory_mb": current / (1024 * 1024),
                     "peak_memory_mb": peak / (1024 * 1024),
                     "top_allocations": top_allocations,
-                    "function_result": result
+                    "function_result": result,
                 }
             }
 
         finally:
             tracemalloc.stop()
 
-    def _profile_cpu(
-        self,
-        func: Callable[..., Any],
-        *args: Any,
-        **kwargs: Any
-    ) -> dict[str, Any]:
+    def _profile_cpu(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> dict[str, Any]:
         """Profile CPU usage using cProfile."""
         profiler = cProfile.Profile()
 
@@ -198,19 +184,21 @@ class PerformanceProfiler:
         # Generate statistics
         stats_stream = StringIO()
         stats = pstats.Stats(profiler, stream=stats_stream)
-        stats.sort_stats('cumulative')
+        stats.sort_stats("cumulative")
 
         # Get top functions by cumulative time
         top_functions = []
         for func_info, (cc, nc, tt, ct, callers) in stats.stats.items():
             filename, line, func_name = func_info
-            top_functions.append({
-                "function": f"{filename}:{line}({func_name})",
-                "call_count": nc,
-                "total_time": tt,
-                "cumulative_time": ct,
-                "time_per_call": tt / nc if nc > 0 else 0
-            })
+            top_functions.append(
+                {
+                    "function": f"{filename}:{line}({func_name})",
+                    "call_count": nc,
+                    "total_time": tt,
+                    "cumulative_time": ct,
+                    "time_per_call": tt / nc if nc > 0 else 0,
+                }
+            )
 
         # Sort by cumulative time and take top 10
         top_functions.sort(key=lambda x: x["cumulative_time"], reverse=True)
@@ -222,15 +210,11 @@ class PerformanceProfiler:
                 "total_function_calls": stats.total_calls,
                 "primitive_calls": stats.prim_calls,
                 "top_functions": top_functions[:10],
-                "function_result": result
+                "function_result": result,
             }
         }
 
-    def _process_profiling_results(
-        self,
-        results: dict[str, Any],
-        execution_time: float
-    ) -> QualityResult:
+    def _process_profiling_results(self, results: dict[str, Any], execution_time: float) -> QualityResult:
         """Process profiling results into QualityResult."""
 
         # Extract key metrics
@@ -242,7 +226,9 @@ class PerformanceProfiler:
         cpu_score = self._calculate_cpu_score(cpu_data)
 
         # Overall score is average of component scores
-        overall_score = (memory_score + cpu_score) / 2 if memory_score and cpu_score else (memory_score or cpu_score or 0)
+        overall_score = (
+            (memory_score + cpu_score) / 2 if memory_score and cpu_score else (memory_score or cpu_score or 0)
+        )
 
         # Determine pass/fail
         min_score = self.config.get("min_score", 70.0)
@@ -266,16 +252,12 @@ class PerformanceProfiler:
         details = {
             "memory": memory_data,
             "cpu": cpu_data,
-            "scores": {
-                "memory_score": memory_score,
-                "cpu_score": cpu_score,
-                "overall_score": overall_score
-            },
+            "scores": {"memory_score": memory_score, "cpu_score": cpu_score, "overall_score": overall_score},
             "thresholds": {
                 "min_score": min_score,
                 "max_memory_mb": max_memory_mb,
-                "max_execution_time": max_execution_time
-            }
+                "max_execution_time": max_execution_time,
+            },
         }
 
         return QualityResult(
@@ -283,7 +265,7 @@ class PerformanceProfiler:
             passed=passed,
             score=overall_score,
             details=details,
-            execution_time=execution_time
+            execution_time=execution_time,
         )
 
     def _calculate_memory_score(self, memory_data: dict[str, Any]) -> float | None:
@@ -341,12 +323,15 @@ class PerformanceProfiler:
         if format == "terminal":
             return self._generate_text_report(result)
         elif format == "json":
-            return json.dumps({
-                "tool": result.tool,
-                "passed": result.passed,
-                "score": result.score,
-                "details": result.details
-            }, indent=2)
+            return json.dumps(
+                {
+                    "tool": result.tool,
+                    "passed": result.passed,
+                    "score": result.score,
+                    "details": result.details,
+                },
+                indent=2,
+            )
         else:
             return str(result.details)
 
@@ -363,21 +348,25 @@ class PerformanceProfiler:
         scores = details.get("scores", {})
 
         if scores:
-            lines.extend([
-                "",
-                "Component Scores:",
-                f"  Memory Score: {scores.get('memory_score', 'N/A')}%",
-                f"  CPU Score: {scores.get('cpu_score', 'N/A')}%",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "Component Scores:",
+                    f"  Memory Score: {scores.get('memory_score', 'N/A')}%",
+                    f"  CPU Score: {scores.get('cpu_score', 'N/A')}%",
+                ]
+            )
 
         # Memory analysis
         memory_data = details.get("memory", {})
         if memory_data:
-            lines.extend([
-                "",
-                f"Memory Analysis ({memory_data.get('tool', 'unknown')}):",
-                f"  Peak Memory: {memory_data.get('peak_memory_mb', 0):.2f} MB",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"Memory Analysis ({memory_data.get('tool', 'unknown')}):",
+                    f"  Peak Memory: {memory_data.get('peak_memory_mb', 0):.2f} MB",
+                ]
+            )
 
             if "average_memory_mb" in memory_data:
                 lines.append(f"  Average Memory: {memory_data['average_memory_mb']:.2f} MB")
@@ -385,30 +374,36 @@ class PerformanceProfiler:
         # CPU analysis
         cpu_data = details.get("cpu", {})
         if cpu_data:
-            lines.extend([
-                "",
-                f"CPU Analysis ({cpu_data.get('tool', 'unknown')}):",
-                f"  Execution Time: {cpu_data.get('execution_time', 0):.4f}s",
-                f"  Total Function Calls: {cpu_data.get('total_function_calls', 0):,}",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"CPU Analysis ({cpu_data.get('tool', 'unknown')}):",
+                    f"  Execution Time: {cpu_data.get('execution_time', 0):.4f}s",
+                    f"  Total Function Calls: {cpu_data.get('total_function_calls', 0):,}",
+                ]
+            )
 
             top_functions = cpu_data.get("top_functions", [])
             if top_functions:
-                lines.extend([
-                    "",
-                    "Top CPU Consumers:",
-                ])
+                lines.extend(
+                    [
+                        "",
+                        "Top CPU Consumers:",
+                    ]
+                )
                 for i, func in enumerate(top_functions[:5], 1):
                     lines.append(f"  {i}. {func['function']} ({func['cumulative_time']:.4f}s)")
 
         # Thresholds
         thresholds = details.get("thresholds", {})
         if thresholds:
-            lines.extend([
-                "",
-                "Thresholds:",
-                f"  Minimum Score: {thresholds.get('min_score', 'N/A')}%",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "Thresholds:",
+                    f"  Minimum Score: {thresholds.get('min_score', 'N/A')}%",
+                ]
+            )
 
             if thresholds.get("max_memory_mb"):
                 lines.append(f"  Maximum Memory: {thresholds['max_memory_mb']} MB")

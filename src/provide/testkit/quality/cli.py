@@ -25,30 +25,19 @@ def quality_cli(ctx: click.Context) -> None:
     "--tool",
     multiple=True,
     type=click.Choice(["coverage", "security", "complexity", "documentation", "profiling"]),
-    help="Specific tools to run (default: all available)"
+    help="Specific tools to run (default: all available)",
 )
 @click.option(
     "--artifact-dir",
     type=click.Path(path_type=Path),
     default=".quality-artifacts",
-    help="Directory for output artifacts"
+    help="Directory for output artifacts",
 )
 @click.option(
-    "--format",
-    type=click.Choice(["terminal", "json", "summary"]),
-    default="terminal",
-    help="Output format"
+    "--format", type=click.Choice(["terminal", "json", "summary"]), default="terminal", help="Output format"
 )
-@click.option(
-    "--fail-fast",
-    is_flag=True,
-    help="Stop on first failure"
-)
-@click.option(
-    "--config",
-    type=click.Path(exists=True, path_type=Path),
-    help="Configuration file (JSON)"
-)
+@click.option("--fail-fast", is_flag=True, help="Stop on first failure")
+@click.option("--config", type=click.Path(exists=True, path_type=Path), help="Configuration file (JSON)")
 @click.option("--verbose", "-v", is_flag=True, help="Verbose output")
 def analyze_command(
     path: Path,
@@ -57,7 +46,7 @@ def analyze_command(
     format: str,
     fail_fast: bool,
     config: Path | None,
-    verbose: bool
+    verbose: bool,
 ) -> None:
     """Analyze code quality for the given path."""
     try:
@@ -78,12 +67,7 @@ def analyze_command(
 
         # Run quality analysis
         runner = QualityRunner()
-        results = runner.run_tools(
-            path,
-            tools_to_run,
-            artifact_dir=artifact_dir,
-            tool_configs=config_data
-        )
+        results = runner.run_tools(path, tools_to_run, artifact_dir=artifact_dir, tool_configs=config_data)
 
         # Output results
         if format == "json":
@@ -95,10 +79,10 @@ def analyze_command(
                         "passed": result.passed,
                         "score": result.score,
                         "details": result.details,
-                        "execution_time": result.execution_time
+                        "execution_time": result.execution_time,
                     }
                     for tool, result in results.items()
-                }
+                },
             }
             click.echo(json.dumps(output, indent=2))
         elif format == "summary":
@@ -117,36 +101,16 @@ def analyze_command(
 
 @quality_cli.command("gates")
 @click.argument("path", type=click.Path(exists=True, path_type=Path))
-@click.option(
-    "--coverage",
-    type=float,
-    help="Minimum coverage percentage required"
-)
-@click.option(
-    "--security",
-    type=float,
-    help="Minimum security score required"
-)
-@click.option(
-    "--complexity",
-    type=int,
-    help="Maximum complexity allowed"
-)
-@click.option(
-    "--documentation",
-    type=float,
-    help="Minimum documentation coverage required"
-)
-@click.option(
-    "--config",
-    type=click.Path(exists=True, path_type=Path),
-    help="Gates configuration file (JSON)"
-)
+@click.option("--coverage", type=float, help="Minimum coverage percentage required")
+@click.option("--security", type=float, help="Minimum security score required")
+@click.option("--complexity", type=int, help="Maximum complexity allowed")
+@click.option("--documentation", type=float, help="Minimum documentation coverage required")
+@click.option("--config", type=click.Path(exists=True, path_type=Path), help="Gates configuration file (JSON)")
 @click.option(
     "--artifact-dir",
     type=click.Path(path_type=Path),
     default=".quality-artifacts",
-    help="Directory for output artifacts"
+    help="Directory for output artifacts",
 )
 @click.option("--verbose", "-v", is_flag=True, help="Verbose output")
 def gates_command(
@@ -157,7 +121,7 @@ def gates_command(
     documentation: float | None,
     config: Path | None,
     artifact_dir: Path,
-    verbose: bool
+    verbose: bool,
 ) -> None:
     """Run quality gates on the given path."""
     try:
@@ -181,7 +145,7 @@ def _build_gates_config(
     security: float | None,
     complexity: int | None,
     documentation: float | None,
-    config: Path | None
+    config: Path | None,
 ) -> dict[str, Any]:
     """Build gates configuration from CLI arguments and config file."""
     gates = {}
@@ -248,38 +212,24 @@ def _print_detailed_results(results: Any) -> None:
 
 @quality_cli.command("coverage")
 @click.argument("path", type=click.Path(exists=True, path_type=Path))
-@click.option(
-    "--min-coverage",
-    type=float,
-    default=80.0,
-    help="Minimum coverage percentage"
-)
+@click.option("--min-coverage", type=float, default=80.0, help="Minimum coverage percentage")
 @click.option(
     "--artifact-dir",
     type=click.Path(path_type=Path),
     default=".coverage-artifacts",
-    help="Directory for coverage artifacts"
+    help="Directory for coverage artifacts",
 )
 @click.option("--html", is_flag=True, help="Generate HTML report")
 @click.option("--xml", is_flag=True, help="Generate XML report")
 @click.option("--verbose", "-v", is_flag=True, help="Verbose output")
 def coverage_command(
-    path: Path,
-    min_coverage: float,
-    artifact_dir: Path,
-    html: bool,
-    xml: bool,
-    verbose: bool
+    path: Path, min_coverage: float, artifact_dir: Path, html: bool, xml: bool, verbose: bool
 ) -> None:
     """Run coverage analysis on the given path."""
     try:
         from .coverage.tracker import CoverageTracker
 
-        config = {
-            "min_coverage": min_coverage,
-            "generate_html": html,
-            "generate_xml": xml
-        }
+        config = {"min_coverage": min_coverage, "generate_html": html, "generate_xml": xml}
 
         tracker = CoverageTracker(config)
         result = tracker.analyze(path, artifact_dir=artifact_dir)
@@ -305,25 +255,15 @@ def coverage_command(
 
 @quality_cli.command("security")
 @click.argument("path", type=click.Path(exists=True, path_type=Path))
-@click.option(
-    "--min-score",
-    type=float,
-    default=90.0,
-    help="Minimum security score"
-)
+@click.option("--min-score", type=float, default=90.0, help="Minimum security score")
 @click.option(
     "--artifact-dir",
     type=click.Path(path_type=Path),
     default=".security-artifacts",
-    help="Directory for security artifacts"
+    help="Directory for security artifacts",
 )
 @click.option("--verbose", "-v", is_flag=True, help="Verbose output")
-def security_command(
-    path: Path,
-    min_score: float,
-    artifact_dir: Path,
-    verbose: bool
-) -> None:
+def security_command(path: Path, min_score: float, artifact_dir: Path, verbose: bool) -> None:
     """Run security analysis on the given path."""
     try:
         from .security.scanner import SecurityScanner
@@ -357,40 +297,28 @@ def security_command(
 
 @quality_cli.command("complexity")
 @click.argument("path", type=click.Path(exists=True, path_type=Path))
-@click.option(
-    "--max-complexity",
-    type=int,
-    default=10,
-    help="Maximum complexity allowed"
-)
+@click.option("--max-complexity", type=int, default=10, help="Maximum complexity allowed")
 @click.option(
     "--min-grade",
     type=click.Choice(["A", "B", "C", "D", "F"]),
     default="C",
-    help="Minimum complexity grade required"
+    help="Minimum complexity grade required",
 )
 @click.option(
     "--artifact-dir",
     type=click.Path(path_type=Path),
     default=".complexity-artifacts",
-    help="Directory for complexity artifacts"
+    help="Directory for complexity artifacts",
 )
 @click.option("--verbose", "-v", is_flag=True, help="Verbose output")
 def complexity_command(
-    path: Path,
-    max_complexity: int,
-    min_grade: str,
-    artifact_dir: Path,
-    verbose: bool
+    path: Path, max_complexity: int, min_grade: str, artifact_dir: Path, verbose: bool
 ) -> None:
     """Run complexity analysis on the given path."""
     try:
         from .complexity.analyzer import ComplexityAnalyzer
 
-        config = {
-            "max_complexity": max_complexity,
-            "min_grade": min_grade
-        }
+        config = {"max_complexity": max_complexity, "min_grade": min_grade}
 
         analyzer = ComplexityAnalyzer(config)
         result = analyzer.analyze(path, artifact_dir=artifact_dir)
