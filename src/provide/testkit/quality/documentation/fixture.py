@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-import pytest
 from pathlib import Path
 from typing import Any
+
+import pytest
 
 from ..base import BaseQualityFixture
 
 try:
-    from .checker import DocumentationChecker, INTERROGATE_AVAILABLE
+    from .checker import INTERROGATE_AVAILABLE, DocumentationChecker
 except ImportError:
     DocumentationChecker = None
     INTERROGATE_AVAILABLE = False

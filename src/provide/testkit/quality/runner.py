@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-import time
 from dataclasses import dataclass
 from pathlib import Path
+import time
 from typing import Any
 
-from .base import QualityResult, QualityTool, QualityError
+from provide.foundation.file import atomic_write_text, ensure_dir
+
+from .base import QualityError, QualityResult, QualityTool
 
 
 class QualityRunner:
@@ -85,7 +87,7 @@ class QualityRunner:
 
         for tool_name, tool in self.tool_instances.items():
             artifact_dir = self.artifact_root / tool_name
-            artifact_dir.mkdir(parents=True, exist_ok=True)
+            ensure_dir(artifact_dir)
 
             try:
                 start_time = time.time()
@@ -142,29 +144,52 @@ class QualityRunner:
                 return False
 
             result = results[gate_name]
-
-            if isinstance(requirement, dict):
-                # Complex gate requirements
-                if requirement.get("enabled", True):
-                    if not result.passed:
-                        return False
-                    if "min_score" in requirement and result.score is not None:
-                        if result.score < requirement["min_score"]:
-                            return False
-            elif isinstance(requirement, bool):
-                # Boolean requirement - must pass if True (check before int/float!)
-                if requirement and not result.passed:
-                    return False
-            elif isinstance(requirement, (int, float)):
-                # Simple score requirement
-                if result.score is None or result.score < requirement:
-                    return False
-            elif isinstance(requirement, str):
-                # String requirements (e.g., complexity grades)
-                if not self._check_grade_requirement(result, requirement):
-                    return False
+            if not self._check_single_gate(result, requirement):
+                return False
 
         return True
+
+    def _check_single_gate(self, result: QualityResult, requirement: Any) -> bool:
+        """Check a single gate requirement against a result.
+
+        Args:
+            result: Result to check
+            requirement: Gate requirement to validate against
+
+        Returns:
+            True if gate requirement is met
+        """
+        if isinstance(requirement, dict):
+            return self._check_dict_requirement(result, requirement)
+        elif isinstance(requirement, bool):
+            return self._check_bool_requirement(result, requirement)
+        elif isinstance(requirement, (int, float)):
+            return self._check_score_requirement(result, requirement)
+        elif isinstance(requirement, str):
+            return self._check_grade_requirement(result, requirement)
+        else:
+            return True
+
+    def _check_dict_requirement(self, result: QualityResult, requirement: dict[str, Any]) -> bool:
+        """Check dictionary-based gate requirements."""
+        if not requirement.get("enabled", True):
+            return True
+
+        if not result.passed:
+            return False
+
+        if "min_score" in requirement and result.score is not None:
+            return result.score >= requirement["min_score"]
+
+        return True
+
+    def _check_bool_requirement(self, result: QualityResult, requirement: bool) -> bool:
+        """Check boolean gate requirements."""
+        return not requirement or result.passed
+
+    def _check_score_requirement(self, result: QualityResult, requirement: float) -> bool:
+        """Check numeric score requirements."""
+        return result.score is not None and result.score >= requirement
 
     def _check_grade_requirement(self, result: QualityResult, requirement: str) -> bool:
         """Check grade-based requirements (A, B, C, etc.).
@@ -194,14 +219,14 @@ class QualityRunner:
         """
         # Save result summary
         summary_file = artifact_dir / "summary.txt"
-        summary_file.write_text(result.summary)
+        atomic_write_text(summary_file, result.summary)
         result.artifacts.append(summary_file)
 
         # Save detailed results if available
         if result.details:
             import json
             details_file = artifact_dir / "details.json"
-            details_file.write_text(json.dumps(result.details, indent=2, default=str))
+            atomic_write_text(details_file, json.dumps(result.details, indent=2, default=str))
             result.artifacts.append(details_file)
 
     def get_available_tools(self) -> list[str]:

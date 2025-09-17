@@ -6,54 +6,11 @@ Provide TestKit.
 
 Unified testing utilities for the provide ecosystem with automatic context detection.
 Comprehensive fixtures and utilities for testing Foundation-based applications.
+
+Note: Testing information is displayed via pytest hooks in conftest.py
 """
 
-import os
-import sys
 from typing import Any
-import warnings
-
-
-# Context detection functions
-def _is_testing_context() -> bool:
-    """Detect if we're running in a testing context."""
-    return (
-        "pytest" in sys.modules
-        or os.getenv("PYTEST_CURRENT_TEST") is not None
-        or "unittest" in sys.modules
-        or os.getenv("TESTING") == "true"
-        or any(arg.endswith(("pytest", "py.test")) for arg in sys.argv)
-    )
-
-
-def _warn_testing_active() -> None:
-    """Issue warning that testing helpers are active."""
-    if not os.getenv("FOUNDATION_SUPPRESS_TESTING_WARNINGS"):
-        warnings.warn(
-            "🚨 Foundation testing helpers are active - production behavior may differ",
-            UserWarning,
-            stacklevel=3,
-        )
-
-
-def _should_warn() -> bool:
-    """Check if we should issue testing warnings."""
-    # Don't warn if explicitly suppressed
-    if os.getenv("FOUNDATION_SUPPRESS_TESTING_WARNINGS"):
-        return False
-
-    # Don't warn if we're not in a testing context
-    if not _is_testing_context():
-        return False
-
-    # Don't warn if already warned (module-level state)
-    return not getattr(_should_warn, "_warned", False)
-
-
-# Issue warning on import if in testing context
-if _should_warn():
-    _warn_testing_active()
-    _should_warn._warned = True
 
 
 # Lazy imports to avoid importing testing utilities in production

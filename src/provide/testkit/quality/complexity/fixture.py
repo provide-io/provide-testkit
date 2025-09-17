@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-import pytest
 from pathlib import Path
 from typing import Any, Generator
 
+import pytest
+
 from ..base import BaseQualityFixture
-from .analyzer import ComplexityAnalyzer, RADON_AVAILABLE
+from .analyzer import RADON_AVAILABLE, ComplexityAnalyzer
 
 
 class ComplexityFixture(BaseQualityFixture):

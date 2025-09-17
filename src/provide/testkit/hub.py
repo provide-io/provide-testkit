@@ -5,7 +5,6 @@ Provides pytest fixtures for testing hub and component functionality,
 including container directories and component registration scenarios.
 """
 
-from pathlib import Path
 
 import pytest
 

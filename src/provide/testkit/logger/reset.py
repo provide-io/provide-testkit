@@ -11,7 +11,6 @@ and ensuring test isolation for the Foundation logging system.
 from unittest.mock import Mock
 
 import pytest
-import structlog
 
 # Note: Removed module-level imports to avoid circular imports
 # All Foundation imports will be done within functions when needed

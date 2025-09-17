@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-import pytest
 from pathlib import Path
 from typing import Any, Callable
+
+import pytest
 
 from ..base import BaseQualityFixture
 
 try:
-    from .profiler import PerformanceProfiler, MEMRAY_AVAILABLE
+    from .profiler import MEMRAY_AVAILABLE, PerformanceProfiler
 except ImportError:
     PerformanceProfiler = None
     MEMRAY_AVAILABLE = False
@@ -171,7 +172,6 @@ class ProfilingFixture(BaseQualityFixture):
             self.setup()
 
         import statistics
-        import time
 
         execution_times = []
         memory_peaks = []

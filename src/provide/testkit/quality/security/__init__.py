@@ -20,8 +20,8 @@ Usage:
     results = runner.run_with_gates(path, {"security": True})
 """
 
-from .scanner import SecurityScanner
 from .fixture import SecurityFixture
+from .scanner import SecurityScanner
 
 __all__ = [
     "SecurityScanner",

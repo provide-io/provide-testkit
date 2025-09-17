@@ -5,6 +5,7 @@ Reusable mock objects for configuration, logging, and other common
 testing scenarios across the provide-io ecosystem.
 """
 
+from typing import Any
 from unittest.mock import Mock, PropertyMock
 
 import pytest
@@ -14,7 +15,7 @@ from provide.foundation.logger.config.logging import LoggingConfig
 
 
 @pytest.fixture
-def mock_http_config():
+def mock_http_config() -> Any:
     """
     Standard HTTP configuration for testing.
 
@@ -37,7 +38,7 @@ def mock_http_config():
 
 
 @pytest.fixture
-def mock_telemetry_config():
+def mock_telemetry_config() -> TelemetryConfig:
     """
     Standard telemetry configuration for testing.
 
@@ -53,7 +54,7 @@ def mock_telemetry_config():
 
 
 @pytest.fixture
-def mock_config_source():
+def mock_config_source() -> Mock:
     """
     Mock configuration source for testing config loading.
 
