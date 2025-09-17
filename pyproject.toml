@@ -32,14 +32,14 @@ classifiers = [
 ]
 dependencies = [
     "provide-foundation>=0.1.0",
-    "click>=8.1.7",  # For CLI testing utilities
-
+    "click>=8.1.7", # For CLI testing utilities
     # Core testing - use highest versions across ecosystem
     "pytest>=8.3.5",
     "pytest-asyncio>=0.26.0",
     "pytest-cov>=6.3.0",
     "pytest-mock>=3.15.0",
     "pytest-xdist>=3.8.0",
+    "mkdocs-material>=9.6.20",
 ]
 
 [project.urls]
