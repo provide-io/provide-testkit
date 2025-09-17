@@ -109,12 +109,13 @@ class ArtifactManager:
             "score": result.score,
             "execution_time": result.execution_time,
             "timestamp": time.time(),
-            "artifacts": [str(p) for p in result.artifacts]
+            "artifacts": [str(p) for p in result.artifacts],
         }
 
         metadata_path = target_dir / f"{result.tool}_metadata.json"
-        with open(metadata_path, 'w') as f:
+        with open(metadata_path, "w") as f:
             import json
+
             json.dump(metadata, f, indent=2)
 
     def cleanup_old_artifacts(self, tool: str | None = None, keep_count: int = 5) -> None:
@@ -163,7 +164,7 @@ class ArtifactManager:
             "timestamp": time.time(),
             "session_id": self.session_id,
             "overall_passed": all(result.passed for result in results.values()),
-            "tools": {}
+            "tools": {},
         }
 
         for tool, result in results.items():
@@ -172,12 +173,13 @@ class ArtifactManager:
                 "score": result.score,
                 "execution_time": result.execution_time,
                 "artifact_count": len(result.artifacts),
-                "key_metrics": self._extract_key_metrics(result)
+                "key_metrics": self._extract_key_metrics(result),
             }
 
         # Write summary
-        with open(summary_path, 'w') as f:
+        with open(summary_path, "w") as f:
             import json
+
             json.dump(summary, f, indent=2)
 
         return summary_path
@@ -195,41 +197,51 @@ class ArtifactManager:
         metrics = {}
 
         if result.tool == "coverage":
-            metrics.update({
-                "coverage_percentage": details.get("coverage_percentage"),
-                "lines_covered": details.get("lines_covered"),
-                "lines_missing": details.get("lines_missing")
-            })
+            metrics.update(
+                {
+                    "coverage_percentage": details.get("coverage_percentage"),
+                    "lines_covered": details.get("lines_covered"),
+                    "lines_missing": details.get("lines_missing"),
+                }
+            )
         elif result.tool == "security":
-            metrics.update({
-                "total_issues": details.get("total_issues"),
-                "high_severity": details.get("severity_counts", {}).get("HIGH"),
-                "medium_severity": details.get("severity_counts", {}).get("MEDIUM"),
-                "low_severity": details.get("severity_counts", {}).get("LOW")
-            })
+            metrics.update(
+                {
+                    "total_issues": details.get("total_issues"),
+                    "high_severity": details.get("severity_counts", {}).get("HIGH"),
+                    "medium_severity": details.get("severity_counts", {}).get("MEDIUM"),
+                    "low_severity": details.get("severity_counts", {}).get("LOW"),
+                }
+            )
         elif result.tool == "complexity":
-            metrics.update({
-                "average_complexity": details.get("average_complexity"),
-                "max_complexity": details.get("max_complexity"),
-                "overall_grade": details.get("overall_grade"),
-                "total_functions": details.get("total_functions")
-            })
+            metrics.update(
+                {
+                    "average_complexity": details.get("average_complexity"),
+                    "max_complexity": details.get("max_complexity"),
+                    "overall_grade": details.get("overall_grade"),
+                    "total_functions": details.get("total_functions"),
+                }
+            )
         elif result.tool == "documentation":
-            metrics.update({
-                "total_coverage": details.get("total_coverage"),
-                "covered_count": details.get("covered_count"),
-                "missing_count": details.get("missing_count"),
-                "grade": details.get("grade")
-            })
+            metrics.update(
+                {
+                    "total_coverage": details.get("total_coverage"),
+                    "covered_count": details.get("covered_count"),
+                    "missing_count": details.get("missing_count"),
+                    "grade": details.get("grade"),
+                }
+            )
         elif result.tool == "profiling":
             memory_data = details.get("memory", {})
             cpu_data = details.get("cpu", {})
-            metrics.update({
-                "peak_memory_mb": memory_data.get("peak_memory_mb"),
-                "execution_time": cpu_data.get("execution_time"),
-                "memory_score": details.get("scores", {}).get("memory_score"),
-                "cpu_score": details.get("scores", {}).get("cpu_score")
-            })
+            metrics.update(
+                {
+                    "peak_memory_mb": memory_data.get("peak_memory_mb"),
+                    "execution_time": cpu_data.get("execution_time"),
+                    "memory_score": details.get("scores", {}).get("memory_score"),
+                    "cpu_score": details.get("scores", {}).get("cpu_score"),
+                }
+            )
 
         # Remove None values
         return {k: v for k, v in metrics.items() if v is not None}
@@ -249,15 +261,11 @@ class ArtifactManager:
         if compress:
             # Create compressed archive
             if not export_path.suffix:
-                archive_path = export_path.with_suffix('.tar.gz')
+                archive_path = export_path.with_suffix(".tar.gz")
             else:
                 archive_path = export_path
 
-            shutil.make_archive(
-                str(archive_path.with_suffix('')),
-                'gztar',
-                self.base_dir
-            )
+            shutil.make_archive(str(archive_path.with_suffix("")), "gztar", self.base_dir)
             return archive_path
         else:
             # Copy directory tree
@@ -292,7 +300,7 @@ class ArtifactManager:
         return {
             "total_bytes": total_size,
             "total_mb": total_size / (1024 * 1024),
-            "tool_breakdown": tool_breakdown
+            "tool_breakdown": tool_breakdown,
         }
 
     def generate_index(self) -> Path:
@@ -308,7 +316,7 @@ class ArtifactManager:
             "session_id": self.session_id,
             "base_directory": str(self.base_dir),
             "disk_usage": self.get_disk_usage(),
-            "tools": {}
+            "tools": {},
         }
 
         # Scan for tool directories and artifacts
@@ -316,11 +324,7 @@ class ArtifactManager:
             if not tool_dir.is_dir() or tool_dir.name in ["summaries", "exports"]:
                 continue
 
-            tool_info = {
-                "latest_run": None,
-                "total_runs": 0,
-                "artifacts": []
-            }
+            tool_info = {"latest_run": None, "total_runs": 0, "artifacts": []}
 
             # Find all run directories
             run_dirs = [d for d in tool_dir.iterdir() if d.is_dir()]
@@ -331,23 +335,26 @@ class ArtifactManager:
                 tool_info["latest_run"] = {
                     "timestamp": latest_dir.stat().st_mtime,
                     "path": str(latest_dir),
-                    "artifacts": [str(f) for f in latest_dir.iterdir() if f.is_file()]
+                    "artifacts": [str(f) for f in latest_dir.iterdir() if f.is_file()],
                 }
 
             # Collect all artifacts
             for artifact in tool_dir.rglob("*"):
                 if artifact.is_file():
-                    tool_info["artifacts"].append({
-                        "path": str(artifact),
-                        "size": artifact.stat().st_size,
-                        "modified": artifact.stat().st_mtime
-                    })
+                    tool_info["artifacts"].append(
+                        {
+                            "path": str(artifact),
+                            "size": artifact.stat().st_size,
+                            "modified": artifact.stat().st_mtime,
+                        }
+                    )
 
             index_data["tools"][tool_dir.name] = tool_info
 
         # Write index
-        with open(index_path, 'w') as f:
+        with open(index_path, "w") as f:
             import json
+
             json.dump(index_data, f, indent=2)
 
         return index_path

@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any
 
 import pytest
 
@@ -60,7 +61,7 @@ class ComplexityFixture(BaseQualityFixture):
             "grade": result.details.get("overall_grade", "F"),
             "average_complexity": result.details.get("average_complexity", 0),
             "max_complexity": result.details.get("max_complexity", 0),
-            "details": result.details
+            "details": result.details,
         }
 
     def generate_report(self, format: str = "terminal") -> str:
@@ -127,23 +128,18 @@ def complexity_config():
         "min_grade": "C",
         "max_complexity": 20,
         "min_score": 70.0,
-        "exclude": [
-            "*/tests/*",
-            "*/test_*",
-            "*/.venv/*",
-            "*/venv/*",
-            "*/__pycache__/*",
-            "*/migrations/*"
-        ]
+        "exclude": ["*/tests/*", "*/test_*", "*/.venv/*", "*/venv/*", "*/__pycache__/*", "*/migrations/*"],
     }
 
 
 # Parametrized fixtures for different complexity configurations
-@pytest.fixture(params=[
-    {"min_grade": "A", "max_complexity": 10, "min_score": 95.0},  # Strict
-    {"min_grade": "B", "max_complexity": 15, "min_score": 80.0},  # Normal
-    {"min_grade": "C", "max_complexity": 25, "min_score": 60.0}   # Lenient
-])
+@pytest.fixture(
+    params=[
+        {"min_grade": "A", "max_complexity": 10, "min_score": 95.0},  # Strict
+        {"min_grade": "B", "max_complexity": 15, "min_score": 80.0},  # Normal
+        {"min_grade": "C", "max_complexity": 25, "min_score": 60.0},  # Lenient
+    ]
+)
 def parametrized_complexity(request, tmp_path) -> Generator[ComplexityFixture, None, None]:
     """Parametrized complexity fixture for testing different configurations.
 
@@ -171,14 +167,8 @@ def parametrized_complexity(request, tmp_path) -> Generator[ComplexityFixture, N
 # Pytest hooks for automatic complexity integration
 def pytest_configure(config):
     """Configure pytest with complexity markers."""
-    config.addinivalue_line(
-        "markers",
-        "complexity: mark test to run with complexity analysis"
-    )
-    config.addinivalue_line(
-        "markers",
-        "no_complexity: mark test to skip complexity analysis"
-    )
+    config.addinivalue_line("markers", "complexity: mark test to run with complexity analysis")
+    config.addinivalue_line("markers", "no_complexity: mark test to skip complexity analysis")
 
 
 @pytest.fixture(autouse=True)

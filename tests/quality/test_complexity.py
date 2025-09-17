@@ -1,13 +1,14 @@
 """Tests for complexity analysis functionality."""
 
 import json
-import pytest
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
-from provide.testkit.quality.complexity.analyzer import ComplexityAnalyzer, RADON_AVAILABLE
-from provide.testkit.quality.complexity.fixture import ComplexityFixture
+import pytest
+
 from provide.testkit.quality.base import QualityResult
+from provide.testkit.quality.complexity.analyzer import RADON_AVAILABLE, ComplexityAnalyzer
+from provide.testkit.quality.complexity.fixture import ComplexityFixture
 
 
 @pytest.mark.skipif(not RADON_AVAILABLE, reason="radon not available")
@@ -22,17 +23,13 @@ class TestComplexityAnalyzer:
 
     def test_initialization_custom_config(self):
         """Test analyzer initialization with custom config."""
-        config = {
-            "min_grade": "A",
-            "max_complexity": 10,
-            "min_score": 95.0
-        }
+        config = {"min_grade": "A", "max_complexity": 10, "min_score": 95.0}
         analyzer = ComplexityAnalyzer(config)
         assert analyzer.config == config
 
-    @patch('provide.testkit.quality.complexity.analyzer.cc_visit')
-    @patch('provide.testkit.quality.complexity.analyzer.cc_rank')
-    @patch('provide.testkit.quality.complexity.analyzer.analyze')
+    @patch("provide.testkit.quality.complexity.analyzer.cc_visit")
+    @patch("provide.testkit.quality.complexity.analyzer.cc_rank")
+    @patch("provide.testkit.quality.complexity.analyzer.analyze")
     def test_analyze_success(self, mock_analyze, mock_cc_rank, mock_cc_visit, tmp_path):
         """Test successful complexity analysis."""
         # Mock radon components
@@ -68,8 +65,8 @@ class TestComplexityAnalyzer:
         assert result.details["average_complexity"] == 3.0
         assert result.execution_time is not None
 
-    @patch('provide.testkit.quality.complexity.analyzer.cc_visit')
-    @patch('provide.testkit.quality.complexity.analyzer.cc_rank')
+    @patch("provide.testkit.quality.complexity.analyzer.cc_visit")
+    @patch("provide.testkit.quality.complexity.analyzer.cc_rank")
     def test_analyze_high_complexity(self, mock_cc_rank, mock_cc_visit, tmp_path):
         """Test analysis with high complexity functions."""
         # Mock high complexity function
@@ -133,11 +130,11 @@ class TestComplexityAnalyzer:
 
         # Test grade boundaries
         test_cases = [
-            (3, "A", 100.0),   # avg_complexity <= 5
-            (8, "B", 85.0),    # avg_complexity <= 10
-            (15, "C", 70.0),   # avg_complexity <= 20
-            (25, "D", 55.0),   # avg_complexity <= 30
-            (40, "F", 40.0),   # avg_complexity > 30
+            (3, "A", 100.0),  # avg_complexity <= 5
+            (8, "B", 85.0),  # avg_complexity <= 10
+            (15, "C", 70.0),  # avg_complexity <= 20
+            (25, "D", 55.0),  # avg_complexity <= 30
+            (40, "F", 40.0),  # avg_complexity > 30
         ]
 
         for avg_complexity, expected_grade, expected_score in test_cases:
@@ -145,7 +142,7 @@ class TestComplexityAnalyzer:
             result = analyzer._process_complexity_results(
                 [{"complexity": avg_complexity, "rank": expected_grade}],
                 [{"loc": 100, "lloc": 80, "comments": 10}],
-                []
+                [],
             )
             assert result.details["overall_grade"] == expected_grade
             assert result.score == expected_score
@@ -167,8 +164,8 @@ class TestComplexityAnalyzer:
                 "grade_breakdown": {"A": 15, "B": 4, "C": 1, "D": 0, "E": 0, "F": 0},
                 "lines_of_code": 500,
                 "logical_lines": 350,
-                "comment_lines": 50
-            }
+                "comment_lines": 50,
+            },
         )
 
         report = analyzer._generate_text_report(result)
@@ -189,11 +186,7 @@ class TestComplexityAnalyzer:
             tool="complexity",
             passed=False,
             score=55.0,
-            details={
-                "overall_grade": "D",
-                "total_functions": 10,
-                "average_complexity": 25.0
-            }
+            details={"overall_grade": "D", "total_functions": 10, "average_complexity": 25.0},
         )
 
         report = analyzer.report(result, "terminal")
@@ -221,8 +214,8 @@ class TestComplexityFixture:
         assert fixture.artifact_dir == tmp_path
         assert fixture.analyzer is None
 
-    @patch('provide.testkit.quality.complexity.fixture.RADON_AVAILABLE', True)
-    @patch('provide.testkit.quality.complexity.fixture.ComplexityAnalyzer')
+    @patch("provide.testkit.quality.complexity.fixture.RADON_AVAILABLE", True)
+    @patch("provide.testkit.quality.complexity.fixture.ComplexityAnalyzer")
     def test_setup_success(self, mock_analyzer_class):
         """Test successful fixture setup."""
         mock_analyzer = Mock()
@@ -234,7 +227,7 @@ class TestComplexityFixture:
         assert fixture.analyzer == mock_analyzer
         mock_analyzer_class.assert_called_once_with({})
 
-    @patch('provide.testkit.quality.complexity.fixture.RADON_AVAILABLE', False)
+    @patch("provide.testkit.quality.complexity.fixture.RADON_AVAILABLE", False)
     def test_setup_radon_unavailable(self):
         """Test setup when radon is unavailable."""
         fixture = ComplexityFixture()
@@ -242,8 +235,8 @@ class TestComplexityFixture:
         with pytest.raises(pytest.skip.Exception):
             fixture.setup()
 
-    @patch('provide.testkit.quality.complexity.fixture.RADON_AVAILABLE', True)
-    @patch('provide.testkit.quality.complexity.fixture.ComplexityAnalyzer')
+    @patch("provide.testkit.quality.complexity.fixture.RADON_AVAILABLE", True)
+    @patch("provide.testkit.quality.complexity.fixture.ComplexityAnalyzer")
     def test_analyze_functionality(self, mock_analyzer_class, tmp_path):
         """Test analysis functionality."""
         mock_analyzer = Mock()
@@ -251,11 +244,7 @@ class TestComplexityFixture:
             tool="complexity",
             passed=True,
             score=85.0,
-            details={
-                "overall_grade": "B",
-                "average_complexity": 7.5,
-                "max_complexity": 12
-            }
+            details={"overall_grade": "B", "average_complexity": 7.5, "max_complexity": 12},
         )
         mock_analyzer.analyze.return_value = mock_result
         mock_analyzer_class.return_value = mock_analyzer
@@ -288,8 +277,8 @@ class TestComplexityFixture:
 
         assert report == "No complexity analyzer available"
 
-    @patch('provide.testkit.quality.complexity.fixture.RADON_AVAILABLE', True)
-    @patch('provide.testkit.quality.complexity.fixture.ComplexityAnalyzer')
+    @patch("provide.testkit.quality.complexity.fixture.RADON_AVAILABLE", True)
+    @patch("provide.testkit.quality.complexity.fixture.ComplexityAnalyzer")
     def test_generate_report_success(self, mock_analyzer_class):
         """Test successful report generation."""
         mock_analyzer = Mock()
@@ -355,11 +344,7 @@ def complex_function(data):
 """)
 
     # Create complexity analyzer
-    config = {
-        "min_grade": "B",
-        "max_complexity": 15,
-        "min_score": 80.0
-    }
+    config = {"min_grade": "B", "max_complexity": 15, "min_score": 80.0}
 
     analyzer = ComplexityAnalyzer(config)
     analyzer.artifact_dir = tmp_path / "artifacts"

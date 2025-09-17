@@ -1,12 +1,12 @@
 """Tests for coverage tracking functionality."""
 
-import pytest
-from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
-from provide.testkit.quality.coverage.tracker import CoverageTracker, COVERAGE_AVAILABLE
-from provide.testkit.quality.coverage.fixture import CoverageFixture
+import pytest
+
 from provide.testkit.quality.base import QualityResult
+from provide.testkit.quality.coverage.fixture import CoverageFixture
+from provide.testkit.quality.coverage.tracker import COVERAGE_AVAILABLE, CoverageTracker
 
 
 @pytest.mark.skipif(not COVERAGE_AVAILABLE, reason="coverage.py not available")
@@ -26,7 +26,7 @@ class TestCoverageTracker:
         tracker = CoverageTracker(config)
         assert tracker.config == config
 
-    @patch('provide.testkit.quality.coverage.tracker.Coverage')
+    @patch("provide.testkit.quality.coverage.tracker.Coverage")
     def test_start_stop_tracking(self, mock_coverage_class):
         """Test starting and stopping coverage tracking."""
         mock_coverage = Mock()
@@ -46,7 +46,7 @@ class TestCoverageTracker:
         mock_coverage.stop.assert_called_once()
         mock_coverage.save.assert_called_once()
 
-    @patch('provide.testkit.quality.coverage.tracker.Coverage')
+    @patch("provide.testkit.quality.coverage.tracker.Coverage")
     def test_start_when_already_running(self, mock_coverage_class):
         """Test starting coverage when already running."""
         mock_coverage = Mock()
@@ -59,7 +59,7 @@ class TestCoverageTracker:
         # Should only be called once
         mock_coverage.start.assert_called_once()
 
-    @patch('provide.testkit.quality.coverage.tracker.Coverage')
+    @patch("provide.testkit.quality.coverage.tracker.Coverage")
     def test_get_coverage_percentage(self, mock_coverage_class):
         """Test getting coverage percentage."""
         mock_coverage = Mock()
@@ -72,14 +72,14 @@ class TestCoverageTracker:
         coverage_percent = tracker.get_coverage()
         assert coverage_percent == 85.7
 
-    @patch('provide.testkit.quality.coverage.tracker.Coverage')
+    @patch("provide.testkit.quality.coverage.tracker.Coverage")
     def test_get_coverage_no_instance(self, mock_coverage_class):
         """Test getting coverage when no instance exists."""
         tracker = CoverageTracker()
         coverage_percent = tracker.get_coverage()
         assert coverage_percent == 0.0
 
-    @patch('provide.testkit.quality.coverage.tracker.Coverage')
+    @patch("provide.testkit.quality.coverage.tracker.Coverage")
     def test_analyze_success(self, mock_coverage_class, tmp_path):
         """Test successful coverage analysis."""
         mock_coverage = Mock()
@@ -101,7 +101,7 @@ class TestCoverageTracker:
         assert result.execution_time is not None
         assert "threshold" in result.details
 
-    @patch('provide.testkit.quality.coverage.tracker.Coverage')
+    @patch("provide.testkit.quality.coverage.tracker.Coverage")
     def test_analyze_below_threshold(self, mock_coverage_class, tmp_path):
         """Test analysis when coverage is below threshold."""
         mock_coverage = Mock()
@@ -121,15 +121,10 @@ class TestCoverageTracker:
         assert result.passed is False  # Below threshold
         assert result.score == 75.0
 
-    @patch('provide.testkit.quality.coverage.tracker.Coverage')
+    @patch("provide.testkit.quality.coverage.tracker.Coverage")
     def test_build_coverage_config(self, mock_coverage_class):
         """Test building coverage.py configuration."""
-        config = {
-            "branch": False,
-            "source": ["myapp"],
-            "omit": ["*/tests/*"],
-            "fail_under": 95
-        }
+        config = {"branch": False, "source": ["myapp"], "omit": ["*/tests/*"], "fail_under": 95}
         tracker = CoverageTracker(config)
 
         built_config = tracker._build_coverage_config()
@@ -140,7 +135,7 @@ class TestCoverageTracker:
         # fail_under is not passed to coverage.py
         assert "fail_under" not in built_config
 
-    @patch('provide.testkit.quality.coverage.tracker.Coverage')
+    @patch("provide.testkit.quality.coverage.tracker.Coverage")
     def test_generate_html_report(self, mock_coverage_class, tmp_path):
         """Test HTML report generation."""
         mock_coverage = Mock()
@@ -155,7 +150,7 @@ class TestCoverageTracker:
         mock_coverage.html_report.assert_called_once()
         assert "htmlcov" in result
 
-    @patch('provide.testkit.quality.coverage.tracker.Coverage')
+    @patch("provide.testkit.quality.coverage.tracker.Coverage")
     def test_generate_xml_report(self, mock_coverage_class, tmp_path):
         """Test XML report generation."""
         mock_coverage = Mock()
@@ -170,7 +165,7 @@ class TestCoverageTracker:
         mock_coverage.xml_report.assert_called_once()
         assert "coverage.xml" in result
 
-    @patch('provide.testkit.quality.coverage.tracker.Coverage')
+    @patch("provide.testkit.quality.coverage.tracker.Coverage")
     def test_report_protocol_implementation(self, mock_coverage_class):
         """Test QualityTool protocol implementation."""
         mock_coverage = Mock()
@@ -182,7 +177,7 @@ class TestCoverageTracker:
             tool="coverage",
             passed=True,
             score=85.5,
-            details={"total_statements": 100, "missing_statements": 15}
+            details={"total_statements": 100, "missing_statements": 15},
         )
 
         report = tracker.report(result, "terminal")
@@ -204,8 +199,8 @@ class TestCoverageFixture:
         assert fixture.artifact_dir == tmp_path
         assert fixture.tracker is None
 
-    @patch('provide.testkit.quality.coverage.fixture.COVERAGE_AVAILABLE', True)
-    @patch('provide.testkit.quality.coverage.fixture.CoverageTracker')
+    @patch("provide.testkit.quality.coverage.fixture.COVERAGE_AVAILABLE", True)
+    @patch("provide.testkit.quality.coverage.fixture.CoverageTracker")
     def test_setup_success(self, mock_tracker_class):
         """Test successful fixture setup."""
         mock_tracker = Mock()
@@ -217,7 +212,7 @@ class TestCoverageFixture:
         assert fixture.tracker == mock_tracker
         mock_tracker_class.assert_called_once_with({})
 
-    @patch('provide.testkit.quality.coverage.fixture.COVERAGE_AVAILABLE', False)
+    @patch("provide.testkit.quality.coverage.fixture.COVERAGE_AVAILABLE", False)
     def test_setup_coverage_unavailable(self):
         """Test setup when coverage is unavailable."""
         fixture = CoverageFixture()
@@ -225,8 +220,8 @@ class TestCoverageFixture:
         with pytest.raises(pytest.skip.Exception):
             fixture.setup()
 
-    @patch('provide.testkit.quality.coverage.fixture.COVERAGE_AVAILABLE', True)
-    @patch('provide.testkit.quality.coverage.fixture.CoverageTracker')
+    @patch("provide.testkit.quality.coverage.fixture.COVERAGE_AVAILABLE", True)
+    @patch("provide.testkit.quality.coverage.fixture.CoverageTracker")
     def test_start_stop_tracking(self, mock_tracker_class):
         """Test starting and stopping tracking."""
         mock_tracker = Mock()
@@ -245,8 +240,8 @@ class TestCoverageFixture:
         fixture.stop_tracking()
         mock_tracker.stop.assert_called_once()
 
-    @patch('provide.testkit.quality.coverage.fixture.COVERAGE_AVAILABLE', True)
-    @patch('provide.testkit.quality.coverage.fixture.CoverageTracker')
+    @patch("provide.testkit.quality.coverage.fixture.COVERAGE_AVAILABLE", True)
+    @patch("provide.testkit.quality.coverage.fixture.CoverageTracker")
     def test_get_coverage(self, mock_tracker_class):
         """Test getting coverage percentage."""
         mock_tracker = Mock()
@@ -265,8 +260,8 @@ class TestCoverageFixture:
         coverage = fixture.get_coverage()
         assert coverage == 0.0
 
-    @patch('provide.testkit.quality.coverage.fixture.COVERAGE_AVAILABLE', True)
-    @patch('provide.testkit.quality.coverage.fixture.CoverageTracker')
+    @patch("provide.testkit.quality.coverage.fixture.COVERAGE_AVAILABLE", True)
+    @patch("provide.testkit.quality.coverage.fixture.CoverageTracker")
     def test_teardown_with_running_tracker(self, mock_tracker_class):
         """Test teardown when tracker is running."""
         mock_tracker = Mock()
@@ -305,11 +300,7 @@ def multiply(a, b):
 """)
 
     # Create coverage tracker
-    config = {
-        "source": [str(tmp_path)],
-        "omit": [],
-        "branch": True
-    }
+    config = {"source": [str(tmp_path)], "omit": [], "branch": True}
 
     tracker = CoverageTracker(config)
     tracker.artifact_dir = tmp_path / "artifacts"
@@ -319,6 +310,7 @@ def multiply(a, b):
 
     # Import and use the module (this would normally be done by tests)
     import sys
+
     sys.path.insert(0, str(tmp_path))
 
     try:

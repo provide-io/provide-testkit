@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import pytest
 
@@ -23,11 +24,7 @@ class ProfilingFixture(BaseQualityFixture):
     setup and teardown. Integrates with the quality framework fixtures.
     """
 
-    def __init__(
-        self,
-        config: dict[str, Any] | None = None,
-        artifact_dir: Path | None = None
-    ):
+    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None):
         """Initialize profiling fixture.
 
         Args:
@@ -42,12 +39,7 @@ class ProfilingFixture(BaseQualityFixture):
         self.profiler = PerformanceProfiler(self.config)
         self._setup_complete = True
 
-    def profile_function(
-        self,
-        func: Callable[..., Any],
-        *args: Any,
-        **kwargs: Any
-    ) -> dict[str, Any]:
+    def profile_function(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> dict[str, Any]:
         """Profile a function's performance.
 
         Args:
@@ -73,17 +65,12 @@ class ProfilingFixture(BaseQualityFixture):
             "thresholds": result.details.get("thresholds", {}),
             "execution_time": result.execution_time,
             "function_result": (
-                result.details.get("memory", {}).get("function_result") or
-                result.details.get("cpu", {}).get("function_result")
-            )
+                result.details.get("memory", {}).get("function_result")
+                or result.details.get("cpu", {}).get("function_result")
+            ),
         }
 
-    def profile_memory(
-        self,
-        func: Callable[..., Any],
-        *args: Any,
-        **kwargs: Any
-    ) -> dict[str, Any]:
+    def profile_memory(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> dict[str, Any]:
         """Profile memory usage only.
 
         Args:
@@ -99,10 +86,7 @@ class ProfilingFixture(BaseQualityFixture):
 
         # Configure for memory-only profiling
         original_config = self.config.copy()
-        self.config.update({
-            "profile_memory": True,
-            "profile_cpu": False
-        })
+        self.config.update({"profile_memory": True, "profile_cpu": False})
 
         # Recreate profiler with updated config
         self.profiler = PerformanceProfiler(self.config)
@@ -114,12 +98,7 @@ class ProfilingFixture(BaseQualityFixture):
             self.config = original_config
             self.profiler = PerformanceProfiler(self.config)
 
-    def profile_cpu(
-        self,
-        func: Callable[..., Any],
-        *args: Any,
-        **kwargs: Any
-    ) -> dict[str, Any]:
+    def profile_cpu(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> dict[str, Any]:
         """Profile CPU usage only.
 
         Args:
@@ -135,10 +114,7 @@ class ProfilingFixture(BaseQualityFixture):
 
         # Configure for CPU-only profiling
         original_config = self.config.copy()
-        self.config.update({
-            "profile_memory": False,
-            "profile_cpu": True
-        })
+        self.config.update({"profile_memory": False, "profile_cpu": True})
 
         # Recreate profiler with updated config
         self.profiler = PerformanceProfiler(self.config)
@@ -151,11 +127,7 @@ class ProfilingFixture(BaseQualityFixture):
             self.profiler = PerformanceProfiler(self.config)
 
     def benchmark_function(
-        self,
-        func: Callable[..., Any],
-        iterations: int = 100,
-        *args: Any,
-        **kwargs: Any
+        self, func: Callable[..., Any], iterations: int = 100, *args: Any, **kwargs: Any
     ) -> dict[str, Any]:
         """Benchmark a function over multiple iterations.
 
@@ -195,7 +167,7 @@ class ProfilingFixture(BaseQualityFixture):
                 "min": min(execution_times),
                 "max": max(execution_times),
                 "stdev": statistics.stdev(execution_times) if len(execution_times) > 1 else 0,
-                "iterations": len(execution_times)
+                "iterations": len(execution_times),
             }
 
         if memory_peaks:
@@ -205,13 +177,13 @@ class ProfilingFixture(BaseQualityFixture):
                 "min_mb": min(memory_peaks),
                 "max_mb": max(memory_peaks),
                 "stdev_mb": statistics.stdev(memory_peaks) if len(memory_peaks) > 1 else 0,
-                "iterations": len(memory_peaks)
+                "iterations": len(memory_peaks),
             }
 
         return {
             "benchmark_stats": benchmark_stats,
             "iterations": iterations,
-            "total_profiling_runs": len(self.results)
+            "total_profiling_runs": len(self.results),
         }
 
     def assert_performance(
@@ -221,7 +193,7 @@ class ProfilingFixture(BaseQualityFixture):
         max_execution_time: float | None = None,
         min_score: float | None = None,
         *args: Any,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         """Assert performance requirements for a function.
 
@@ -262,7 +234,9 @@ class ProfilingFixture(BaseQualityFixture):
 
             if max_execution_time and result.get("cpu", {}).get("execution_time", 0) > max_execution_time:
                 actual_time = result["cpu"]["execution_time"]
-                failure_reasons.append(f"Execution time {actual_time:.4f}s exceeds limit {max_execution_time}s")
+                failure_reasons.append(
+                    f"Execution time {actual_time:.4f}s exceeds limit {max_execution_time}s"
+                )
 
             if min_score and result.get("score", 0) < min_score:
                 actual_score = result["score"]
@@ -316,7 +290,7 @@ def profiling_config() -> dict[str, Any]:
         "use_memray": MEMRAY_AVAILABLE,
         "min_score": 70.0,
         "max_memory_mb": 100.0,
-        "max_execution_time": 1.0
+        "max_execution_time": 1.0,
     }
 
 
@@ -331,10 +305,7 @@ def memory_profiler(profiling_config: dict[str, Any]) -> ProfilingFixture:
         ProfilingFixture configured for memory profiling only
     """
     config = profiling_config.copy()
-    config.update({
-        "profile_memory": True,
-        "profile_cpu": False
-    })
+    config.update({"profile_memory": True, "profile_cpu": False})
 
     fixture = ProfilingFixture(config)
     fixture.setup()
@@ -353,10 +324,7 @@ def cpu_profiler(profiling_config: dict[str, Any]) -> ProfilingFixture:
         ProfilingFixture configured for CPU profiling only
     """
     config = profiling_config.copy()
-    config.update({
-        "profile_memory": False,
-        "profile_cpu": True
-    })
+    config.update({"profile_memory": False, "profile_cpu": True})
 
     fixture = ProfilingFixture(config)
     fixture.setup()

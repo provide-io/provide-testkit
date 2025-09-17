@@ -2,21 +2,22 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 import functools
 import inspect
 from pathlib import Path
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 from .runner import QualityRunner
 
-F = TypeVar('F', bound=Callable[..., Any])
+F = TypeVar("F", bound=Callable[..., Any])
 
 
 def quality_gate(
     gates: dict[str, Any],
     path: Path | str | None = None,
     artifact_dir: Path | str | None = None,
-    fail_fast: bool = True
+    fail_fast: bool = True,
 ) -> Callable[[F], F]:
     """Decorator to apply quality gates to a function or test.
 
@@ -35,6 +36,7 @@ def quality_gate(
             # Test implementation
             pass
     """
+
     def decorator(func: F) -> F:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -55,7 +57,7 @@ def quality_gate(
                 analysis_path,
                 gates,
                 artifact_dir=Path(artifact_dir) if artifact_dir else None,
-                fail_fast=fail_fast
+                fail_fast=fail_fast,
             )
 
             # Check if gates passed
@@ -67,13 +69,12 @@ def quality_gate(
             return func(*args, **kwargs)
 
         return wrapper
+
     return decorator
 
 
 def coverage_gate(
-    min_coverage: float,
-    path: Path | str | None = None,
-    artifact_dir: Path | str | None = None
+    min_coverage: float, path: Path | str | None = None, artifact_dir: Path | str | None = None
 ) -> Callable[[F], F]:
     """Decorator to enforce minimum coverage requirements.
 
@@ -95,9 +96,7 @@ def coverage_gate(
 
 
 def security_gate(
-    min_score: float = 90.0,
-    path: Path | str | None = None,
-    artifact_dir: Path | str | None = None
+    min_score: float = 90.0, path: Path | str | None = None, artifact_dir: Path | str | None = None
 ) -> Callable[[F], F]:
     """Decorator to enforce security scanning requirements.
 
@@ -123,7 +122,7 @@ def complexity_gate(
     min_grade: str | None = None,
     min_score: float | None = None,
     path: Path | str | None = None,
-    artifact_dir: Path | str | None = None
+    artifact_dir: Path | str | None = None,
 ) -> Callable[[F], F]:
     """Decorator to enforce complexity requirements.
 
@@ -163,7 +162,7 @@ def documentation_gate(
     min_grade: str | None = None,
     min_score: float | None = None,
     path: Path | str | None = None,
-    artifact_dir: Path | str | None = None
+    artifact_dir: Path | str | None = None,
 ) -> Callable[[F], F]:
     """Decorator to enforce documentation requirements.
 
@@ -199,9 +198,7 @@ def documentation_gate(
 
 
 def performance_gate(
-    max_memory_mb: float | None = None,
-    max_execution_time: float | None = None,
-    min_score: float | None = None
+    max_memory_mb: float | None = None, max_execution_time: float | None = None, min_score: float | None = None
 ) -> Callable[[F], F]:
     """Decorator to enforce performance requirements on function execution.
 
@@ -219,10 +216,10 @@ def performance_gate(
             # Test implementation
             pass
     """
+
     def decorator(func: F) -> F:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-
             # Configure and run profiler
             profiler = _create_performance_profiler(max_memory_mb, max_execution_time, min_score)
             result = profiler.profile_function(lambda: func(*args, **kwargs))
@@ -234,21 +231,17 @@ def performance_gate(
             return _extract_function_result(result)
 
         return wrapper
+
     return decorator
 
 
 def _create_performance_profiler(
-    max_memory_mb: float | None,
-    max_execution_time: float | None,
-    min_score: float | None
+    max_memory_mb: float | None, max_execution_time: float | None, min_score: float | None
 ) -> Any:
     """Create and configure a performance profiler."""
     from .profiling.profiler import PerformanceProfiler
 
-    config = {
-        "profile_memory": True,
-        "profile_cpu": True
-    }
+    config = {"profile_memory": True, "profile_cpu": True}
 
     if max_memory_mb is not None:
         config["max_memory_mb"] = max_memory_mb
@@ -261,10 +254,7 @@ def _create_performance_profiler(
 
 
 def _validate_performance_requirements(
-    result: Any,
-    max_memory_mb: float | None,
-    max_execution_time: float | None,
-    min_score: float | None
+    result: Any, max_memory_mb: float | None, max_execution_time: float | None, min_score: float | None
 ) -> None:
     """Validate performance requirements and raise error if not met."""
     if result.passed:
@@ -293,9 +283,8 @@ def _validate_performance_requirements(
 
 def _extract_function_result(result: Any) -> Any:
     """Extract the actual function result from profiling data."""
-    return (
-        result.details.get("memory", {}).get("function_result") or
-        result.details.get("cpu", {}).get("function_result")
+    return result.details.get("memory", {}).get("function_result") or result.details.get("cpu", {}).get(
+        "function_result"
     )
 
 
@@ -307,7 +296,7 @@ def quality_check(
     performance: dict[str, Any] | None = None,
     path: Path | str | None = None,
     artifact_dir: Path | str | None = None,
-    fail_fast: bool = True
+    fail_fast: bool = True,
 ) -> Callable[[F], F]:
     """Comprehensive quality check decorator with multiple dimensions.
 
@@ -336,6 +325,7 @@ def quality_check(
             # Test implementation
             pass
     """
+
     def decorator(func: F) -> F:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -360,7 +350,7 @@ def quality_check(
                 perf_decorator = performance_gate(
                     max_memory_mb=performance.get("max_memory_mb"),
                     max_execution_time=performance.get("max_execution_time"),
-                    min_score=performance.get("min_score")
+                    min_score=performance.get("min_score"),
                 )
                 func_with_perf = perf_decorator(func)
             else:
@@ -377,6 +367,7 @@ def quality_check(
             return func_with_gates(*args, **kwargs)
 
         return wrapper
+
     return decorator
 
 

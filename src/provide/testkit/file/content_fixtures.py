@@ -85,7 +85,9 @@ def temp_named_file():
             dir = str(dir)
 
         # Use Foundation's temp_file with cleanup=False since we manage cleanup
-        with foundation_temp_file(suffix=suffix, prefix=prefix, dir=dir, text="b" not in mode, cleanup=False) as path:
+        with foundation_temp_file(
+            suffix=suffix, prefix=prefix, dir=dir, text="b" not in mode, cleanup=False
+        ) as path:
             if content is not None:
                 if isinstance(content, str):
                     if "b" in mode:
@@ -212,7 +214,7 @@ def temp_csv_file():
             Path to created CSV file
         """
         with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as path:
-            with open(path, 'w', newline='') as f:
+            with open(path, "w", newline="") as f:
                 writer = csv.writer(f)
                 writer.writerow(headers)
                 writer.writerows(rows)
@@ -250,7 +252,7 @@ def temp_json_file():
             Path to created JSON file
         """
         with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as path:
-            with open(path, 'w') as f:
+            with open(path, "w") as f:
                 json.dump(data, f, indent=indent)
 
         created_files.append(path)

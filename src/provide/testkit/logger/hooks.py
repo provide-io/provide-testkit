@@ -93,8 +93,8 @@ def suppress_loggers(logger_names: list[str], level: int = logging.WARNING) -> N
 
 __all__ = [
     "DEFAULT_NOISY_LOGGERS",
-    "get_noisy_loggers",
     "get_log_level_for_noisy_loggers",
+    "get_noisy_loggers",
     "pytest_runtest_setup",
     "suppress_loggers",
 ]

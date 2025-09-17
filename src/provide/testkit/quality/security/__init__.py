@@ -24,6 +24,6 @@ from .fixture import SecurityFixture
 from .scanner import SecurityScanner
 
 __all__ = [
-    "SecurityScanner",
     "SecurityFixture",
+    "SecurityScanner",
 ]

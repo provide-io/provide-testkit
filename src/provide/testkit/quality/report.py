@@ -25,11 +25,7 @@ class ReportGenerator:
         """
         self.config = config or {}
 
-    def generate(
-        self,
-        results: dict[str, QualityResult],
-        format: str = "terminal"
-    ) -> str:
+    def generate(self, results: dict[str, QualityResult], format: str = "terminal") -> str:
         """Generate a report from quality results.
 
         Args:
@@ -102,9 +98,9 @@ class ReportGenerator:
                 "total_tools": len(results),
                 "passed": sum(1 for r in results.values() if r.passed),
                 "failed": sum(1 for r in results.values() if not r.passed),
-                "overall_score": self._calculate_overall_score(results)
+                "overall_score": self._calculate_overall_score(results),
             },
-            "results": {}
+            "results": {},
         }
 
         for tool_name, result in results.items():
@@ -114,7 +110,7 @@ class ReportGenerator:
                 "score": result.score,
                 "execution_time": result.execution_time,
                 "details": result.details,
-                "artifacts": [str(path) for path in result.artifacts]
+                "artifacts": [str(path) for path in result.artifacts],
             }
 
         return json.dumps(report_data, indent=2)
@@ -157,7 +153,7 @@ class ReportGenerator:
             html += f"""
     <div class="tool-result {status_class}">
         <h3>{result.tool.title()}{score_text}</h3>
-        <p class="score">Status: {'✅ PASSED' if result.passed else '❌ FAILED'}</p>
+        <p class="score">Status: {"✅ PASSED" if result.passed else "❌ FAILED"}</p>
 """
 
             if result.details:
@@ -244,10 +240,7 @@ class ReportGenerator:
         return sum(scores) / len(scores) if scores else 0.0
 
     def save_report(
-        self,
-        results: dict[str, QualityResult],
-        output_path: Path,
-        format: str | None = None
+        self, results: dict[str, QualityResult], output_path: Path, format: str | None = None
     ) -> None:
         """Save report to file.
 

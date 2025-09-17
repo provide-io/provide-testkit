@@ -23,11 +23,7 @@ class DocumentationFixture(BaseQualityFixture):
     setup and teardown. Integrates with the quality framework fixtures.
     """
 
-    def __init__(
-        self,
-        config: dict[str, Any] | None = None,
-        artifact_dir: Path | None = None
-    ):
+    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None):
         """Initialize documentation fixture.
 
         Args:
@@ -75,7 +71,7 @@ class DocumentationFixture(BaseQualityFixture):
             "total_count": result.details.get("total_count"),
             "file_coverage": result.details.get("file_coverage", []),
             "thresholds": result.details.get("thresholds", {}),
-            "execution_time": result.execution_time
+            "execution_time": result.execution_time,
         }
 
     def check(
@@ -83,7 +79,7 @@ class DocumentationFixture(BaseQualityFixture):
         path: Path,
         min_coverage: float | None = None,
         min_grade: str | None = None,
-        min_score: float | None = None
+        min_score: float | None = None,
     ) -> dict[str, Any]:
         """Check documentation coverage with optional thresholds.
 
@@ -160,14 +156,7 @@ def documentation_config() -> dict[str, Any]:
         "ignore_init_method": True,
         "ignore_magic": True,
         "ignore_setters": True,
-        "ignore": [
-            "__pycache__",
-            "*.pyc",
-            "test_*",
-            "tests/*",
-            "*/.venv/*",
-            "*/venv/*"
-        ]
+        "ignore": ["__pycache__", "*.pyc", "test_*", "tests/*", "*/.venv/*", "*/venv/*"],
     }
 
 
@@ -182,13 +171,15 @@ def documentation_checker_strict(documentation_config: dict[str, Any]) -> Docume
         DocumentationFixture with strict requirements
     """
     config = documentation_config.copy()
-    config.update({
-        "min_coverage": 95.0,
-        "min_grade": "A",
-        "min_score": 95.0,
-        "ignore_init_method": False,
-        "ignore_magic": False
-    })
+    config.update(
+        {
+            "min_coverage": 95.0,
+            "min_grade": "A",
+            "min_score": 95.0,
+            "ignore_init_method": False,
+            "ignore_magic": False,
+        }
+    )
 
     fixture = DocumentationFixture(config)
     fixture.setup()

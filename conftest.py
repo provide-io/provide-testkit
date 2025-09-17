@@ -30,7 +30,7 @@ def pytest_report_header(config):
         "💡 Fixtures provide automatic cleanup and isolation             💡",
         "🔇 To suppress this notice: TESTKIT_SUPPRESS_WARNINGS=1",
         "⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️",
-        ""
+        "",
     ]
 
 
