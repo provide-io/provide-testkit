@@ -33,7 +33,7 @@ class TestMyService(ProcessTestCase):
 
 ## API Reference
 
-For complete API documentation, see the [API Reference](api/).
+For complete API documentation, see the [API Reference](api/index.md).
 
 ## Testing Modules
 
