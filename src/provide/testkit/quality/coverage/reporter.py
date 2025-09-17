@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 from ..base import QualityResult
@@ -113,7 +112,7 @@ class CoverageReporter:
         Returns:
             Dashboard data structure
         """
-        dashboard_data = {
+        dashboard_data: dict[str, Any] = {
             "title": "Code Coverage",
             "status": "passed" if result.passed else "failed",
             "primary_metric": {
@@ -126,8 +125,9 @@ class CoverageReporter:
         }
 
         details = result.details
-        if "total_statements" in details:
-            dashboard_data["secondary_metrics"].extend([
+        secondary_metrics = dashboard_data["secondary_metrics"]
+        if "total_statements" in details and isinstance(secondary_metrics, list):
+            secondary_metrics.extend([
                 {
                     "label": "Total Statements",
                     "value": details.get("total_statements", 0)
@@ -138,8 +138,8 @@ class CoverageReporter:
                 }
             ])
 
-        if "branch_coverage" in details and details["branch_coverage"] is not None:
-            dashboard_data["secondary_metrics"].append({
+        if "branch_coverage" in details and details["branch_coverage"] is not None and isinstance(secondary_metrics, list):
+            secondary_metrics.append({
                 "label": "Branch Coverage",
                 "value": details["branch_coverage"],
                 "unit": "%"

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import time
 from pathlib import Path
+import time
 from typing import Any
 
 try:
@@ -13,7 +13,7 @@ except ImportError:
     COVERAGE_AVAILABLE = False
     Coverage = None
 
-from ..base import QualityResult, QualityTool, QualityToolError
+from ..base import QualityResult, QualityToolError
 
 
 class CoverageTracker:

@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 import shutil
 import time
-from pathlib import Path
 from typing import Any
+
+from provide.foundation.file import ensure_dir
 
 from .base import QualityResult
 
@@ -36,7 +38,7 @@ class ArtifactManager:
             Path to tool's session directory
         """
         session_dir = self.base_dir / self.session_id / tool
-        session_dir.mkdir(parents=True, exist_ok=True)
+        ensure_dir(session_dir)
         return session_dir
 
     def create_timestamped_dir(self, tool: str) -> Path:
@@ -50,7 +52,7 @@ class ArtifactManager:
         """
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         timestamped_dir = self.base_dir / tool / timestamp
-        timestamped_dir.mkdir(parents=True, exist_ok=True)
+        ensure_dir(timestamped_dir)
         return timestamped_dir
 
     def get_latest_dir(self, tool: str) -> Path | None:
@@ -83,7 +85,7 @@ class ArtifactManager:
         if not result.artifacts:
             return
 
-        target_dir.mkdir(parents=True, exist_ok=True)
+        ensure_dir(target_dir)
 
         # Copy artifacts to organized location
         for artifact_path in result.artifacts:
@@ -151,7 +153,7 @@ class ArtifactManager:
             Path to summary report
         """
         summary_dir = self.base_dir / "summaries"
-        summary_dir.mkdir(parents=True, exist_ok=True)
+        ensure_dir(summary_dir)
 
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         summary_path = summary_dir / f"quality_summary_{timestamp}.json"

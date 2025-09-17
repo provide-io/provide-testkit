@@ -9,10 +9,10 @@ from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Generator
 
 import click
-from click.testing import CliRunner
+from click.testing import CliRunner, Result
 import pytest
 
 from provide.foundation.context import CLIContext
@@ -25,7 +25,7 @@ log = get_logger(__name__)
 class MockContext(CLIContext):
     """Mock context for testing that tracks method calls."""
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         """Initialize mock context with tracking."""
         super().__init__(**kwargs)
         self.calls = []
@@ -46,7 +46,7 @@ class MockContext(CLIContext):
 @contextmanager
 def isolated_cli_runner(
     env: dict[str, str] | None = None,
-):
+) -> Generator[CliRunner, None, None]:
     """
     Create an isolated test environment for CLI testing.
 
@@ -153,7 +153,7 @@ def create_test_cli(
     @click.group(name=name)
     @standard_options
     @click.pass_context
-    def cli(ctx, **kwargs) -> None:
+    def cli(ctx: click.Context, **kwargs: Any) -> None:
         """Test CLI for testing."""
         ctx.obj = CLIContext(**{k: v for k, v in kwargs.items() if v is not None})
 
@@ -178,7 +178,7 @@ class CliTestCase:
             if path.exists():
                 path.unlink()
 
-    def invoke(self, *args, **kwargs):
+    def invoke(self, *args: Any, **kwargs: Any) -> Result:
         """Invoke CLI command."""
         return self.runner.invoke(*args, **kwargs)
 
@@ -190,7 +190,7 @@ class CliTestCase:
         self.temp_files.append(path)
         return path
 
-    def assert_json_output(self, result, expected: dict[str, Any]) -> None:
+    def assert_json_output(self, result: Result, expected: dict[str, Any]) -> None:
         """Assert that output is valid JSON matching expected."""
         try:
             output = json.loads(result.output)
@@ -203,7 +203,7 @@ class CliTestCase:
 
 
 @pytest.fixture
-def click_testing_mode():
+def click_testing_mode() -> Generator[None, None, None]:
     """
     Pytest fixture to enable Click testing mode.
 

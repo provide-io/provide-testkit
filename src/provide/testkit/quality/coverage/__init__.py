@@ -24,8 +24,8 @@ Usage:
 """
 
 from .fixture import CoverageFixture, coverage_tracker, session_coverage
-from .tracker import CoverageTracker
 from .reporter import CoverageReporter
+from .tracker import CoverageTracker
 
 __all__ = [
     "CoverageFixture",

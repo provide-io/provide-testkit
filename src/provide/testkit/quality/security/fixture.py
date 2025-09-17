@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-import pytest
 from pathlib import Path
 from typing import Any, Generator
 
+import pytest
+
 from ..base import BaseQualityFixture
-from .scanner import SecurityScanner, BANDIT_AVAILABLE
+from .scanner import BANDIT_AVAILABLE, SecurityScanner
 
 
 class SecurityFixture(BaseQualityFixture):

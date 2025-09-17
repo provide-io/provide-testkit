@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from provide.foundation.file import atomic_write_text, ensure_dir
+
 from .base import QualityResult
 
 
@@ -95,7 +97,7 @@ class ReportGenerator:
 
     def _generate_json_report(self, results: dict[str, QualityResult]) -> str:
         """Generate JSON report."""
-        report_data = {
+        report_data: dict[str, Any] = {
             "summary": {
                 "total_tools": len(results),
                 "passed": sum(1 for r in results.values() if r.passed),
@@ -267,5 +269,5 @@ class ReportGenerator:
                 format = "terminal"
 
         report_content = self.generate(results, format)
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(report_content)
+        ensure_dir(output_path.parent)
+        atomic_write_text(output_path, report_content)

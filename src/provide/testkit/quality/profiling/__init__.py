@@ -21,8 +21,8 @@ Usage:
     results = runner.run_with_gates(path, {"profiling": {"max_memory_mb": 100}})
 """
 
-from .profiler import PerformanceProfiler
 from .fixture import ProfilingFixture
+from .profiler import PerformanceProfiler
 
 __all__ = [
     "PerformanceProfiler",
