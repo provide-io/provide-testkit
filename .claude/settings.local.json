@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(rm:*)",
-      "Read(//Users/tim/code/gh/**)"
+      "Read(//Users/tim/code/gh/**)",
+      "Read(//Users/tim/code/**)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io"
