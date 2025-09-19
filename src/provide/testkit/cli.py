@@ -95,9 +95,8 @@ def temp_config_file(
     """
     suffix = f".{format}"
 
-    with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as config_path:
-        with open(config_path, "w") as f:
-            if isinstance(content, dict):
+    with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as config_path, Path(config_path).open("w") as f:
+        if isinstance(content, dict):
                 if format == "json":
                     json.dump(content, f, indent=2)
                 elif format == "toml":
@@ -122,8 +121,8 @@ def temp_config_file(
                         import yaml
 
                         yaml.safe_dump(content, f)
-                    except ImportError:
-                        raise ImportError("PyYAML required for YAML testing")
+                    except ImportError as e:
+                        raise ImportError("PyYAML required for YAML testing") from e
             else:
                 f.write(content)
 
@@ -196,7 +195,7 @@ class CliTestCase:
         try:
             output = json.loads(result.output)
         except json.JSONDecodeError as e:
-            raise AssertionError(f"Output is not valid JSON: {e}\n{result.output}")
+            raise AssertionError(f"Output is not valid JSON: {e}\n{result.output}") from e
 
         for key, value in expected.items():
             assert key in output, f"Key '{key}' not in output"
