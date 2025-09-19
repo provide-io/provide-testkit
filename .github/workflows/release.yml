@@ -86,10 +86,9 @@ jobs:
 
       - name: 🚀 Release Package
         id: release
-        uses: ../ci-tooling/actions/python-release
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          pypi-token: ${{ secrets.PYPI_API_TOKEN }}
+          password: ${{ secrets.PYPI_API_TOKEN }}
           repository-url: ${{ github.event.inputs.test-pypi == 'true' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
-          dry-run: ${{ github.event.inputs.dry-run || 'false' }}
-          artifacts-path: 'dist/'
-          workenv-path: './workenv'
+          print-hash: ${{ github.event.inputs.dry-run || 'false' }}
+          packages-dir: 'dist/'
