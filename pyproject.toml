@@ -212,8 +212,6 @@ dev-dependencies = [
     "provide-testkit[quality]",
 ]
 
-[tool.uv.sources]
-provide-foundation = { workspace = true }
 
 [tool.ruff]
 target-version = "py311"
