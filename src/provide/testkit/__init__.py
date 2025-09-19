@@ -12,73 +12,38 @@ Note: Testing information is displayed via pytest hooks in conftest.py
 
 from typing import Any
 
-
-# Lazy imports to avoid importing testing utilities in production
-def __getattr__(name: str) -> Any:
-    """Lazy import testing utilities only when accessed."""
-
+# Mapping of attribute names to their modules
+_LAZY_IMPORTS = {
     # CLI testing utilities
-    if name in [
+    "cli": [
         "MockContext",
         "isolated_cli_runner",
         "temp_config_file",
         "create_test_cli",
         "CliTestCase",
         "click_testing_mode",
-    ]:
-        import provide.testkit.cli as cli_module
-
-        return getattr(cli_module, name)
-
+    ],
     # Logger testing utilities
-    elif name in [
+    "logger": [
         "reset_foundation_setup_for_testing",
         "reset_foundation_state",
         "mock_logger",
         "mock_logger_factory",
-        # New hook utilities
         "DEFAULT_NOISY_LOGGERS",
         "get_noisy_loggers",
         "get_log_level_for_noisy_loggers",
         "pytest_runtest_setup",
         "suppress_loggers",
-    ]:
-        import provide.testkit.logger as logger_module
-
-        return getattr(logger_module, name)
-
+    ],
     # Stream testing utilities
-    elif name in ["set_log_stream_for_testing"]:
-        import provide.testkit.streams as streams_module
-
-        return getattr(streams_module, name)
-
+    "streams": ["set_log_stream_for_testing"],
     # Fixture utilities
-    elif name in [
+    "fixtures": [
         "captured_stderr_for_foundation",
         "setup_foundation_telemetry_for_test",
-    ]:
-        import provide.testkit.fixtures as fixtures_module
-
-        return getattr(fixtures_module, name)
-
-    # Import submodules directly
-    elif name in [
-        "archive",
-        "common",
-        "file",
-        "process",
-        "transport",
-        "mocking",
-        "time",
-        "threading",
-    ]:
-        import importlib
-
-        return importlib.import_module(f"provide.testkit.{name}")
-
-    # File testing utilities (backward compatibility)
-    elif name in [
+    ],
+    # File testing utilities
+    "file.fixtures": [
         "temp_directory",
         "test_files_structure",
         "temp_file",
@@ -86,13 +51,9 @@ def __getattr__(name: str) -> Any:
         "nested_directory_structure",
         "empty_directory",
         "readonly_file",
-    ]:
-        import provide.testkit.file.fixtures as file_module
-
-        return getattr(file_module, name)
-
-    # Process/async testing utilities (backward compatibility)
-    elif name in [
+    ],
+    # Process/async testing utilities
+    "process.fixtures": [
         "clean_event_loop",
         "async_timeout",
         "mock_async_process",
@@ -103,13 +64,9 @@ def __getattr__(name: str) -> Any:
         "async_queue",
         "async_lock",
         "mock_async_sleep",
-    ]:
-        import provide.testkit.process.fixtures as process_module
-
-        return getattr(process_module, name)
-
-    # Common mock utilities (backward compatibility)
-    elif name in [
+    ],
+    # Common mock utilities
+    "common.fixtures": [
         "mock_http_config",
         "mock_telemetry_config",
         "mock_config_source",
@@ -120,13 +77,9 @@ def __getattr__(name: str) -> Any:
         "mock_database",
         "mock_file_system",
         "mock_subprocess",
-    ]:
-        import provide.testkit.common.fixtures as common_module
-
-        return getattr(common_module, name)
-
-    # Transport/network testing utilities (backward compatibility)
-    elif name in [
+    ],
+    # Transport/network testing utilities
+    "transport.fixtures": [
         "free_port",
         "mock_server",
         "httpx_mock_responses",
@@ -136,26 +89,18 @@ def __getattr__(name: str) -> Any:
         "mock_ssl_context",
         "network_timeout",
         "mock_http_headers",
-    ]:
-        import provide.testkit.transport.fixtures as transport_module
-
-        return getattr(transport_module, name)
-
+    ],
     # Archive testing utilities
-    elif name in [
+    "archive.fixtures": [
         "archive_test_content",
         "large_file_for_compression",
         "multi_format_archives",
         "archive_with_permissions",
         "corrupted_archives",
         "archive_stress_test_files",
-    ]:
-        import provide.testkit.archive.fixtures as archive_module
-
-        return getattr(archive_module, name)
-
-    # Crypto fixtures (many fixtures)
-    elif name in [
+    ],
+    # Crypto fixtures
+    "crypto": [
         "client_cert",
         "server_cert",
         "ca_cert",
@@ -171,30 +116,62 @@ def __getattr__(name: str) -> Any:
         "cert_with_utf8_bom",
         "cert_with_extra_whitespace",
         "external_ca_pem",
-    ]:
-        import provide.testkit.crypto as crypto_module
-
-        return getattr(crypto_module, name)
-
+    ],
     # Hub fixtures
-    elif name in ["default_container_directory"]:
-        import provide.testkit.hub as hub_module
-
-        return getattr(hub_module, name)
-
+    "hub": ["default_container_directory"],
     # Environment utilities
-    elif name in [
+    "environment": [
         "TestEnvironment",
         "get_example_dir",
         "add_src_to_path",
         "reset_test_environment",
-    ]:
-        import provide.testkit.environment as environment_module
+    ],
+}
 
-        return getattr(environment_module, name)
+# Submodules that can be imported directly
+_DIRECT_SUBMODULES = [
+    "archive",
+    "common",
+    "file",
+    "process",
+    "transport",
+    "mocking",
+    "time",
+    "threading",
+]
 
-    else:
-        raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+
+def _import_from_module(module_path: str, name: str) -> Any:
+    """Import an attribute from a specific module."""
+    import importlib
+
+    module = importlib.import_module(f"provide.testkit.{module_path}")
+    return getattr(module, name)
+
+
+def _find_attribute_module(name: str) -> str | None:
+    """Find which module contains the given attribute name."""
+    for module_path, attributes in _LAZY_IMPORTS.items():
+        if name in attributes:
+            return module_path
+    return None
+
+
+# Lazy imports to avoid importing testing utilities in production
+def __getattr__(name: str) -> Any:
+    """Lazy import testing utilities only when accessed."""
+    # Check if it's a direct submodule
+    if name in _DIRECT_SUBMODULES:
+        import importlib
+
+        return importlib.import_module(f"provide.testkit.{name}")
+
+    # Find which module contains this attribute
+    module_path = _find_attribute_module(name)
+    if module_path:
+        return _import_from_module(module_path, name)
+
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 
 # Public API - these will be available for import but loaded lazily
