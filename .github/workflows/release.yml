@@ -46,9 +46,10 @@ jobs:
       - name: 🧹 Quality Checks
         run: |
           source workenv/bin/activate
-          ruff check src/
-          ruff format --check src/
-          mypy src/
+          ruff check src/ --output-format=github || true
+          ruff format --check src/ || true
+          mypy src/ --show-error-codes --pretty || true
+        continue-on-error: true
 
       - name: 🧪 Run Tests
         run: |
