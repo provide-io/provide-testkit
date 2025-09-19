@@ -204,6 +204,9 @@ docs-standalone = [
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+
 [tool.uv]
 dev-dependencies = [
     "provide-testkit[quality]",
