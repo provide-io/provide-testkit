@@ -31,7 +31,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "provide-foundation>=0.0.0.dev0",
+    "provide-foundation",
     "click>=8.1.7", # For CLI testing utilities
     # Core testing - use highest versions across ecosystem
     "pytest>=8.3.5",
