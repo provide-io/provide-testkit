@@ -95,37 +95,36 @@ def temp_config_file(
     """
     suffix = f".{format}"
 
-    with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as config_path:
-        with open(config_path, "w") as f:
-            if isinstance(content, dict):
-                if format == "json":
-                    json.dump(content, f, indent=2)
-                elif format == "toml":
-                    try:
-                        import tomli_w
+    with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as config_path, Path(config_path).open("w") as f:
+        if isinstance(content, dict):
+            if format == "json":
+                json.dump(content, f, indent=2)
+            elif format == "toml":
+                try:
+                    import tomli_w
 
-                        # tomli_w needs the content as a string, not written to file handle
-                        toml_content = tomli_w.dumps(content)
-                        f.write(toml_content)
-                    except ImportError:
-                        # Fall back to manual formatting
-                        for key, value in content.items():
-                            if isinstance(value, str):
-                                f.write(f'{key} = "{value}"\n')
-                            elif isinstance(value, bool):
-                                # TOML uses lowercase for booleans
-                                f.write(f"{key} = {str(value).lower()}\n")
-                            else:
-                                f.write(f"{key} = {value}\n")
-                elif format == "yaml":
-                    try:
-                        import yaml
+                    # tomli_w needs the content as a string, not written to file handle
+                    toml_content = tomli_w.dumps(content)
+                    f.write(toml_content)
+                except ImportError:
+                    # Fall back to manual formatting
+                    for key, value in content.items():
+                        if isinstance(value, str):
+                            f.write(f'{key} = "{value}"\n')
+                        elif isinstance(value, bool):
+                            # TOML uses lowercase for booleans
+                            f.write(f"{key} = {str(value).lower()}\n")
+                        else:
+                            f.write(f"{key} = {value}\n")
+            elif format == "yaml":
+                try:
+                    import yaml
 
-                        yaml.safe_dump(content, f)
-                    except ImportError:
-                        raise ImportError("PyYAML required for YAML testing")
-            else:
-                f.write(content)
+                    yaml.safe_dump(content, f)
+                except ImportError as e:
+                    raise ImportError("PyYAML required for YAML testing") from e
+        else:
+            f.write(content)
 
     try:
         yield config_path
@@ -196,7 +195,7 @@ class CliTestCase:
         try:
             output = json.loads(result.output)
         except json.JSONDecodeError as e:
-            raise AssertionError(f"Output is not valid JSON: {e}\n{result.output}")
+            raise AssertionError(f"Output is not valid JSON: {e}\n{result.output}") from e
 
         for key, value in expected.items():
             assert key in output, f"Key '{key}' not in output"
