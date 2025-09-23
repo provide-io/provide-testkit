@@ -172,6 +172,12 @@ def _reset_foundation_environment_variables() -> None:
         "PROVIDE_NO_EMOJI",
         "PROVIDE_NO_COLOR",
         "PROVIDE_LOG_MODULE_LEVELS",
+        "PROVIDE_LOG_CONSOLE_FORMATTER",
+        "PROVIDE_LOG_LOGGER_NAME_EMOJI_ENABLED",
+        "PROVIDE_LOG_DAS_EMOJI_ENABLED",
+        "PROVIDE_LOG_OMIT_TIMESTAMP",
+        "PROVIDE_SERVICE_NAME",
+        "PROVIDE_TELEMETRY_DISABLED",
     ]
 
     # Reset to defaults
