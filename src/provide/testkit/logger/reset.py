@@ -147,6 +147,43 @@ def _reset_opentelemetry_providers() -> None:
         pass
 
 
+def _reset_foundation_environment_variables() -> None:
+    """Reset Foundation environment variables that can affect test isolation.
+
+    This resets Foundation-specific environment variables that tests may have set,
+    ensuring clean state for subsequent tests while preserving test defaults.
+    """
+    import os
+
+    # Environment variables to reset with their test defaults
+    env_var_defaults = {
+        "PROVIDE_LOG_LEVEL": "DEBUG",  # Default from conftest.py
+        "FOUNDATION_SUPPRESS_TESTING_WARNINGS": "true",  # Default from conftest.py
+    }
+
+    # Environment variables to remove completely
+    env_vars_to_remove = [
+        "PROVIDE_PROFILE",
+        "PROVIDE_DEBUG",
+        "PROVIDE_JSON_OUTPUT",
+        "PROVIDE_CONFIG_FILE",
+        "PROVIDE_LOG_FILE",
+        "PROVIDE_LOG_FORMAT",
+        "PROVIDE_NO_EMOJI",
+        "PROVIDE_NO_COLOR",
+        "PROVIDE_LOG_MODULE_LEVELS",
+    ]
+
+    # Reset to defaults
+    for env_var, default_value in env_var_defaults.items():
+        os.environ[env_var] = default_value
+
+    # Remove variables that shouldn't persist
+    for env_var in env_vars_to_remove:
+        if env_var in os.environ:
+            del os.environ[env_var]
+
+
 def reset_foundation_state() -> None:
     """
     Internal function to reset structlog and Foundation's state using Hub-based approach.
@@ -157,6 +194,7 @@ def reset_foundation_state() -> None:
     - Stream state back to defaults
     - Lazy setup state tracking (if available)
     - OpenTelemetry provider state (if available)
+    - Foundation environment variables to defaults
     """
     # Use the new internal reset APIs from Foundation's testmode module
     from provide.foundation.testmode.internal import (
@@ -168,6 +206,9 @@ def reset_foundation_state() -> None:
         reset_streams_state,
         reset_structlog_state,
     )
+
+    # Reset Foundation environment variables first to avoid affecting other resets
+    _reset_foundation_environment_variables()
 
     # Reset in the proper order to avoid triggering reinitialization
     reset_structlog_state()
