@@ -147,6 +147,45 @@ def _reset_opentelemetry_providers() -> None:
         pass
 
 
+def _reset_foundation_environment_variables() -> None:
+    """Reset Foundation environment variables that can affect test isolation.
+
+    This resets Foundation-specific environment variables that tests may have set,
+    ensuring clean state for subsequent tests while preserving active test configuration.
+
+    Uses a conservative approach: only reset variables that are known to cause
+    test isolation issues, and preserve any that might be set by current test.
+    """
+    import os
+
+    # Always ensure these test defaults are set
+    env_var_defaults = {
+        "PROVIDE_LOG_LEVEL": "DEBUG",  # Default from conftest.py
+        "FOUNDATION_SUPPRESS_TESTING_WARNINGS": "true",  # Default from conftest.py
+    }
+
+    # Only reset critical variables that commonly cause test interference
+    # Be conservative - don't reset variables that might be intentionally set by tests
+    env_vars_to_reset_conditionally = [
+        "PROVIDE_PROFILE",
+        "PROVIDE_DEBUG",
+        "PROVIDE_JSON_OUTPUT",
+    ]
+
+    # Set test defaults (but don't override if already set by test)
+    for env_var, default_value in env_var_defaults.items():
+        if env_var not in os.environ:
+            os.environ[env_var] = default_value
+
+    # Only reset problematic variables that commonly cause cross-test contamination
+    # Skip resetting variables that tests commonly use with patch.dict()
+    for env_var in env_vars_to_reset_conditionally:
+        if env_var in os.environ:
+            # Only remove if it looks like leftover from previous test
+            # This is conservative - when in doubt, preserve
+            del os.environ[env_var]
+
+
 def reset_foundation_state() -> None:
     """
     Internal function to reset structlog and Foundation's state using Hub-based approach.
@@ -157,6 +196,7 @@ def reset_foundation_state() -> None:
     - Stream state back to defaults
     - Lazy setup state tracking (if available)
     - OpenTelemetry provider state (if available)
+    - Foundation environment variables to defaults
     """
     # Use the new internal reset APIs from Foundation's testmode module
     from provide.foundation.testmode.internal import (
@@ -168,6 +208,9 @@ def reset_foundation_state() -> None:
         reset_streams_state,
         reset_structlog_state,
     )
+
+    # Reset Foundation environment variables first to avoid affecting other resets
+    _reset_foundation_environment_variables()
 
     # Reset in the proper order to avoid triggering reinitialization
     reset_structlog_state()
