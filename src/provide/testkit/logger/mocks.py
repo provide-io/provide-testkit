@@ -15,7 +15,7 @@ import pytest
 
 
 @pytest.fixture
-def mock_logger():
+def mock_logger() -> Mock:
     """
     Comprehensive mock logger for testing.
 
@@ -53,7 +53,7 @@ def mock_logger():
     return logger
 
 
-def mock_logger_factory():
+def mock_logger_factory() -> Mock:
     """
     Factory function to create mock loggers outside of pytest context.
 
