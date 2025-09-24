@@ -160,6 +160,7 @@ def reset_foundation_state() -> None:
     """
     # Use the new internal reset APIs from Foundation's testmode module
     from provide.foundation.testmode.internal import (
+        reset_circuit_breaker_state,
         reset_coordinator_state,
         reset_eventsets_state,
         reset_hub_state,
@@ -187,6 +188,9 @@ def reset_foundation_state() -> None:
     # Reset coordinator and event set state
     reset_coordinator_state()
     reset_eventsets_state()
+
+    # Reset circuit breaker state to prevent test isolation issues
+    reset_circuit_breaker_state()
 
     # Final reset of logger state (after all operations that might trigger setup)
     reset_logger_state()
