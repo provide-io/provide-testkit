@@ -8,7 +8,7 @@ Provides utilities for redirecting and managing streams during testing,
 allowing tests to capture and control Foundation's output streams.
 """
 
-from typing import TextIO
+from typing import Any, TextIO
 
 # Import the actual stream management variables
 from provide.foundation.streams.core import get_log_stream
@@ -68,7 +68,7 @@ def enable_file_logging_for_testing(log_file_path: str) -> object:
     from unittest.mock import patch
 
     @contextmanager
-    def file_logging_context():
+    def file_logging_context() -> Any:
         # Patch the testmode detection function directly in the detection module
         # This is where both streams modules import it from
         patcher = patch("provide.foundation.testmode.detection.is_in_click_testing", return_value=False)
