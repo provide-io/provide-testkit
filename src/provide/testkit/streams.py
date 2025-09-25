@@ -78,10 +78,16 @@ def enable_file_logging_for_testing(log_file_path: str) -> object:
         try:
             # Clear test stream first
             set_log_stream_for_testing(None)
-            # Configure file logging
-            from provide.foundation.streams.file import configure_file_logging
 
-            configure_file_logging(log_file_path)
+            # After reset, force Foundation to use a fresh config that includes the environment
+            # This ensures file logging is properly configured with the current environment
+            from provide.foundation.logger.config import TelemetryConfig
+            from provide.foundation.hub import get_hub
+
+            config = TelemetryConfig.from_env()
+            hub = get_hub()
+            hub.initialize_foundation(config, force=True)
+
             yield
         finally:
             # Clean up patch
