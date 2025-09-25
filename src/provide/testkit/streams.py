@@ -81,8 +81,8 @@ def enable_file_logging_for_testing(log_file_path: str) -> object:
 
             # After reset, force Foundation to use a fresh config that includes the environment
             # This ensures file logging is properly configured with the current environment
-            from provide.foundation.logger.config import TelemetryConfig
             from provide.foundation.hub import get_hub
+            from provide.foundation.logger.config import TelemetryConfig
 
             config = TelemetryConfig.from_env()
             hub = get_hub()
