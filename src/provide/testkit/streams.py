@@ -63,16 +63,11 @@ def enable_file_logging_for_testing(log_file_path: str) -> None:
     """
     from unittest.mock import patch
 
-    # Import the modules we need to patch
-    from provide.foundation.streams import core as streams_core_module, file as streams_file_module
+    # Patch the testmode detection function directly in the detection module
+    # This is where both streams modules import it from
+    patcher = patch("provide.foundation.testmode.detection.is_in_click_testing", return_value=False)
 
-    # Patch both modules to temporarily disable testmode detection
-    # This allows both set_log_stream_for_testing and configure_file_logging to work
-    patcher1 = patch.object(streams_file_module, "is_in_click_testing", return_value=False)
-    patcher2 = patch.object(streams_core_module, "is_in_click_testing", return_value=False)
-
-    patcher1.start()
-    patcher2.start()
+    patcher.start()
 
     try:
         # Clear test stream first
@@ -82,9 +77,8 @@ def enable_file_logging_for_testing(log_file_path: str) -> None:
 
         configure_file_logging(log_file_path)
     finally:
-        # Clean up patches
-        patcher2.stop()
-        patcher1.stop()
+        # Clean up patch
+        patcher.stop()
 
 
 __all__ = [
