@@ -73,16 +73,14 @@ def enable_file_logging_for_testing(log_file_path: str) -> object:
         patcher = patch("provide.foundation.testmode.detection.is_in_click_testing", return_value=False)
         patcher.start()
 
+        # Create a helper object that the test can use to trigger file logging setup
+        class FileLoggingHelper:
+            def setup_after_reset(self):
+                from provide.foundation.streams.file import configure_file_logging
+                configure_file_logging(log_file_path)
+
         try:
-            # Clear test stream first to reset to stderr
-            set_log_stream_for_testing(None)
-
-            # Call configure_file_logging directly after patching
-            from provide.foundation.streams.file import configure_file_logging
-
-            configure_file_logging(log_file_path)
-
-            yield
+            yield FileLoggingHelper()
         finally:
             # Clean up patch
             patcher.stop()
