@@ -69,17 +69,15 @@ def enable_file_logging_for_testing(log_file_path: str) -> object:
 
     @contextmanager
     def file_logging_context() -> Any:
-        # Patch the testmode detection function directly in the detection module
-        # This is where both streams modules import it from
+        # Patch the testmode detection function at the module level
         patcher = patch("provide.foundation.testmode.detection.is_in_click_testing", return_value=False)
-
         patcher.start()
 
         try:
             # Clear test stream first to reset to stderr
             set_log_stream_for_testing(None)
 
-            # Just call configure_file_logging directly after patching
+            # Call configure_file_logging directly after patching
             from provide.foundation.streams.file import configure_file_logging
 
             configure_file_logging(log_file_path)
