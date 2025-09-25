@@ -47,7 +47,7 @@ def reset_log_stream() -> None:
     set_log_stream_for_testing(None)
 
 
-def enable_file_logging_for_testing(log_file_path: str) -> None:
+def enable_file_logging_for_testing(log_file_path: str) -> object:
     """Enable file logging specifically for testing scenarios.
 
     This function bypasses the normal testmode detection that prevents
@@ -57,28 +57,37 @@ def enable_file_logging_for_testing(log_file_path: str) -> None:
     Args:
         log_file_path: Path to the log file to write to
 
+    Returns:
+        Context manager that keeps the file logging enabled
+
     Note:
         This is a specialized utility for testing file logging behavior.
         Most tests should use captured_stderr_for_foundation fixture instead.
     """
+    from contextlib import contextmanager
     from unittest.mock import patch
 
-    # Patch the testmode detection function directly in the detection module
-    # This is where both streams modules import it from
-    patcher = patch("provide.foundation.testmode.detection.is_in_click_testing", return_value=False)
+    @contextmanager
+    def file_logging_context():
+        # Patch the testmode detection function directly in the detection module
+        # This is where both streams modules import it from
+        patcher = patch("provide.foundation.testmode.detection.is_in_click_testing", return_value=False)
 
-    patcher.start()
+        patcher.start()
 
-    try:
-        # Clear test stream first
-        set_log_stream_for_testing(None)
-        # Configure file logging
-        from provide.foundation.streams.file import configure_file_logging
+        try:
+            # Clear test stream first
+            set_log_stream_for_testing(None)
+            # Configure file logging
+            from provide.foundation.streams.file import configure_file_logging
 
-        configure_file_logging(log_file_path)
-    finally:
-        # Clean up patch
-        patcher.stop()
+            configure_file_logging(log_file_path)
+            yield
+        finally:
+            # Clean up patch
+            patcher.stop()
+
+    return file_logging_context()
 
 
 __all__ = [
