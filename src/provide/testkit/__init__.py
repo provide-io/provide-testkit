@@ -36,7 +36,7 @@ _LAZY_IMPORTS = {
         "suppress_loggers",
     ],
     # Stream testing utilities
-    "streams": ["set_log_stream_for_testing"],
+    "streams": ["set_log_stream_for_testing", "enable_file_logging_for_testing"],
     # Fixture utilities
     "fixtures": [
         "captured_stderr_for_foundation",
@@ -191,6 +191,7 @@ __all__ = [
     "create_test_cli",
     "default_container_directory",
     "empty_cert",
+    "enable_file_logging_for_testing",
     "external_ca_pem",
     "get_example_dir",
     "get_log_level_for_noisy_loggers",
