@@ -69,7 +69,6 @@ _LAZY_IMPORTS = {
         "async_iterator",
         "async_queue",
         "async_lock",
-        "mock_async_sleep",
     ],
     # Common fixture utilities
     "common.fixtures": [
