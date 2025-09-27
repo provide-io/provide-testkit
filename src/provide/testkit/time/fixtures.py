@@ -24,7 +24,7 @@ def freeze_time():
     """
 
     class FrozenTime:
-        def __init__(self, frozen_time: datetime.datetime | None = None):
+        def __init__(self, frozen_time: datetime.datetime | None = None) -> None:
             self.frozen_time = frozen_time or datetime.datetime.now()
             self.original_time = time.time
             self.original_datetime = datetime.datetime
@@ -49,7 +49,7 @@ def freeze_time():
             for p in self.patches:
                 p.stop()
 
-        def tick(self, seconds: float = 1.0):
+        def tick(self, seconds: float = 1.0) -> None:
             """Advance the frozen time by the specified seconds."""
             self.frozen_time += datetime.timedelta(seconds=seconds)
             # Update mocks
@@ -95,7 +95,7 @@ def mock_sleep_with_callback():
         Function to set up sleep mock with callback.
     """
 
-    def _mock_sleep(callback: Callable[[float], None] = None):
+    def _mock_sleep(callback: Callable[[float], None] | None = None):
         """
         Create a mock sleep with optional callback.
 
@@ -106,7 +106,7 @@ def mock_sleep_with_callback():
             Mock sleep object
         """
 
-        def sleep_side_effect(seconds):
+        def sleep_side_effect(seconds) -> None:
             if callback:
                 callback(seconds)
             return None
@@ -132,7 +132,7 @@ def time_machine():
     """
 
     class TimeMachine:
-        def __init__(self):
+        def __init__(self) -> None:
             self.current_time = time.time()
             self.speed_multiplier = 1.0
             self.patches = []
@@ -143,35 +143,69 @@ def time_machine():
             self.is_frozen = True
             self.current_time = at or time.time()
 
-            patcher = patch("time.time", return_value=self.current_time)
-            mock = patcher.start()
-            self.patches.append(patcher)
+            # Patch global time.time
+            global_patcher = patch("time.time", return_value=self.current_time)
+            global_patcher.start()
+            self.patches.append(global_patcher)
+
+            # Patch time.monotonic as well for timing operations
+            monotonic_patcher = patch("time.monotonic", return_value=self.current_time)
+            monotonic_patcher.start()
+            self.patches.append(monotonic_patcher)
+
+            # Patch module-specific time imports for provide.foundation modules
+            module_patches = [
+                "provide.foundation.state._internal.transitions.time.time",
+                "provide.foundation.state._internal.transitions.time.monotonic",
+                "provide.foundation.resilience.retry.time.time",
+                "provide.foundation.resilience.retry.time.monotonic",
+                "provide.foundation.resilience.circuit.time.time",
+                "provide.foundation.resilience.circuit.time.monotonic",
+                "provide.foundation.utils.rate_limiting.time.time",
+                "provide.foundation.utils.rate_limiting.time.monotonic",
+                "provide.foundation.utils.timing.time.time",
+                "provide.foundation.utils.timing.time.monotonic",
+                "provide.foundation.transport.middleware.time.time",
+                "provide.foundation.transport.middleware.time.monotonic",
+                "provide.foundation.tracer.spans.time.time",
+                "provide.foundation.tracer.spans.time.monotonic",
+            ]
+
+            for module_path in module_patches:
+                try:
+                    patcher = patch(module_path, return_value=self.current_time)
+                    patcher.start()
+                    self.patches.append(patcher)
+                except (ImportError, AttributeError):
+                    # Module might not be imported yet or doesn't exist
+                    pass
+
             return self
 
-        def unfreeze(self):
+        def unfreeze(self) -> None:
             """Unfreeze time."""
             self.is_frozen = False
             for p in self.patches:
                 p.stop()
             self.patches.clear()
 
-        def jump(self, seconds: float):
+        def jump(self, seconds: float) -> None:
             """Jump forward or backward in time."""
             self.current_time += seconds
             if self.is_frozen:
-                for p in self.patches:
-                    if hasattr(p, "return_value"):
-                        p.return_value = self.current_time
+                # Stop all patches and restart them with the new time
+                self.unfreeze()
+                self.freeze(self.current_time)
 
-        def speed_up(self, factor: float):
+        def speed_up(self, factor: float) -> None:
             """Speed up time by a factor."""
             self.speed_multiplier = factor
 
-        def slow_down(self, factor: float):
+        def slow_down(self, factor: float) -> None:
             """Slow down time by a factor."""
             self.speed_multiplier = 1.0 / factor
 
-        def cleanup(self):
+        def cleanup(self) -> None:
             """Clean up all patches."""
             for p in self.patches:
                 p.stop()
@@ -191,7 +225,7 @@ def timer():
     """
 
     class Timer:
-        def __init__(self):
+        def __init__(self) -> None:
             self.start_time = None
             self.end_time = None
             self.durations = []
@@ -235,7 +269,7 @@ def timer():
                 return 0.0
             return sum(self.durations) / len(self.durations)
 
-        def reset(self):
+        def reset(self) -> None:
             """Reset the timer."""
             self.start_time = None
             self.end_time = None
@@ -279,7 +313,7 @@ def time_travel():
     def mock_time():
         return original_time() + current_offset
 
-    def _travel_to(target: datetime.datetime):
+    def _travel_to(target: datetime.datetime) -> None:
         """
         Travel to a specific point in time.
 
@@ -303,7 +337,7 @@ def rate_limiter_mock():
     """
 
     class MockRateLimiter:
-        def __init__(self):
+        def __init__(self) -> None:
             self.calls = []
             self.should_limit = False
             self.limit_after = None
@@ -319,14 +353,14 @@ def rate_limiter_mock():
 
             return not self.should_limit
 
-        def reset(self):
+        def reset(self) -> None:
             """Reset the rate limiter."""
             self.calls.clear()
             self.call_count = 0
             self.should_limit = False
             self.limit_after = None
 
-        def set_limit(self, after_calls: int):
+        def set_limit(self, after_calls: int) -> None:
             """Set to limit after N calls."""
             self.limit_after = after_calls
 
@@ -343,7 +377,7 @@ def benchmark_timer():
     """
 
     class BenchmarkTimer:
-        def __init__(self):
+        def __init__(self) -> None:
             self.measurements = []
 
         def measure(self, func: Callable, *args, **kwargs) -> tuple[Any, float]:
@@ -379,7 +413,7 @@ def benchmark_timer():
             """Get average execution time."""
             return sum(self.measurements) / len(self.measurements) if self.measurements else 0.0
 
-        def assert_faster_than(self, seconds: float):
+        def assert_faster_than(self, seconds: float) -> None:
             """Assert all measurements were faster than threshold."""
             if not self.measurements:
                 raise AssertionError("No measurements taken")
@@ -390,7 +424,7 @@ def benchmark_timer():
 
 
 # Utility functions that can be imported directly
-def advance_time(mock_time: Mock, seconds: float):
+def advance_time(mock_time: Mock, seconds: float) -> None:
     """
     Advance a mocked time by specified seconds.
 
