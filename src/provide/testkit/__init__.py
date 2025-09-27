@@ -71,8 +71,10 @@ _LAZY_IMPORTS = {
         "async_lock",
         "mock_async_sleep",
     ],
-    # Common mock utilities
+    # Common fixture utilities
     "common.fixtures": [
+        "captured_stderr_for_foundation",
+        "setup_foundation_telemetry_for_test",
         "mock_http_config",
         "mock_telemetry_config",
         "mock_config_source",
