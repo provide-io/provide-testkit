@@ -15,13 +15,19 @@ from typing import Any
 # Mapping of attribute names to their modules
 _LAZY_IMPORTS = {
     # CLI testing utilities
-    "cli": [
+    "cli.testing": [
         "MockContext",
         "isolated_cli_runner",
         "temp_config_file",
         "create_test_cli",
         "CliTestCase",
         "click_testing_mode",
+    ],
+    # CLI runner utilities
+    "cli.runner": [
+        "CliTestRunner",
+        "assert_cli_success",
+        "assert_cli_error",
     ],
     # Logger testing utilities
     "logger": [
@@ -36,9 +42,9 @@ _LAZY_IMPORTS = {
         "suppress_loggers",
     ],
     # Stream testing utilities
-    "streams": ["set_log_stream_for_testing", "enable_file_logging_for_testing"],
-    # Fixture utilities
-    "fixtures": [
+    "streams.testing": ["set_log_stream_for_testing", "enable_file_logging_for_testing"],
+    # Common fixture utilities
+    "common.fixtures": [
         "captured_stderr_for_foundation",
         "setup_foundation_telemetry_for_test",
     ],
@@ -100,7 +106,7 @@ _LAZY_IMPORTS = {
         "archive_stress_test_files",
     ],
     # Crypto fixtures
-    "crypto": [
+    "crypto.fixtures": [
         "client_cert",
         "server_cert",
         "ca_cert",
@@ -118,26 +124,61 @@ _LAZY_IMPORTS = {
         "external_ca_pem",
     ],
     # Hub fixtures
-    "hub": ["default_container_directory"],
+    "hub.fixtures": ["default_container_directory"],
     # Environment utilities
-    "environment": [
+    "utils.environment": [
         "TestEnvironment",
         "get_example_dir",
         "add_src_to_path",
         "reset_test_environment",
+    ],
+    # Temp environment utilities
+    "utils.temp_env": [
+        "temp_env",
+        "temp_env_from_dict",
+        "isolated_env",
+        "EnvContext",
+    ],
+    # Base test classes
+    "base.foundation": [
+        "FoundationTestCase",
+    ],
+    # Base harness utilities
+    "base.harness": [
+        "HarnessRunner",
+    ],
+    # Time mocking utilities
+    "mocking.time": [
+        "SleepTracker",
+        "mock_sleep",
+        "mock_time_sleep",
+        "mock_asyncio_sleep",
+        "create_sleep_mock",
+    ],
+    # File temp utilities
+    "file.temp": [
+        "TempFileManager",
+        "create_temp_file",
+        "create_temp_dir",
     ],
 }
 
 # Submodules that can be imported directly
 _DIRECT_SUBMODULES = [
     "archive",
+    "base",
+    "cli",
     "common",
+    "crypto",
     "file",
-    "process",
-    "transport",
+    "hub",
     "mocking",
-    "time",
+    "process",
+    "streams",
     "threading",
+    "time",
+    "transport",
+    "utils",
 ]
 
 
@@ -178,14 +219,25 @@ def __getattr__(name: str) -> Any:
 __all__ = [
     "DEFAULT_NOISY_LOGGERS",
     "CliTestCase",
+    "CliTestRunner",
+    "EnvContext",
+    "FoundationTestCase",
+    "HarnessRunner",
     "MockContext",
+    "SleepTracker",
+    "TempFileManager",
     "TestEnvironment",
     "_is_testing_context",
     "add_src_to_path",
+    "assert_cli_error",
+    "assert_cli_success",
     "ca_cert",
     "captured_stderr_for_foundation",
     "cert_with_extra_whitespace",
     "cert_with_utf8_bom",
+    "create_sleep_mock",
+    "create_temp_dir",
+    "create_temp_file",
     "cert_with_windows_line_endings",
     "client_cert",
     "create_test_cli",
