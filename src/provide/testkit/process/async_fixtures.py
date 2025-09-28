@@ -170,26 +170,7 @@ async def async_lock():
     return asyncio.Lock()
 
 
-@pytest.fixture
-def mock_async_sleep():
-    """
-    Mock asyncio.sleep to speed up tests.
-
-    Returns:
-        Mock that replaces asyncio.sleep with instant return.
-    """
-    original_sleep = asyncio.sleep
-
-    async def instant_sleep(seconds):
-        """Sleep replacement that returns immediately."""
-        return None
-
-    asyncio.sleep = instant_sleep
-
-    yield instant_sleep
-
-    # Restore original
-    asyncio.sleep = original_sleep
+# mock_async_sleep removed - use mock_asyncio_sleep from provide.testkit.mocking.time instead
 
 
 @pytest.fixture
@@ -406,5 +387,4 @@ __all__ = [
     "async_timeout",
     "clean_event_loop",
     "event_loop_policy",
-    "mock_async_sleep",
 ]

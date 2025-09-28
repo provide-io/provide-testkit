@@ -20,7 +20,6 @@ from provide.testkit.process.async_fixtures import (
     async_timeout,
     clean_event_loop,
     event_loop_policy,
-    mock_async_sleep,
 )
 from provide.testkit.process.subprocess_fixtures import (
     async_mock_server,
@@ -39,7 +38,6 @@ __all__ = [
     "async_iterator",
     "async_queue",
     "async_lock",
-    "mock_async_sleep",
     "async_gather_helper",
     "async_task_group",
     "async_condition_waiter",
