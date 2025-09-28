@@ -1,234 +1,164 @@
 """
-Common Mock Objects and Fixtures.
+Common Test Fixtures for Foundation.
 
-Reusable mock objects for configuration, logging, and other common
-testing scenarios across the provide-io ecosystem.
+Provides pytest fixtures for capturing output, setting up telemetry,
+and other common testing scenarios across the Foundation test suite.
 """
 
-from typing import Any
-from unittest.mock import Mock, PropertyMock
+from collections.abc import Callable, Generator
+import io
+from typing import Any, TextIO
+from unittest.mock import Mock
 
 import pytest
 
-from provide.foundation import TelemetryConfig
-from provide.foundation.logger.config.logging import LoggingConfig
+from provide.foundation import TelemetryConfig, get_hub
+from provide.testkit.streams import set_log_stream_for_testing
 
 
 @pytest.fixture
-def mock_http_config() -> Any:
+def captured_stderr_for_foundation() -> Generator[TextIO]:
     """
-    Standard HTTP configuration for testing.
+    Fixture to capture stderr output from Foundation's logging system.
 
-    Returns:
-        HTTPConfig with common test settings.
+    It redirects Foundation's log stream to an `io.StringIO` buffer, yields the buffer
+    to the test, and then restores the original stream.
     """
-    from provide.foundation.transport.config import HTTPConfig
-
-    return HTTPConfig(
-        timeout=30.0,
-        max_retries=3,
-        retry_backoff_factor=0.5,
-        verify_ssl=True,
-        pool_connections=10,
-        pool_maxsize=100,
-        follow_redirects=True,
-        http2=True,
-        max_redirects=5,
-    )
+    current_test_stream = io.StringIO()
+    set_log_stream_for_testing(current_test_stream)
+    yield current_test_stream
+    set_log_stream_for_testing(None)
+    current_test_stream.close()
 
 
 @pytest.fixture
-def mock_telemetry_config() -> TelemetryConfig:
+def setup_foundation_telemetry_for_test(
+    captured_stderr_for_foundation: TextIO,
+) -> Callable[[TelemetryConfig | None], None]:
     """
-    Standard telemetry configuration for testing.
+    Fixture providing a function to set up Foundation Telemetry for tests.
 
-    Returns:
-        TelemetryConfig with debug logging enabled.
+    This fixture captures stderr via `captured_stderr_for_foundation`
+    and provides a callable to configure telemetry with custom settings.
     """
-    return TelemetryConfig(
-        logging=LoggingConfig(default_level="DEBUG"),
-        globally_disabled=False,
-        service_name="test_service",
-        service_version="1.0.0",
-    )
+
+    def _setup(config: TelemetryConfig | None = None) -> None:
+        if config is None:
+            config = TelemetryConfig()
+
+        # Use Hub API directly instead of deprecated setup_telemetry
+        hub = get_hub()
+        hub.initialize_foundation(config, force=True)
+
+    return _setup
+
+
+# Mock fixtures for common testing scenarios
+@pytest.fixture
+def mock_cache() -> Mock:
+    """Mock cache object for testing."""
+    mock = Mock()
+    mock.get.return_value = None
+    mock.set.return_value = None
+    mock.delete.return_value = None
+    mock.clear.return_value = None
+    return mock
 
 
 @pytest.fixture
 def mock_config_source() -> Mock:
-    """
-    Mock configuration source for testing config loading.
-
-    Returns:
-        Mock that simulates a configuration source.
-    """
-    source = Mock()
-    source.load = Mock(return_value={"key": "value", "nested": {"key": "value"}})
-    source.exists = Mock(return_value=True)
-    source.reload = Mock()
-    source.watch = Mock()
-    source.priority = 100
-    source.name = "mock_source"
-
-    return source
+    """Mock configuration source for testing."""
+    mock = Mock()
+    mock.load.return_value = {}
+    mock.reload.return_value = {}
+    return mock
 
 
 @pytest.fixture
-def mock_event_emitter():
-    """
-    Mock event emitter for testing event-driven components.
-
-    Returns:
-        Mock with emit, on, off methods.
-    """
-    emitter = Mock()
-    emitter.emit = Mock()
-    emitter.on = Mock()
-    emitter.off = Mock()
-    emitter.once = Mock()
-    emitter.listeners = Mock(return_value=[])
-    emitter.remove_all_listeners = Mock()
-
-    return emitter
+def mock_database() -> Mock:
+    """Mock database connection for testing."""
+    mock = Mock()
+    mock.connect.return_value = None
+    mock.disconnect.return_value = None
+    mock.execute.return_value = []
+    mock.commit.return_value = None
+    mock.rollback.return_value = None
+    return mock
 
 
 @pytest.fixture
-def mock_transport():
-    """
-    Mock transport for testing network operations.
-
-    Returns:
-        Mock transport with request/response methods.
-    """
-    transport = Mock()
-    transport.request = Mock(return_value={"status": 200, "data": {}})
-    transport.get = Mock(return_value={"status": 200, "data": {}})
-    transport.post = Mock(return_value={"status": 200, "data": {}})
-    transport.put = Mock(return_value={"status": 200, "data": {}})
-    transport.delete = Mock(return_value={"status": 204})
-    transport.close = Mock()
-
-    return transport
+def mock_event_emitter() -> Mock:
+    """Mock event emitter for testing."""
+    mock = Mock()
+    mock.emit.return_value = None
+    mock.on.return_value = None
+    mock.off.return_value = None
+    return mock
 
 
 @pytest.fixture
-def mock_metrics_collector():
-    """
-    Mock metrics collector for testing instrumentation.
-
-    Returns:
-        Mock with common metrics methods.
-    """
-    collector = Mock()
-    collector.increment = Mock()
-    collector.decrement = Mock()
-    collector.gauge = Mock()
-    collector.histogram = Mock()
-    collector.timer = Mock()
-    collector.flush = Mock()
-
-    # Add context manager support for timing
-    timer_cm = Mock()
-    timer_cm.__enter__ = Mock(return_value=timer_cm)
-    timer_cm.__exit__ = Mock(return_value=None)
-    collector.timer.return_value = timer_cm
-
-    return collector
+def mock_file_system() -> Mock:
+    """Mock file system for testing."""
+    mock = Mock()
+    mock.read.return_value = ""
+    mock.write.return_value = None
+    mock.exists.return_value = True
+    mock.delete.return_value = None
+    return mock
 
 
 @pytest.fixture
-def mock_cache():
-    """
-    Mock cache for testing caching behavior.
-
-    Returns:
-        Mock with get, set, delete, clear methods.
-    """
-    cache_data = {}
-
-    cache = Mock()
-    cache.get = Mock(side_effect=lambda k, default=None: cache_data.get(k, default))
-    cache.set = Mock(side_effect=lambda k, v, ttl=None: cache_data.update({k: v}))
-    cache.delete = Mock(side_effect=lambda k: cache_data.pop(k, None))
-    cache.clear = Mock(side_effect=cache_data.clear)
-    cache.exists = Mock(side_effect=lambda k: k in cache_data)
-    cache.keys = Mock(return_value=list(cache_data.keys()))
-
-    # Store reference to data for test assertions
-    cache._data = cache_data
-
-    return cache
+def mock_http_config() -> Mock:
+    """Mock HTTP configuration for testing."""
+    mock = Mock()
+    mock.base_url = "http://localhost:8080"
+    mock.timeout = 30
+    mock.retries = 3
+    return mock
 
 
 @pytest.fixture
-def mock_database():
-    """
-    Mock database connection for testing.
-
-    Returns:
-        Mock with execute, fetch, commit, rollback methods.
-    """
-    db = Mock()
-    db.execute = Mock(return_value=Mock(rowcount=1))
-    db.fetch = Mock(return_value=[])
-    db.fetchone = Mock(return_value=None)
-    db.fetchall = Mock(return_value=[])
-    db.commit = Mock()
-    db.rollback = Mock()
-    db.close = Mock()
-    db.is_connected = PropertyMock(return_value=True)
-
-    # Add context manager support
-    db.__enter__ = Mock(return_value=db)
-    db.__exit__ = Mock(return_value=None)
-
-    return db
+def mock_metrics_collector() -> Mock:
+    """Mock metrics collector for testing."""
+    mock = Mock()
+    mock.collect.return_value = {}
+    mock.reset.return_value = None
+    mock.increment.return_value = None
+    mock.gauge.return_value = None
+    return mock
 
 
 @pytest.fixture
-def mock_file_system():
-    """
-    Mock file system operations.
-
-    Returns:
-        Mock with read, write, exists, delete methods.
-    """
-    fs = Mock()
-    fs.read = Mock(return_value=b"content")
-    fs.write = Mock()
-    fs.exists = Mock(return_value=True)
-    fs.delete = Mock()
-    fs.mkdir = Mock()
-    fs.rmdir = Mock()
-    fs.list = Mock(return_value=[])
-    fs.stat = Mock(return_value=Mock(st_size=1024, st_mtime=0))
-
-    return fs
+def mock_subprocess() -> Mock:
+    """Mock subprocess for testing."""
+    mock = Mock()
+    mock.run.return_value = Mock(returncode=0, stdout="", stderr="")
+    mock.Popen.return_value = Mock(
+        returncode=0,
+        stdout=Mock(read=Mock(return_value="")),
+        stderr=Mock(read=Mock(return_value="")),
+        communicate=Mock(return_value=("", "")),
+    )
+    return mock
 
 
 @pytest.fixture
-def mock_subprocess():
-    """
-    Mock subprocess for testing command execution.
+def mock_telemetry_config() -> Mock:
+    """Mock telemetry configuration for testing."""
+    mock = Mock()
+    mock.service_name = "test-service"
+    mock.log_level = "DEBUG"
+    mock.enable_file_logging = False
+    mock.log_file_path = None
+    return mock
 
-    Returns:
-        Mock with run, Popen methods.
-    """
-    subprocess = Mock()
 
-    # Mock run method
-    result = Mock()
-    result.returncode = 0
-    result.stdout = "output"
-    result.stderr = ""
-    subprocess.run = Mock(return_value=result)
-
-    # Mock Popen
-    process = Mock()
-    process.communicate = Mock(return_value=("output", ""))
-    process.returncode = 0
-    process.pid = 12345
-    process.poll = Mock(return_value=0)
-    process.wait = Mock(return_value=0)
-    subprocess.Popen = Mock(return_value=process)
-
-    return subprocess
+@pytest.fixture
+def mock_transport() -> Mock:
+    """Mock transport for testing."""
+    mock = Mock()
+    mock.send.return_value = {"status": "success"}
+    mock.receive.return_value = {"data": "test"}
+    mock.connect.return_value = None
+    mock.disconnect.return_value = None
+    return mock

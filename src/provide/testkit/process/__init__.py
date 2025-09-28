@@ -23,7 +23,6 @@ from provide.testkit.process.fixtures import (
     clean_event_loop,
     event_loop_policy,
     mock_async_process,
-    mock_async_sleep,
 )
 
 __all__ = [
@@ -44,5 +43,4 @@ __all__ = [
     "clean_event_loop",
     "event_loop_policy",
     "mock_async_process",
-    "mock_async_sleep",
 ]
