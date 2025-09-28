@@ -156,6 +156,17 @@ _LAZY_IMPORTS = {
         "mock_asyncio_sleep",
         "create_sleep_mock",
     ],
+    # Time fixture utilities
+    "time.fixtures": [
+        "time_machine",
+        "freeze_time",
+        "mock_datetime",
+        "timer",
+        "time_travel",
+        "rate_limiter_mock",
+        "benchmark_timer",
+        "advance_time",
+    ],
     # File temp utilities
     "file.temp": [
         "TempFileManager",
@@ -271,6 +282,9 @@ __all__ = [
     "temp_env_from_dict",
     "temporary_cert_file",
     "temporary_key_file",
+    "time_machine",
+    "timer",
+    "time_travel",
     "valid_cert_pem",
     "valid_key_pem",
 ]
