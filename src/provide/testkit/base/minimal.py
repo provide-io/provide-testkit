@@ -41,6 +41,7 @@ class MinimalTestCase:
                     path.unlink()
                 elif path.is_dir():
                     import shutil
+
                     shutil.rmtree(path)
 
         # Reset mocks
@@ -81,7 +82,9 @@ class MinimalTestCase:
             assert key in actual, f"Key '{key}' not in output"
             assert actual[key] == value, f"Value mismatch for '{key}': {actual[key]} != {value}"
 
-    def assert_contains_error(self, output: str, error_type: type[Exception], message: str | None = None) -> None:
+    def assert_contains_error(
+        self, output: str, error_type: type[Exception], message: str | None = None
+    ) -> None:
         """Assert that output contains an error of the specified type."""
         error_name = error_type.__name__
         assert error_name in output, f"Error type '{error_name}' not found in output: {output}"

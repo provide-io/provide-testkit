@@ -46,21 +46,21 @@ class FoundationTestCase(MinimalTestCase):
             # Get the test method
             frame = inspect.currentframe()
             while frame:
-                if frame.f_code.co_name.startswith('test_'):
+                if frame.f_code.co_name.startswith("test_"):
                     test_method = getattr(self, frame.f_code.co_name, None)
-                    if test_method and hasattr(test_method, 'pytestmark'):
-                        marks = getattr(test_method, 'pytestmark', [])
+                    if test_method and hasattr(test_method, "pytestmark"):
+                        marks = getattr(test_method, "pytestmark", [])
                         for mark in marks:
-                            if mark.name == 'timing_sensitive':
+                            if mark.name == "timing_sensitive":
                                 return False
                     break
                 frame = frame.f_back
 
             # Check class-level markers
-            if hasattr(self.__class__, 'pytestmark'):
-                marks = getattr(self.__class__, 'pytestmark', [])
+            if hasattr(self.__class__, "pytestmark"):
+                marks = getattr(self.__class__, "pytestmark", [])
                 for mark in marks:
-                    if mark.name == 'timing_sensitive':
+                    if mark.name == "timing_sensitive":
                         return False
         except Exception:
             # If we can't determine, default to full reset for safety
