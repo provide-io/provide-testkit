@@ -6,7 +6,7 @@ Reduces boilerplate and ensures consistent mocking across all tests.
 """
 
 from typing import Any
-from unittest.mock import ANY, AsyncMock, MagicMock, Mock, PropertyMock, call, patch
+from unittest.mock import ANY, AsyncMock, MagicMock, Mock, PropertyMock, call, mock_open, patch
 
 import pytest
 
@@ -331,6 +331,7 @@ __all__ = [
     "call",
     "magic_mock_factory",
     "mock_factory",
+    "mock_open",
     "mock_open_fixture",
     "patch",
     "patch_fixture",
