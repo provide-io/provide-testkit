@@ -5,6 +5,8 @@ Fixtures for mocking time, freezing time, and testing time-dependent code
 across the provide-io ecosystem.
 """
 
+from __future__ import annotations
+
 from collections.abc import Callable
 import datetime
 import time
@@ -12,6 +14,95 @@ from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
+
+
+class TimeMachine:
+    """Advanced time manipulation class for testing.
+
+    Provides methods to:
+    - Freeze time
+    - Speed up/slow down time
+    - Jump to specific times
+    """
+
+    def __init__(self) -> None:
+        """Initialize the TimeMachine."""
+        self.current_time = time.time()
+        self.speed_multiplier = 1.0
+        self.patches: list[Any] = []
+        self.is_frozen = False
+
+    def freeze(self, at: float | None = None) -> "TimeMachine":
+        """Freeze time at a specific timestamp."""
+        self.is_frozen = True
+        self.current_time = at or time.time()
+
+        # Patch global time.time
+        global_patcher = patch("time.time", return_value=self.current_time)
+        global_patcher.start()
+        self.patches.append(global_patcher)
+
+        # Patch time.monotonic as well for timing operations
+        monotonic_patcher = patch("time.monotonic", return_value=self.current_time)
+        monotonic_patcher.start()
+        self.patches.append(monotonic_patcher)
+
+        # Patch module-specific time imports for provide.foundation modules
+        module_patches = [
+            "provide.foundation.state._internal.transitions.time.time",
+            "provide.foundation.state._internal.transitions.time.monotonic",
+            "provide.foundation.resilience.retry.time.time",
+            "provide.foundation.resilience.retry.time.monotonic",
+            "provide.foundation.resilience.circuit.time.time",
+            "provide.foundation.resilience.circuit.time.monotonic",
+            "provide.foundation.utils.rate_limiting.time.time",
+            "provide.foundation.utils.rate_limiting.time.monotonic",
+            "provide.foundation.utils.timing.time.time",
+            "provide.foundation.utils.timing.time.monotonic",
+            "provide.foundation.transport.middleware.time.time",
+            "provide.foundation.transport.middleware.time.monotonic",
+            "provide.foundation.tracer.spans.time.time",
+            "provide.foundation.tracer.spans.time.monotonic",
+        ]
+
+        for module_path in module_patches:
+            try:
+                patcher = patch(module_path, return_value=self.current_time)
+                patcher.start()
+                self.patches.append(patcher)
+            except (ImportError, AttributeError):
+                # Module might not be imported yet or doesn't exist
+                pass
+
+        return self
+
+    def unfreeze(self) -> None:
+        """Unfreeze time."""
+        self.is_frozen = False
+        for p in self.patches:
+            p.stop()
+        self.patches.clear()
+
+    def jump(self, seconds: float) -> None:
+        """Jump forward or backward in time."""
+        self.current_time += seconds
+        if self.is_frozen:
+            # Stop all patches and restart them with the new time
+            self.unfreeze()
+            self.freeze(self.current_time)
+
+    def speed_up(self, factor: float) -> None:
+        """Speed up time by a factor."""
+        self.speed_multiplier = factor
+
+    def slow_down(self, factor: float) -> None:
+        """Slow down time by a factor."""
+        self.speed_multiplier = 1.0 / factor
+
+    def cleanup(self) -> None:
+        """Clean up all patches."""
+        for p in self.patches:
+            p.stop()
 
 
 @pytest.fixture
@@ -118,98 +209,13 @@ def mock_sleep_with_callback():
 
 
 @pytest.fixture
-def time_machine():
+def time_machine() -> TimeMachine:
     """
     Advanced time manipulation fixture.
 
-    Provides methods to:
-    - Freeze time
-    - Speed up/slow down time
-    - Jump to specific times
-
-    Returns:
+    Yields:
         TimeMachine instance for time manipulation.
     """
-
-    class TimeMachine:
-        def __init__(self) -> None:
-            self.current_time = time.time()
-            self.speed_multiplier = 1.0
-            self.patches = []
-            self.is_frozen = False
-
-        def freeze(self, at: float | None = None):
-            """Freeze time at a specific timestamp."""
-            self.is_frozen = True
-            self.current_time = at or time.time()
-
-            # Patch global time.time
-            global_patcher = patch("time.time", return_value=self.current_time)
-            global_patcher.start()
-            self.patches.append(global_patcher)
-
-            # Patch time.monotonic as well for timing operations
-            monotonic_patcher = patch("time.monotonic", return_value=self.current_time)
-            monotonic_patcher.start()
-            self.patches.append(monotonic_patcher)
-
-            # Patch module-specific time imports for provide.foundation modules
-            module_patches = [
-                "provide.foundation.state._internal.transitions.time.time",
-                "provide.foundation.state._internal.transitions.time.monotonic",
-                "provide.foundation.resilience.retry.time.time",
-                "provide.foundation.resilience.retry.time.monotonic",
-                "provide.foundation.resilience.circuit.time.time",
-                "provide.foundation.resilience.circuit.time.monotonic",
-                "provide.foundation.utils.rate_limiting.time.time",
-                "provide.foundation.utils.rate_limiting.time.monotonic",
-                "provide.foundation.utils.timing.time.time",
-                "provide.foundation.utils.timing.time.monotonic",
-                "provide.foundation.transport.middleware.time.time",
-                "provide.foundation.transport.middleware.time.monotonic",
-                "provide.foundation.tracer.spans.time.time",
-                "provide.foundation.tracer.spans.time.monotonic",
-            ]
-
-            for module_path in module_patches:
-                try:
-                    patcher = patch(module_path, return_value=self.current_time)
-                    patcher.start()
-                    self.patches.append(patcher)
-                except (ImportError, AttributeError):
-                    # Module might not be imported yet or doesn't exist
-                    pass
-
-            return self
-
-        def unfreeze(self) -> None:
-            """Unfreeze time."""
-            self.is_frozen = False
-            for p in self.patches:
-                p.stop()
-            self.patches.clear()
-
-        def jump(self, seconds: float) -> None:
-            """Jump forward or backward in time."""
-            self.current_time += seconds
-            if self.is_frozen:
-                # Stop all patches and restart them with the new time
-                self.unfreeze()
-                self.freeze(self.current_time)
-
-        def speed_up(self, factor: float) -> None:
-            """Speed up time by a factor."""
-            self.speed_multiplier = factor
-
-        def slow_down(self, factor: float) -> None:
-            """Slow down time by a factor."""
-            self.speed_multiplier = 1.0 / factor
-
-        def cleanup(self) -> None:
-            """Clean up all patches."""
-            for p in self.patches:
-                p.stop()
-
     machine = TimeMachine()
     yield machine
     machine.cleanup()
@@ -437,6 +443,7 @@ def advance_time(mock_time: Mock, seconds: float) -> None:
 
 
 __all__ = [
+    "TimeMachine",
     "advance_time",
     "benchmark_timer",
     "freeze_time",
