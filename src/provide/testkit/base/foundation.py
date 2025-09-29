@@ -78,22 +78,12 @@ class FoundationTestCase(MinimalTestCase):
         affect timing.
         """
         try:
-            # Reset component registry to prevent cross-test contamination
-            from provide.foundation.hub.components import reset_registry_for_tests
+            # Reset Hub state which includes component registry
+            from provide.foundation.testmode.internal import reset_hub_state
 
-            reset_registry_for_tests()
+            reset_hub_state()
         except ImportError:
-            # Function might not exist in older versions, that's okay
-            pass
-
-        try:
-            # Reset any file locks that might be lingering
-            # This is particularly important for file lock tests
-            from provide.foundation.file.lock import _reset_file_locks_for_testing
-
-            _reset_file_locks_for_testing()
-        except (ImportError, AttributeError):
-            # Function might not exist, that's okay
+            # Testmode module not available, skip
             pass
 
 
