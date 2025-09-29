@@ -32,7 +32,7 @@ def mock_factory():
             Configured Mock object
         """
         defaults = {
-            "spec_set": True if "spec" in kwargs else False,
+            "spec_set": "spec" in kwargs,
         }
         defaults.update(kwargs)
 
@@ -205,7 +205,7 @@ def auto_patch():
     """
 
     class AutoPatch:
-        def __init__(self):
+        def __init__(self) -> None:
             self.patches = []
 
         def object(self, target: Any, attribute: str, **kwargs) -> Mock:
@@ -229,7 +229,7 @@ def auto_patch():
             patcher.start()
             self.patches.append(patcher)
 
-        def cleanup(self):
+        def cleanup(self) -> None:
             """Stop all patches."""
             for patcher in self.patches:
                 patcher.stop()
@@ -249,7 +249,7 @@ def mock_open_fixture():
     """
     from unittest.mock import mock_open
 
-    def _mock_open(read_data: str = None) -> Mock:
+    def _mock_open(read_data: str | None = None) -> Mock:
         """
         Create a mock for the open() builtin.
 
@@ -301,7 +301,7 @@ def assert_mock_calls():
         Function for asserting mock calls.
     """
 
-    def _assert_calls(mock: Mock, expected_calls: list, any_order: bool = False):
+    def _assert_calls(mock: Mock, expected_calls: list, any_order: bool = False) -> None:
         """
         Assert that a mock was called with expected calls.
 
