@@ -7,8 +7,6 @@ standard utilities, automatic setup/cleanup, and common assertions.
 
 from __future__ import annotations
 
-import pytest
-
 from provide.testkit.base.minimal import MinimalTestCase
 from provide.testkit.logger import reset_foundation_setup_for_testing
 
@@ -29,6 +27,10 @@ class FoundationTestCase(MinimalTestCase):
         # Check if this test/class is marked as timing_sensitive
         if self._needs_full_reset():
             reset_foundation_setup_for_testing()
+        else:
+            # For timing-sensitive tests, do minimal reset to prevent test interference
+            # but avoid full setup that could affect timing
+            self._minimal_state_reset()
 
         # Always call parent setup for basic utilities
         super().setup_method()
@@ -67,6 +69,32 @@ class FoundationTestCase(MinimalTestCase):
             pass
 
         return True
+
+    def _minimal_state_reset(self) -> None:
+        """Perform minimal state reset for timing-sensitive tests.
+
+        This resets only the most critical global state that can cause
+        test interference, while avoiding expensive operations that could
+        affect timing.
+        """
+        try:
+            # Reset component registry to prevent cross-test contamination
+            from provide.foundation.hub.components import reset_registry_for_tests
+
+            reset_registry_for_tests()
+        except ImportError:
+            # Function might not exist in older versions, that's okay
+            pass
+
+        try:
+            # Reset any file locks that might be lingering
+            # This is particularly important for file lock tests
+            from provide.foundation.file.lock import _reset_file_locks_for_testing
+
+            _reset_file_locks_for_testing()
+        except (ImportError, AttributeError):
+            # Function might not exist, that's okay
+            pass
 
 
 __all__ = ["FoundationTestCase"]
