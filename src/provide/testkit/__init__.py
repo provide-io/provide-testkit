@@ -12,7 +12,7 @@ Note: Testing information is displayed via pytest hooks in conftest.py
 
 from typing import Any
 
-# Mapping of attribute names to their modules
+# Mapping of attribute names to their modules for lazy loading.
 _LAZY_IMPORTS = {
     # CLI testing utilities
     "cli.testing": [
@@ -47,6 +47,16 @@ _LAZY_IMPORTS = {
     "common.fixtures": [
         "captured_stderr_for_foundation",
         "setup_foundation_telemetry_for_test",
+        "mock_http_config",
+        "mock_telemetry_config",
+        "mock_config_source",
+        "mock_event_emitter",
+        "mock_transport",
+        "mock_metrics_collector",
+        "mock_cache",
+        "mock_database",
+        "mock_file_system",
+        "mock_subprocess",
     ],
     # File testing utilities
     "file.fixtures": [
@@ -69,21 +79,6 @@ _LAZY_IMPORTS = {
         "async_iterator",
         "async_queue",
         "async_lock",
-    ],
-    # Common fixture utilities
-    "common.fixtures": [
-        "captured_stderr_for_foundation",
-        "setup_foundation_telemetry_for_test",
-        "mock_http_config",
-        "mock_telemetry_config",
-        "mock_config_source",
-        "mock_event_emitter",
-        "mock_transport",
-        "mock_metrics_collector",
-        "mock_cache",
-        "mock_database",
-        "mock_file_system",
-        "mock_subprocess",
     ],
     # Transport/network testing utilities
     "transport.fixtures": [
@@ -144,9 +139,32 @@ _LAZY_IMPORTS = {
     "base.foundation": [
         "FoundationTestCase",
     ],
+    "base.minimal": [
+        "MinimalTestCase",
+    ],
     # Base harness utilities
     "base.harness": [
         "HarnessRunner",
+    ],
+    # Mocking utilities
+    "mocking.fixtures": [
+        "ANY",
+        "AsyncMock",
+        "MagicMock",
+        "Mock",
+        "PropertyMock",
+        "assert_mock_calls",
+        "async_mock_factory",
+        "auto_patch",
+        "call",
+        "magic_mock_factory",
+        "mock_factory",
+        "mock_open_fixture",
+        "patch",
+        "patch_fixture",
+        "patch_multiple_fixture",
+        "property_mock_factory",
+        "spy_fixture",
     ],
     # Time mocking utilities
     "mocking.time": [
@@ -227,64 +245,11 @@ def __getattr__(name: str) -> Any:
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 
-# Public API - these will be available for import but loaded lazily
-__all__ = [
-    "DEFAULT_NOISY_LOGGERS",
-    "CliTestCase",
-    "CliTestRunner",
-    "EnvContext",
-    "FoundationTestCase",
-    "HarnessRunner",
-    "MockContext",
-    "SleepTracker",
-    "TempFileManager",
-    "TestEnvironment",
-    "_is_testing_context",
-    "add_src_to_path",
-    "assert_cli_error",
-    "assert_cli_success",
-    "ca_cert",
-    "captured_stderr_for_foundation",
-    "cert_with_extra_whitespace",
-    "cert_with_utf8_bom",
-    "create_sleep_mock",
-    "create_temp_dir",
-    "create_temp_file",
-    "cert_with_windows_line_endings",
-    "client_cert",
-    "create_test_cli",
-    "default_container_directory",
-    "empty_cert",
-    "enable_file_logging_for_testing",
-    "external_ca_pem",
-    "get_example_dir",
-    "get_log_level_for_noisy_loggers",
-    "get_noisy_loggers",
-    "invalid_cert_pem",
-    "invalid_key_pem",
-    "isolated_cli_runner",
-    "isolated_env",
-    "malformed_cert_pem",
-    "mock_asyncio_sleep",
-    "mock_logger",
-    "mock_sleep",
-    "mock_time_sleep",
-    "pytest_runtest_setup",
-    "reset_foundation_setup_for_testing",
-    "reset_foundation_state",
-    "reset_test_environment",
-    "server_cert",
-    "set_log_stream_for_testing",
-    "setup_foundation_telemetry_for_test",
-    "suppress_loggers",
-    "temp_config_file",
-    "temp_env",
-    "temp_env_from_dict",
-    "temporary_cert_file",
-    "temporary_key_file",
-    "time_machine",
-    "timer",
-    "time_travel",
-    "valid_cert_pem",
-    "valid_key_pem",
-]
+# --- Public API ---
+# This list is dynamically generated to be comprehensive and stay in sync
+# with the lazy loader, ensuring a complete and correct public API.
+_all_lazy_attributes: list[str] = []
+for _attributes in _LAZY_IMPORTS.values():
+    _all_lazy_attributes.extend(_attributes)
+
+__all__ = sorted(list(set(_all_lazy_attributes)))
