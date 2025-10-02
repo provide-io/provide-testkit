@@ -217,15 +217,29 @@ def mock_sleep_with_callback():
 
 
 @pytest.fixture
-def time_machine() -> TimeMachine:
+def time_machine(request: pytest.FixtureRequest) -> TimeMachine:
     """
     Advanced time manipulation fixture.
 
     Yields:
         TimeMachine instance for time manipulation.
+
+    IMPORTANT: Uses request.addfinalizer() to ensure patches are stopped
+    BEFORE pytest-asyncio creates event loops for the next test.
     """
     machine = TimeMachine()
+
+    # Register cleanup with highest priority (runs before standard teardown)
+    # This ensures time patches are stopped before pytest-asyncio creates
+    # event loops for the next test
+    def cleanup_patches() -> None:
+        machine.cleanup()
+
+    request.addfinalizer(cleanup_patches)
+
     yield machine
+
+    # Also call cleanup here as backup (defensive)
     machine.cleanup()
 
 
