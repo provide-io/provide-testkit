@@ -78,12 +78,14 @@ class TimeMachine:
 
     def _stop_all_patches(self) -> None:
         """Stop and clear all active patches robustly."""
+        import sys
         for p in self.patches:
             try:
                 p.stop()
-            except Exception:
-                # Ignore errors - module might be unloaded/reloaded
-                pass
+            except Exception as e:
+                # Debug: show what's failing
+                print(f"[TimeMachine] Failed to stop patch {p}: {e}", file=sys.stderr)
+        print(f"[TimeMachine] Stopped {len(self.patches)} patches", file=sys.stderr)
         self.patches.clear()
 
     def unfreeze(self) -> None:
