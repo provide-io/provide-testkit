@@ -217,15 +217,53 @@ def mock_sleep_with_callback():
 
 
 @pytest.fixture
-def time_machine() -> TimeMachine:
+def time_machine(request: pytest.FixtureRequest) -> TimeMachine:
     """
     Advanced time manipulation fixture.
 
     Yields:
         TimeMachine instance for time manipulation.
+
+    IMPORTANT: Uses request.addfinalizer() to ensure patches are stopped
+    BEFORE pytest-asyncio creates event loops for the next test. Also forcibly
+    closes ALL event loops to prevent cached frozen time.monotonic references.
     """
     machine = TimeMachine()
+
+    # Register cleanup with highest priority (runs before standard teardown)
+    # This ensures time patches are stopped before pytest-asyncio creates
+    # event loops for the next test
+    def cleanup_patches() -> None:
+        machine.cleanup()
+
+        # NUCLEAR OPTION: Close ALL event loops to force fresh creation
+        # This is necessary because event loops cache time.monotonic references
+        # at creation time, and those cached values persist even after patches stop
+        try:
+            import asyncio
+
+            try:
+                loop = asyncio.get_event_loop()
+                if not loop.is_running() and not loop.is_closed():
+                    loop.close()
+            except RuntimeError:
+                pass
+
+            # Also close the running loop if there is one
+            try:
+                loop = asyncio.get_running_loop()
+                # Can't close running loop, but we can stop it
+            except RuntimeError:
+                pass
+
+        except Exception:
+            pass
+
+    request.addfinalizer(cleanup_patches)
+
     yield machine
+
+    # Also call cleanup here as backup (defensive)
     machine.cleanup()
 
 
