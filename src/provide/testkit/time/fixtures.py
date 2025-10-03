@@ -76,12 +76,22 @@ class TimeMachine:
 
         return self
 
+    def _stop_all_patches(self) -> None:
+        """Stop and clear all active patches robustly."""
+        import sys
+        for p in self.patches:
+            try:
+                p.stop()
+            except Exception as e:
+                # Debug: show what's failing
+                print(f"[TimeMachine] Failed to stop patch {p}: {e}", file=sys.stderr)
+        print(f"[TimeMachine] Stopped {len(self.patches)} patches", file=sys.stderr)
+        self.patches.clear()
+
     def unfreeze(self) -> None:
         """Unfreeze time."""
         self.is_frozen = False
-        for p in self.patches:
-            p.stop()
-        self.patches.clear()
+        self._stop_all_patches()
 
     def jump(self, seconds: float) -> None:
         """Jump forward or backward in time."""
@@ -100,9 +110,9 @@ class TimeMachine:
         self.speed_multiplier = 1.0 / factor
 
     def cleanup(self) -> None:
-        """Clean up all patches."""
-        for p in self.patches:
-            p.stop()
+        """Clean up all patches and reset state."""
+        self.is_frozen = False
+        self._stop_all_patches()
 
 
 @pytest.fixture
