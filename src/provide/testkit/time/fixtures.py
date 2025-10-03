@@ -7,13 +7,54 @@ across the provide-io ecosystem.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 import datetime
 import time
 from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
+
+
+def make_controlled_time() -> tuple[
+    Callable[[], float],
+    Callable[[float], None],
+    Callable[[float], None],
+    Callable[[float], Awaitable[None]],
+]:
+    """Create controlled time source and sleep functions for testing.
+
+    This provides injectable time/sleep functions that don't rely on global mocking,
+    making tests faster and more reliable. Use these instead of time_machine.freeze()
+    for retry/circuit breaker tests.
+
+    Returns:
+        Tuple of (get_time, advance_time, fake_sleep, fake_async_sleep)
+
+    Example:
+        >>> get_time, advance_time, fake_sleep, fake_async_sleep = make_controlled_time()
+        >>> executor = RetryExecutor(
+        ...     policy,
+        ...     time_source=get_time,
+        ...     sleep_func=fake_sleep,
+        ...     async_sleep_func=fake_async_sleep,
+        ... )
+    """
+    current_time = [0.0]
+
+    def get_time() -> float:
+        return current_time[0]
+
+    def advance_time(seconds: float) -> None:
+        current_time[0] += seconds
+
+    def fake_sleep(seconds: float) -> None:
+        advance_time(seconds)
+
+    async def fake_async_sleep(seconds: float) -> None:
+        advance_time(seconds)
+
+    return get_time, advance_time, fake_sleep, fake_async_sleep
 
 
 class TimeMachine:
