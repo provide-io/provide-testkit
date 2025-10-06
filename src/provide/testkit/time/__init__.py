@@ -1,11 +1,15 @@
-"""
-Time testing utilities for the provide-io ecosystem.
+"""Time testing utilities for the provide-io ecosystem.
 
 Fixtures and utilities for mocking time, freezing time, and testing
 time-dependent code across any project that depends on provide.foundation.
 """
 
 from provide.testkit.time.fixtures import (
+    BenchmarkTimer,
+    FrozenTime,
+    MockRateLimiter,
+    TimeMachine,
+    Timer,
     advance_time,
     benchmark_timer,
     freeze_time,
@@ -20,6 +24,13 @@ from provide.testkit.time.fixtures import (
 )
 
 __all__ = [
+    # Classes
+    "BenchmarkTimer",
+    "FrozenTime",
+    "MockRateLimiter",
+    "TimeMachine",
+    "Timer",
+    # Utilities and fixtures
     "advance_time",
     "benchmark_timer",
     "freeze_time",
