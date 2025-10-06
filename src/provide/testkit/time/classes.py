@@ -11,6 +11,23 @@ import time
 from typing import Any
 from unittest.mock import patch
 
+# Module-level registry for tracking active TimeMachine instances
+# Used by test fixtures to avoid expensive gc.get_objects() scans
+_active_time_machines: set[Any] = set()  # Will contain TimeMachine instances
+
+
+def get_active_time_machines() -> set[Any]:
+    """Get set of currently active TimeMachine instances.
+
+    Returns:
+        Set of TimeMachine instances that are currently active.
+
+    Note:
+        Thread-safe within a process. pytest-xdist workers are separate processes,
+        so no cross-process synchronization needed.
+    """
+    return _active_time_machines.copy()  # Return copy to prevent external modification
+
 
 class TimeMachine:
     """Advanced time manipulation class for testing.
@@ -27,6 +44,9 @@ class TimeMachine:
         self.speed_multiplier = 1.0
         self.patches: list[Any] = []
         self.is_frozen = False
+
+        # Register in global registry for efficient cleanup
+        _active_time_machines.add(self)
 
     def freeze(self, at: float | None = None) -> TimeMachine:
         """Freeze time at a specific timestamp."""
@@ -107,6 +127,9 @@ class TimeMachine:
         """Clean up all patches and reset state."""
         self.is_frozen = False
         self._stop_all_patches()
+
+        # Unregister from global registry
+        _active_time_machines.discard(self)  # discard() won't raise if not in set
 
 
 class FrozenTime:
@@ -284,9 +307,7 @@ class BenchmarkTimer:
         if not self.measurements:
             raise AssertionError("No measurements taken")
         if self.max_time > seconds:
-            raise AssertionError(
-                f"Maximum time {self.max_time:.3f}s exceeded threshold {seconds:.3f}s"
-            )
+            raise AssertionError(f"Maximum time {self.max_time:.3f}s exceeded threshold {seconds:.3f}s")
 
 
 __all__ = [
@@ -295,4 +316,5 @@ __all__ = [
     "MockRateLimiter",
     "TimeMachine",
     "Timer",
+    "get_active_time_machines",
 ]
