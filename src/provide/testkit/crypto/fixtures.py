@@ -36,7 +36,7 @@ zvpvL+mfy1c5oHQhh6KPnxpoo1WyDJGYplwPTGS68DvvWmolrPAtC7I7r7spgyJS
 -----END EC PRIVATE KEY-----"""
 
     logger.debug(f"Created CLIENT_CERT fixture: {cert_pem[:30]}...")
-    return Certificate(cert_pem_or_uri=cert_pem, key_pem_or_uri=key_pem)
+    return Certificate.from_pem(cert_pem=cert_pem, key_pem=key_pem)
 
 
 @pytest.fixture(scope="module")
@@ -64,7 +64,7 @@ VXHTAdc/bLFFy9kybQqo300Rv6ViW2I=
 -----END EC PRIVATE KEY-----"""
 
     logger.debug(f"Created SERVER_CERT fixture: {cert_pem[:30]}...")
-    return Certificate(cert_pem_or_uri=cert_pem, key_pem_or_uri=key_pem)
+    return Certificate.from_pem(cert_pem=cert_pem, key_pem=key_pem)
 
 
 @pytest.fixture(scope="module")
