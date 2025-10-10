@@ -78,13 +78,13 @@ def ca_cert() -> Certificate:
 @pytest.fixture(scope="module")
 def valid_key_pem(client_cert: Certificate) -> str:
     """Get a valid key PEM from the client cert fixture."""
-    return client_cert.key
+    return client_cert.key_pem
 
 
 @pytest.fixture
 def valid_cert_pem(client_cert: Certificate) -> str:
     """Get a valid certificate PEM from the client cert fixture."""
-    return client_cert.cert
+    return client_cert.cert_pem
 
 
 @pytest.fixture
@@ -112,37 +112,37 @@ def empty_cert() -> str:
 
 
 @pytest.fixture
-def temporary_cert_file(tmp_path, client_cert) -> str:
+def temporary_cert_file(tmp_path: any, client_cert: Certificate) -> str:
     """Creates a temporary file containing the client certificate."""
     cert_file = tmp_path / "client_cert.pem"
-    cert_file.write_text(client_cert.cert)
+    cert_file.write_text(client_cert.cert_pem)
     return f"file://{cert_file}"
 
 
 @pytest.fixture
-def temporary_key_file(tmp_path, client_cert) -> str:
+def temporary_key_file(tmp_path: any, client_cert: Certificate) -> str:
     """Creates a temporary file containing the client private key."""
     key_file = tmp_path / "client_key.pem"
-    key_file.write_text(client_cert.key)
+    key_file.write_text(client_cert.key_pem)
     return f"file://{key_file}"
 
 
 @pytest.fixture
-def cert_with_windows_line_endings(client_cert) -> str:
+def cert_with_windows_line_endings(client_cert: Certificate) -> str:
     """Returns a certificate PEM with Windows line endings."""
-    return client_cert.cert.replace("\n", "\r\n")
+    return client_cert.cert_pem.replace("\n", "\r\n")
 
 
 @pytest.fixture
-def cert_with_utf8_bom(client_cert) -> str:
+def cert_with_utf8_bom(client_cert: Certificate) -> str:
     """Returns a certificate PEM with UTF-8 BOM."""
-    return "\ufeff" + client_cert.cert
+    return "\ufeff" + client_cert.cert_pem
 
 
 @pytest.fixture
-def cert_with_extra_whitespace(client_cert) -> str:
+def cert_with_extra_whitespace(client_cert: Certificate) -> str:
     """Returns a certificate PEM with extra whitespace."""
-    return f"   {client_cert.cert}   \n\n  "
+    return f"   {client_cert.cert_pem}   \n\n  "
 
 
 @pytest.fixture(scope="module")
