@@ -127,12 +127,14 @@ def malformed_inputs(  # type: ignore[misc]
     # Text inputs
     strategies.append(st.text(min_size=0, max_size=1000))
     if include_huge:
-        strategies.append(st.text(min_size=100000, max_size=1000000))
+        # Use 8KB as max to stay within Hypothesis BUFFER_SIZE limits
+        strategies.append(st.text(min_size=5000, max_size=8000))
 
     # Binary inputs
     strategies.append(st.binary(min_size=0, max_size=1000))
     if include_huge:
-        strategies.append(st.binary(min_size=100000, max_size=1000000))
+        # Use 8KB as max to stay within Hypothesis BUFFER_SIZE limits
+        strategies.append(st.binary(min_size=5000, max_size=8000))
 
     # Numeric inputs
     strategies.append(st.integers())
