@@ -27,7 +27,8 @@ class ChaosTimeSource:
             start_time: Initial time value (defaults to current time)
         """
         self._current_time = start_time if start_time is not None else time.time()
-        self._frozen = False
+        # If explicit start_time given, freeze by default; otherwise follow real time
+        self._frozen = start_time is not None
 
     def __call__(self) -> float:
         """Get current time.
@@ -48,12 +49,13 @@ class ChaosTimeSource:
         self._current_time += seconds
 
     def set(self, timestamp: float) -> None:
-        """Set time to specific value.
+        """Set time to specific value and freeze.
 
         Args:
             timestamp: Absolute time value to set
         """
         self._current_time = timestamp
+        self._frozen = True  # Freeze after setting explicit time
 
     def freeze(self) -> None:
         """Freeze time at current value."""
