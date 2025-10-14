@@ -120,7 +120,7 @@ _LAZY_IMPORTS = {
         "external_ca_pem",
     ],
     # Hub fixtures
-    "hub.fixtures": ["default_container_directory"],
+    "hub.fixtures": ["default_container_directory", "isolated_container", "isolated_hub"],
     # Environment utilities
     "utils.environment": [
         "TestEnvironment",

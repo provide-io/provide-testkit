@@ -116,6 +116,93 @@ async def test_async_function(clean_event_loop):
         assert result is not None
 ```
 
+## Dependency Injection Testing (New in Phase 2)
+
+Foundation now supports dependency injection for cleaner, more isolated tests. Instead of relying on global state and reset functions, you can create isolated Container and Hub instances per test.
+
+### Using Isolated Container
+
+```python
+from provide.testkit import isolated_container
+
+def test_with_isolated_container(isolated_container):
+    """Each test gets a fresh Container with no shared state."""
+    # Register test-specific dependencies
+    isolated_container.register("my_service", MyTestService())
+
+    # Use the container
+    service = isolated_container.resolve("my_service")
+    assert service is not None
+
+    # No need to call reset_foundation_setup_for_testing()
+```
+
+### Using Isolated Hub
+
+```python
+from provide.testkit import isolated_hub
+from provide.foundation.transport import UniversalClient
+
+@pytest.mark.asyncio
+async def test_with_isolated_hub(isolated_hub):
+    """Hub with isolated Container for complete test isolation."""
+    # Create components with explicit DI
+    client = UniversalClient(hub=isolated_hub)
+
+    # Test proceeds without affecting global Hub state
+    response = await client.get("https://api.example.com")
+    assert response.status == 200
+
+    # No global state pollution - no reset needed
+```
+
+### When to Use Isolated Fixtures vs FoundationTestCase
+
+**Use isolated fixtures (`isolated_container`, `isolated_hub`) when:**
+- Writing unit tests that need complete isolation
+- Testing components that accept Hub/Container via constructor
+- You want to avoid global state entirely
+- No need for reset functions between tests
+
+**Use FoundationTestCase when:**
+- Writing integration tests that use global Hub (via `get_hub()`)
+- Testing legacy code that relies on global state
+- You need automatic cleanup of temp files and mocks
+- Testing components that don't support DI yet
+
+### Comparing Testing Patterns
+
+**Traditional Pattern (with reset):**
+```python
+class TestMyFeature(FoundationTestCase):
+    def test_something(self) -> None:
+        # Foundation reset happens automatically
+        # Uses global Hub via get_hub()
+        result = my_function_using_global_hub()
+        assert result is not None
+```
+
+**Modern DI Pattern (no reset needed):**
+```python
+def test_something(isolated_hub):
+    # Fresh Hub per test, no reset needed
+    # Explicit DI via constructor
+    component = MyComponent(hub=isolated_hub)
+    result = component.do_something()
+    assert result is not None
+```
+
+**Best of Both Worlds:**
+```python
+class TestMyFeature(FoundationTestCase):
+    def test_with_di(self, isolated_hub) -> None:
+        # Get FoundationTestCase cleanup + isolated Hub
+        # Temp files tracked, Hub isolated
+        temp_file = self.create_temp_file("data")
+        component = MyComponent(hub=isolated_hub, data_file=temp_file)
+        assert component.process() is not None
+```
+
 ## Best Practices
 
 1. **Always use FoundationTestCase** as base class for Foundation tests
@@ -124,6 +211,8 @@ async def test_async_function(clean_event_loop):
 4. **Use environment utilities** instead of manual os.environ manipulation
 5. **Use async fixtures** for async test scenarios
 6. **Clean up properly** (FoundationTestCase handles this automatically)
+7. **Prefer isolated fixtures** for new tests using DI-enabled components
+8. **Use explicit DI** (pass Hub/Container to constructors) instead of global `get_hub()` calls
 
 ## Migration from Plain Test Classes
 
