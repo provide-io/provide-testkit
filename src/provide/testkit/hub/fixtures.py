@@ -23,13 +23,17 @@ Example usage:
     ...     # Test proceeds with isolated dependencies
 """
 
+from __future__ import annotations
+
+from typing import Any
+
 import pytest
 
 from provide.foundation.file import temp_dir as foundation_temp_dir
 
 
 @pytest.fixture(scope="session")
-def default_container_directory():
+def default_container_directory() -> Any:
     """
     Provides a default directory for container operations in tests.
 
@@ -41,7 +45,7 @@ def default_container_directory():
 
 
 @pytest.fixture
-def isolated_container():
+def isolated_container() -> Any:
     """
     Create an isolated Container for dependency injection testing.
 
@@ -70,18 +74,15 @@ def isolated_container():
 
 
 @pytest.fixture
-def isolated_hub(isolated_container):
+def isolated_hub() -> Any:
     """
-    Create an isolated Hub with a fresh Container for testing.
+    Create an isolated Hub with fresh registries for testing.
 
-    This fixture provides a Hub instance with an isolated Container,
+    This fixture provides a Hub instance with isolated registries,
     enabling dependency injection testing without global state side effects.
 
-    Args:
-        isolated_container: The isolated Container fixture (auto-injected).
-
     Returns:
-        Hub: A Hub instance with the isolated Container.
+        Hub: A Hub instance with isolated registries.
 
     Example:
         >>> def test_with_di(isolated_hub):
@@ -96,6 +97,18 @@ def isolated_hub(isolated_container):
         but want complete isolation from other tests. No reset functions
         are needed when using this fixture.
     """
+    from provide.foundation.context import CLIContext
     from provide.foundation.hub import Hub
+    from provide.foundation.hub.registry import Registry
 
-    return Hub(container=isolated_container)
+    # Create isolated registries
+    component_registry = Registry()
+    command_registry = Registry()
+
+    # Create Hub with isolated registries (not shared)
+    return Hub(
+        context=CLIContext(),
+        component_registry=component_registry,
+        command_registry=command_registry,
+        use_shared_registries=False,
+    )
