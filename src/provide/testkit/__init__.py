@@ -79,6 +79,7 @@ _LAZY_IMPORTS = {
         "async_iterator",
         "async_queue",
         "async_lock",
+        "disable_setproctitle",
     ],
     # Transport/network testing utilities
     "transport.fixtures": [
