@@ -21,6 +21,7 @@ from provide.testkit.process.fixtures import (
     async_test_client,
     async_timeout,
     clean_event_loop,
+    disable_setproctitle,
     event_loop_policy,
     mock_async_process,
 )
@@ -41,6 +42,7 @@ __all__ = [
     "async_test_client",
     "async_timeout",
     "clean_event_loop",
+    "disable_setproctitle",
     "event_loop_policy",
     "mock_async_process",
 ]
