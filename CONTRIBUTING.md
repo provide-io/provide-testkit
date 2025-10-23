@@ -16,7 +16,7 @@ git clone https://github.com/provide-io/provide-testkit.git
 cd provide-testkit
 
 # Set up development environment
-source env.sh  # This creates workenv/ and installs dependencies
+uv sync  # This creates workenv/ and installs dependencies
 
 # Verify setup
 pytest tests/

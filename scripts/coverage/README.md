@@ -20,7 +20,7 @@ Runs pytest with branch coverage for multiple packages in parallel, saving indiv
 - Parallel test execution across multiple packages
 - Branch coverage collection with `pytest-cov`
 - Individual log files for each package
-- Automatic environment setup (sources `env.sh` if present)
+- Automatic environment setup using `uv` (creates `.venv` if needed)
 - Works with `pytest-xdist` for parallel test execution within each package
 
 **Configuration:**
@@ -137,6 +137,7 @@ Per-package breakdown including:
 **For `run_tests.sh`:**
 - Bash shell
 - Python 3.11+
+- uv package manager
 - pytest with pytest-cov plugin
 - pytest-xdist (for parallel execution)
 - coverage.py
@@ -176,24 +177,25 @@ high_perf = [r for r in packages_with_tests
 - **Parallel Execution**: Tests run in parallel across packages. Within each package, `pytest -n auto` also parallelizes tests.
 - **Log Files**: Each package gets its own log file for easier debugging.
 - **Coverage Reports**: Coverage data is combined automatically using `coverage combine`.
-- **Environment Setup**: If a package has an `env.sh` file, it will be sourced before running tests.
+- **Environment Setup**: Uses `uv sync` to ensure dependencies are installed, then `uv run` to execute tests in the package's virtual environment.
 - **Interrupting**: Press Ctrl+C to stop all running tests (background processes will be terminated).
 
 ## Troubleshooting
 
 **Tests not running for a package:**
 - Check if the package path is correct
-- Verify that pytest is available in the package's environment
+- Verify that the package has a `pyproject.toml` with dependencies
 - Check the individual log file for errors
+- Ensure `uv` is installed and available
 
 **Coverage not showing:**
-- Ensure pytest-cov is installed in the package's environment
+- Ensure pytest-cov is listed in the package's dependencies
 - Check that the package name format matches the module structure (e.g., `my-package` → `my.package`)
 
 **UNKNOWN status in report:**
 - Package may not have tests
 - Tests may have failed to start (check log file)
-- env.sh sourcing may have issues
+- `uv sync` may have failed (check log file for errors)
 
 ## Related Documentation
 
