@@ -74,6 +74,10 @@ class QualityRunner:
             from .documentation import DocumentationChecker
 
             return DocumentationChecker(self.config.get("documentation", {}))
+        elif tool_name == "mutation":
+            from .mutation import MutationRunner
+
+            return MutationRunner(self.config.get("mutation", {}))
         else:
             raise QualityError(f"Unknown tool: {tool_name}")
 
