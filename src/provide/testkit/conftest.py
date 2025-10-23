@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-import pytest
+import pytest  # noqa: F401
+
+# Note: setproctitle is disabled by pytest_plugin.py (registered via entry points)
+# This happens very early in pytest initialization to prevent pytest-xdist performance issues
 
 # Import fixtures from hub module
 from provide.testkit.hub.fixtures import (

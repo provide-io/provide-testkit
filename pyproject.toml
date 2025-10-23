@@ -50,6 +50,9 @@ Issues = "https://github.com/provide-io/provide-testkit/issues"
 [project.scripts]
 provide-testkit = "provide.testkit.main:main"
 
+[project.entry-points.pytest11]
+provide_testkit = "provide.testkit.pytest_plugin"
+
 [project.optional-dependencies]
 
 # Comprehensive code quality tools
