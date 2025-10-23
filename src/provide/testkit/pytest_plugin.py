@@ -46,8 +46,22 @@ class SetproctitleImportBlocker:
         When setproctitle is imported, this hook raises ImportError,
         which pytest-xdist catches and handles gracefully by using
         its built-in no-op fallback implementation.
+
+        Special case: Allow stub setproctitle.py files in site-packages
+        to be imported (for mutmut compatibility), but block the real
+        C extension version.
         """
         if fullname == "setproctitle":
+            # Check if there's a stub setproctitle.py in site-packages
+            # If so, allow it (return None to continue normal import)
+            # Otherwise, block it (raise ImportError)
+            import os
+            for sp in sys.path:
+                stub_path = os.path.join(sp, "setproctitle.py")
+                if os.path.exists(stub_path):
+                    # Found stub, allow import to proceed
+                    return None
+            # No stub found, block the real setproctitle
             raise ImportError("setproctitle import blocked by provide-testkit to prevent macOS freezing")
         return None
 
