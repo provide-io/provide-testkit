@@ -69,15 +69,20 @@ run_package_tests() {
     # Determine package name for coverage (convert package-name to package.name)
     local cov_package=$(echo "$package" | sed 's/-/./g')
 
-    # Source env.sh if it exists
-    if [ -f "env.sh" ]; then
-        echo "[$package] Sourcing env.sh..." >> "$log_file"
-        source env.sh >> "$log_file" 2>&1
+    # Ensure dependencies are installed
+    # Uses uv to run pytest in the package's virtual environment
+    # No need to manually activate venv or source env.sh
+    if [ ! -d ".venv" ]; then
+        echo "[$package] Creating virtual environment..." >> "$log_file"
+        uv sync >> "$log_file" 2>&1 || {
+            echo "[$package] ERROR: Failed to sync dependencies" >> "$log_file"
+            return 1
+        }
     fi
 
-    # Run tests with coverage
+    # Run tests with coverage using uv run (automatically uses .venv)
     echo "[$package] Running pytest with coverage..." >> "$log_file"
-    pytest \
+    uv run pytest \
         --cov-branch \
         --cov="$cov_package" \
         -n auto \
@@ -88,12 +93,12 @@ run_package_tests() {
     # Combine coverage data
     if [ -f ".coverage" ] || ls .coverage.* 1> /dev/null 2>&1; then
         echo "[$package] Combining coverage data..." >> "$log_file"
-        coverage combine >> "$log_file" 2>&1 || true
+        uv run coverage combine >> "$log_file" 2>&1 || true
 
         # Generate coverage report
         echo "[$package] Coverage Report:" >> "$log_file"
         echo "======================================" >> "$log_file"
-        coverage report --show-missing >> "$log_file" 2>&1 || true
+        uv run coverage report --show-missing >> "$log_file" 2>&1 || true
     else
         echo "[$package] No coverage data generated" >> "$log_file"
     fi
