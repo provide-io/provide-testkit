@@ -6,7 +6,20 @@ Reduces boilerplate and ensures consistent mocking across all tests.
 """
 
 from typing import Any
-from unittest.mock import ANY, AsyncMock, MagicMock, Mock, PropertyMock, call, mock_open, patch
+from unittest.mock import (
+    ANY,
+    DEFAULT,
+    AsyncMock,
+    MagicMock,
+    Mock,
+    PropertyMock,
+    call,
+    create_autospec,
+    mock_open,
+    patch,
+    seal,
+    sentinel,
+)
 
 import pytest
 
@@ -322,6 +335,7 @@ def assert_mock_calls():
 __all__ = [
     "ANY",
     "AsyncMock",
+    "DEFAULT",
     "MagicMock",
     "Mock",
     "PropertyMock",
@@ -329,6 +343,7 @@ __all__ = [
     "async_mock_factory",
     "auto_patch",
     "call",
+    "create_autospec",
     "magic_mock_factory",
     "mock_factory",
     "mock_open",
@@ -337,5 +352,7 @@ __all__ = [
     "patch_fixture",
     "patch_multiple_fixture",
     "property_mock_factory",
+    "seal",
+    "sentinel",
     "spy_fixture",
 ]

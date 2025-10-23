@@ -24,7 +24,7 @@ def quality_cli(ctx: click.Context) -> None:
 @click.option(
     "--tool",
     multiple=True,
-    type=click.Choice(["coverage", "security", "complexity", "documentation", "profiling", "mutation"]),
+    type=click.Choice(["coverage", "security", "complexity", "documentation", "profiling"]),
     help="Specific tools to run (default: all available)",
 )
 @click.option(
@@ -56,10 +56,7 @@ def analyze_command(
             config_data = json.loads(config.read_text())
 
         # Determine which tools to run
-        if tool:
-            tools_to_run = list(tool)
-        else:
-            tools_to_run = ["coverage", "security", "complexity", "documentation"]
+        tools_to_run = list(tool) if tool else ["coverage", "security", "complexity", "documentation"]
 
         if verbose:
             click.echo(f"Analyzing {path} with tools: {', '.join(tools_to_run)}")
@@ -334,86 +331,6 @@ def complexity_command(
             click.echo("\nMost complex functions:")
             for func in result.details["most_complex_functions"][:5]:
                 click.echo(f"  {func['name']}: {func['complexity']} (Grade {func['rank']})")
-
-        if not result.passed:
-            sys.exit(1)
-
-    except Exception as e:
-        click.echo(f"Error: {e}", err=True)
-        sys.exit(1)
-
-
-@quality_cli.command("mutate")
-@click.argument("path", type=click.Path(exists=True, path_type=Path))
-@click.option("--module", help="Specific module to mutate")
-@click.option("--changed-only", is_flag=True, help="Only mutate changed files (requires git)")
-@click.option(
-    "--priority",
-    type=click.Choice(["critical", "high", "standard", "low"]),
-    help="Only mutate modules of specific priority",
-)
-@click.option("--target-score", type=float, help="Target mutation score (0-100)")
-@click.option(
-    "--artifact-dir",
-    type=click.Path(path_type=Path),
-    default=".mutation-artifacts",
-    help="Directory for mutation artifacts",
-)
-@click.option("--format", type=click.Choice(["terminal", "json", "html", "markdown"]), default="terminal")
-@click.option("--verbose", "-v", is_flag=True, help="Verbose output")
-def mutate_command(
-    path: Path,
-    module: str | None,
-    changed_only: bool,
-    priority: str | None,
-    target_score: float | None,
-    artifact_dir: Path,
-    format: str,
-    verbose: bool,
-) -> None:
-    """Run mutation testing on the given path."""
-    try:
-        from .mutation.runner import MutationRunner
-
-        config = {}
-        if target_score:
-            config["score_thresholds"] = {"standard": target_score}
-
-        runner = MutationRunner(config)
-
-        if verbose:
-            click.echo(f"Running mutation testing on {path}")
-            if module:
-                click.echo(f"  Module filter: {module}")
-            if changed_only:
-                click.echo("  Mode: Changed files only")
-            if priority:
-                click.echo(f"  Priority filter: {priority}")
-
-        # Run mutation testing
-        kwargs = {}
-        if module:
-            kwargs["module_filter"] = module
-        if changed_only:
-            kwargs["changed_only"] = True
-        if priority:
-            kwargs["priority"] = priority
-
-        result = runner.analyze(path, **kwargs)
-
-        # Output results
-        if format == "json":
-            click.echo(runner.report(result, format="json"))
-        elif format == "html":
-            html_output = runner.report(result, format="html")
-            html_file = artifact_dir / "mutation-report.html"
-            html_file.parent.mkdir(parents=True, exist_ok=True)
-            html_file.write_text(html_output)
-            click.echo(f"HTML report generated: {html_file}")
-        elif format == "markdown":
-            click.echo(runner.report(result, format="markdown"))
-        else:
-            click.echo(runner.report(result, format="terminal"))
 
         if not result.passed:
             sys.exit(1)

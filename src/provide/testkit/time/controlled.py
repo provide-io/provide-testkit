@@ -6,7 +6,7 @@ Injectable time sources and sleep functions that don't rely on global mocking.
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
-from unittest.mock import Mock
+from provide.testkit.mocking import Mock
 
 
 def make_controlled_time() -> tuple[

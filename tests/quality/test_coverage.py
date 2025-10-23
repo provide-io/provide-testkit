@@ -1,6 +1,6 @@
 """Tests for coverage tracking functionality."""
 
-from unittest.mock import Mock, patch
+from provide.testkit.mocking import Mock, patch
 
 import pytest
 

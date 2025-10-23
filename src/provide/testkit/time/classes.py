@@ -9,7 +9,7 @@ from __future__ import annotations
 import datetime
 import time
 from typing import Any
-from unittest.mock import patch
+from provide.testkit.mocking import patch
 
 # Module-level registry for tracking active TimeMachine instances
 # Used by test fixtures to avoid expensive gc.get_objects() scans

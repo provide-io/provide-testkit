@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from unittest.mock import Mock, patch
+from provide.testkit.mocking import Mock, patch
 
 import pytest
 

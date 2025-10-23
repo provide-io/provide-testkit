@@ -8,7 +8,7 @@ and other common testing scenarios across the Foundation test suite.
 from collections.abc import Callable, Generator
 import io
 from typing import Any, TextIO
-from unittest.mock import Mock
+from provide.testkit.mocking import Mock
 
 import pytest
 
