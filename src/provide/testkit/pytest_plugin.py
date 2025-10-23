@@ -11,6 +11,19 @@ the mock is injected BEFORE pytest-xdist or any other code can import setproctit
 On macOS, when setproctitle is installed, pytest-xdist's use of it to set worker
 process titles causes the terminal/UX to freeze completely. This plugin prevents
 that by mocking out setproctitle before it can be imported.
+
+IMPORTANT: For pytest-xdist worker subprocesses to benefit from this plugin, you must
+explicitly import this plugin at the top of your tests/conftest.py file:
+
+    import provide.testkit.pytest_plugin  # noqa: F401
+
+Worker subprocesses start with fresh Python interpreters and don't inherit sys.modules
+from the parent process. By importing the plugin in conftest.py, you ensure it loads
+early in both the main process and worker subprocesses, before xdist can import the
+real setproctitle module.
+
+The plugin is automatically registered via entry points, but explicit import ensures
+proper load ordering in worker subprocesses.
 """
 
 from __future__ import annotations
@@ -64,13 +77,13 @@ else:
 
     # Replace all callable attributes with no-ops
     if hasattr(existing_module, "setproctitle"):
-        setattr(existing_module, "setproctitle", _noop_setproctitle)
+        existing_module.setproctitle = _noop_setproctitle
     if hasattr(existing_module, "getproctitle"):
-        setattr(existing_module, "getproctitle", _noop_getproctitle)
+        existing_module.getproctitle = _noop_getproctitle
     if hasattr(existing_module, "setthreadtitle"):
-        setattr(existing_module, "setthreadtitle", _noop_setthreadtitle)
+        existing_module.setthreadtitle = _noop_setthreadtitle
     if hasattr(existing_module, "getthreadtitle"):
-        setattr(existing_module, "getthreadtitle", _noop_getthreadtitle)
+        existing_module.getthreadtitle = _noop_getthreadtitle
 
 
 def pytest_load_initial_conftests() -> None:
