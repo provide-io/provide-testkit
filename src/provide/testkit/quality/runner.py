@@ -24,7 +24,7 @@ class QualityRunner:
         artifact_root: Path | None = None,
         tools: list[str] | None = None,
         config: dict[str, Any] | None = None,
-    ):
+    ) -> None:
         """Initialize the quality runner.
 
         Args:
@@ -74,10 +74,6 @@ class QualityRunner:
             from .documentation import DocumentationChecker
 
             return DocumentationChecker(self.config.get("documentation", {}))
-        elif tool_name == "mutation":
-            from .mutation import MutationRunner
-
-            return MutationRunner(self.config.get("mutation", {}))
         else:
             raise QualityError(f"Unknown tool: {tool_name}")
 
@@ -257,7 +253,7 @@ class QualityRunner:
         lines.append(f"Failed: {total_tools - passed_tools}")
         lines.append("")
 
-        for tool_name, result in results.items():
+        for _tool_name, result in results.items():
             lines.append(result.summary)
 
         return "\n".join(lines)

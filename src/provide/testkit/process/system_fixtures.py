@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 import sys
-from unittest.mock import MagicMock
+from provide.testkit.mocking import MagicMock
 
 import pytest
 

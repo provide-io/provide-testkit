@@ -9,7 +9,7 @@ applications. These are logger-specific mocks that complement the Foundation
 reset orchestration.
 """
 
-from unittest.mock import Mock
+from provide.testkit.mocking import Mock
 
 import pytest
 
