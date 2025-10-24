@@ -6,7 +6,7 @@ Provides utilities for testing CLI harnesses with artifact management.
 
 from pathlib import Path
 
-from provide.foundation.process.runner import run_command
+from provide.foundation.process import run
 
 
 class HarnessRunner:
@@ -76,7 +76,7 @@ class HarnessRunner:
             (artifact_dir / "stdin.txt").write_bytes(stdin.encode() if isinstance(stdin, str) else stdin)
 
         # Run command in binary mode to handle binary outputs
-        result = run_command(
+        result = run(
             command,
             cwd=cwd,
             input=stdin,
