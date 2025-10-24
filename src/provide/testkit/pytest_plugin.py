@@ -57,21 +57,38 @@ class SetproctitleImportBlocker:
             ModuleSpec if stub file exists, otherwise raises ImportError
         """
         if fullname == "setproctitle":
+            # DEBUG: Track setproctitle import attempts
+            import os
+            import traceback
+
+            _pid = os.getpid()
+            _debug_file = f"/tmp/testkit-debug-{_pid}.log"
+            with open(_debug_file, "a") as f:
+                f.write(f"🐛🚫 [PID {_pid}] setproctitle import BLOCKED!\n")
+                f.write(f"🐛📍 Stack trace:\n")
+                for line in traceback.format_stack()[:-1]:
+                    f.write(f"  {line.strip()}\n")
+                f.flush()
+
             # Check if there's a stub setproctitle.py in site-packages
             # If found, create a ModuleSpec to load it directly
-            import os
-
             for sp in sys.path:
                 stub_path = os.path.join(sp, "setproctitle.py")
                 if os.path.exists(stub_path):
                     # Found stub - create a ModuleSpec to force loading this file
                     # This prevents Python from finding the real setproctitle package
+                    with open(_debug_file, "a") as f:
+                        f.write(f"🐛📝 [PID {_pid}] Using stub file: {stub_path}\n")
+                        f.flush()
                     loader = importlib.machinery.SourceFileLoader(fullname, stub_path)
                     spec = importlib.util.spec_from_file_location(
                         fullname, stub_path, loader=loader, submodule_search_locations=None
                     )
                     return spec
             # No stub found, block the real setproctitle
+            with open(_debug_file, "a") as f:
+                f.write(f"🐛❌ [PID {_pid}] No stub found, raising ImportError\n")
+                f.flush()
             raise ImportError("setproctitle import blocked by provide-testkit to prevent macOS freezing")
         return None
 

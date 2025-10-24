@@ -10,7 +10,42 @@ Comprehensive fixtures and utilities for testing Foundation-based applications.
 Note: Testing information is displayed via pytest hooks in conftest.py
 """
 
+from __future__ import annotations
+
+import sys
 from typing import Any
+
+# ============================================================================
+# Install setproctitle blocker IMMEDIATELY on package import
+# ============================================================================
+# This must happen BEFORE pytest-xdist (or any other tool) imports setproctitle.
+# The blocker is installed at module load time to ensure it's active as early
+# as possible in the Python startup sequence.
+#
+# Projects should import provide.testkit in their tests/conftest.py to ensure
+# this blocker is installed before pytest initializes.
+# ============================================================================
+
+import os
+
+# DEBUG: Track when this module is loaded
+_pid = os.getpid()
+_debug_file = f"/tmp/testkit-debug-{_pid}.log"
+with open(_debug_file, "a") as f:
+    f.write(f"🐛 [PID {_pid}] provide.testkit.__init__ is being imported\n")
+    f.flush()
+
+from provide.testkit.pytest_plugin import SetproctitleImportBlocker
+
+if not any(isinstance(hook, SetproctitleImportBlocker) for hook in sys.meta_path):
+    with open(_debug_file, "a") as f:
+        f.write(f"🐛 [PID {_pid}] Installing SetproctitleImportBlocker\n")
+        f.flush()
+    sys.meta_path.insert(0, SetproctitleImportBlocker())
+else:
+    with open(_debug_file, "a") as f:
+        f.write(f"🐛 [PID {_pid}] SetproctitleImportBlocker already installed\n")
+        f.flush()
 
 # Mapping of attribute names to their modules for lazy loading.
 _LAZY_IMPORTS = {
