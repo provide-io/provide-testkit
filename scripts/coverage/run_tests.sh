@@ -32,9 +32,11 @@ mkdir -p "$LOG_DIR"
 #
 # To customize for your projects, edit this array:
 packages=(
+    "ci-tooling:/REDACTED_ABS_PATH"
     "flavorpack:/REDACTED_ABS_PATH"
     "plating:/REDACTED_ABS_PATH"
     "provide-foundation:/REDACTED_ABS_PATH"
+    "provide-foundry:/REDACTED_ABS_PATH"
     "provide-testkit:/REDACTED_ABS_PATH"
     "pyvider:/REDACTED_ABS_PATH"
     "pyvider-components:/REDACTED_ABS_PATH"
@@ -42,6 +44,7 @@ packages=(
     "pyvider-hcl:/REDACTED_ABS_PATH"
     "pyvider-rpcplugin:/REDACTED_ABS_PATH"
     "supsrc:/REDACTED_ABS_PATH"
+    "terraform-provider-pyvider:/REDACTED_ABS_PATH"
     "tofusoup:/REDACTED_ABS_PATH"
     "wrknv:/REDACTED_ABS_PATH"
 )
@@ -78,6 +81,16 @@ run_package_tests() {
             echo "[$package] ERROR: Failed to sync dependencies" >> "$log_file"
             return 1
         }
+    fi
+
+    # Install local provide-foundation and provide-testkit in editable mode
+    # Skip this for the foundation and testkit packages themselves
+    if [ "$package" != "provide-foundation" ] && [ "$package" != "provide-testkit" ]; then
+        echo "[$package] Installing local provide-foundation in editable mode..." >> "$log_file"
+        uv pip install -e /REDACTED_ABS_PATH >> "$log_file" 2>&1 || true
+
+        echo "[$package] Installing local provide-testkit in editable mode..." >> "$log_file"
+        uv pip install -e /REDACTED_ABS_PATH >> "$log_file" 2>&1 || true
     fi
 
     # Run tests with coverage using uv run (automatically uses .venv)
