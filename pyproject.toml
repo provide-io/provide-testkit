@@ -47,6 +47,11 @@ Homepage = "https://github.com/provide-io/provide-testkit"
 Repository = "https://github.com/provide-io/provide-testkit"
 Issues = "https://github.com/provide-io/provide-testkit/issues"
 
+[dependency-groups]
+dev = [
+    "provide-testkit[quality,advanced-testing]",
+]
+
 [project.scripts]
 provide-testkit = "provide.testkit.main:main"
 
@@ -198,7 +203,7 @@ all = [
 ]
 
 dev = [
-    "provide-testkit[quality]",
+    "provide-testkit[quality,advanced-testing]",
 ]
 
 # Self-referential docs for testkit itself
