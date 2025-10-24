@@ -1,0 +1,4 @@
+include src/provide/testkit/provide_testkit_init.pth
+include VERSION
+include README.md
+include LICENSE

@@ -86,6 +86,30 @@ The main `__init__.py` implements a sophisticated lazy loading system using `__g
 - Provides backward compatibility for legacy import patterns
 - Minimizes production runtime overhead
 
+### setproctitle Blocker (.pth File Approach)
+
+The testkit uses a `.pth` file (`provide_testkit_init.pth`) to install a setproctitle import blocker **during Python's site initialization**, before pytest or any other code runs. This prevents macOS UX freezing issues with pytest-xdist.
+
+**How it works:**
+1. **Installation**: The `.pth` file is installed to `site-packages/` when the package is installed
+2. **Early Execution**: Python executes `.pth` imports during site initialization (before user code)
+3. **Smart Detection**: `_early_init.py` detects testing context and conditionally installs the blocker
+4. **Import Blocking**: `SetproctitleImportBlocker` intercepts setproctitle imports via `sys.meta_path`
+5. **Fallback Layers**: pytest11 entry point and `__init__.py` provide fallback if .pth file fails
+
+**Key files:**
+- `src/provide_testkit_init.pth`: Single-line import executed at Python startup
+- `src/provide/testkit/_early_init.py`: Smart detection and blocker installation
+- `src/provide/testkit/pytest_plugin.py`: SetproctitleImportBlocker implementation
+
+**Benefits:**
+- Automatic activation - no manual configuration needed
+- Works before pytest loads (earlier than entry points or conftest.py)
+- Per-virtualenv (installed/removed with package)
+- Prevents macOS terminal freezing with pytest-xdist
+
+**Note**: The blocker only activates in testing contexts (pytest/test in argv or PYTEST_* env vars) to minimize overhead for non-test Python scripts.
+
 ### CLI Testing Support
 
 Comprehensive CLI testing utilities in `cli.py`:
