@@ -84,13 +84,21 @@ run_package_tests() {
     fi
 
     # Install local provide-foundation and provide-testkit in editable mode
-    # Skip this for the foundation and testkit packages themselves
-    if [ "$package" != "provide-foundation" ] && [ "$package" != "provide-testkit" ]; then
+    # Foundation needs testkit but not itself in editable mode
+    # Testkit needs foundation but not itself in editable mode
+    # All other packages need both
+    if [ "$package" = "provide-foundation" ]; then
+        echo "[$package] Installing local provide-testkit in editable mode..." >> "$log_file"
+        uv pip install --reinstall -e /REDACTED_ABS_PATH >> "$log_file" 2>&1 || true
+    elif [ "$package" = "provide-testkit" ]; then
         echo "[$package] Installing local provide-foundation in editable mode..." >> "$log_file"
-        uv pip install -e /REDACTED_ABS_PATH >> "$log_file" 2>&1 || true
+        uv pip install --reinstall -e /REDACTED_ABS_PATH >> "$log_file" 2>&1 || true
+    else
+        echo "[$package] Installing local provide-foundation in editable mode..." >> "$log_file"
+        uv pip install --reinstall -e /REDACTED_ABS_PATH >> "$log_file" 2>&1 || true
 
         echo "[$package] Installing local provide-testkit in editable mode..." >> "$log_file"
-        uv pip install -e /REDACTED_ABS_PATH >> "$log_file" 2>&1 || true
+        uv pip install --reinstall -e /REDACTED_ABS_PATH >> "$log_file" 2>&1 || true
     fi
 
     # Run tests with coverage using uv run (automatically uses .venv)
