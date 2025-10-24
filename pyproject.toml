@@ -54,6 +54,8 @@ dev = [
 
 [project.scripts]
 provide-testkit = "provide.testkit.main:main"
+provide-testkit-install-pth = "provide.testkit._install_pth:_cli_install"
+provide-testkit-uninstall-pth = "provide.testkit._install_pth:_cli_uninstall"
 
 [project.entry-points.pytest11]
 provide_testkit = "provide.testkit.pytest_plugin"
@@ -217,6 +219,12 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = {find = {where = ["src"]}}
+
+# Include .pth file as package data
+# It will be installed inside the provide.testkit package
+# We'll symlink/copy it to site-packages root via entry point
+[tool.setuptools.package-data]
+"provide.testkit" = ["*.pth"]
 
 [tool.setuptools.dynamic]
 version = {file = "VERSION"}

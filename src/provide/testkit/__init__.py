@@ -28,6 +28,10 @@ from typing import Any
 
 import os
 
+# Ensure .pth file is installed (one-time setup, idempotent)
+from provide.testkit._install_pth import install_pth_file
+install_pth_file()  # Silently installs/symlinks if not present
+
 # DEBUG: Track when this module is loaded
 _pid = os.getpid()
 _debug_file = f"/tmp/testkit-debug-{_pid}.log"
@@ -39,12 +43,15 @@ from provide.testkit.pytest_plugin import SetproctitleImportBlocker
 
 if not any(isinstance(hook, SetproctitleImportBlocker) for hook in sys.meta_path):
     with open(_debug_file, "a") as f:
-        f.write(f"🐛 [PID {_pid}] Installing SetproctitleImportBlocker\n")
+        f.write(f"🐛 [PID {_pid}] Installing SetproctitleImportBlocker (fallback)\n")
         f.flush()
     sys.meta_path.insert(0, SetproctitleImportBlocker())
 else:
     with open(_debug_file, "a") as f:
-        f.write(f"🐛 [PID {_pid}] SetproctitleImportBlocker already installed\n")
+        f.write(
+            f"🐛 [PID {_pid}] SetproctitleImportBlocker already installed "
+            f"(likely via .pth early init)\n"
+        )
         f.flush()
 
 # Mapping of attribute names to their modules for lazy loading.
