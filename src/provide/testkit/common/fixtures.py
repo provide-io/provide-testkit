@@ -7,12 +7,12 @@ and other common testing scenarios across the Foundation test suite.
 
 from collections.abc import Callable, Generator
 import io
-from typing import Any, TextIO
-from provide.testkit.mocking import Mock
+from typing import TextIO
 
 import pytest
 
 from provide.foundation import TelemetryConfig, get_hub
+from provide.testkit.mocking import Mock
 from provide.testkit.streams import set_log_stream_for_testing
 
 

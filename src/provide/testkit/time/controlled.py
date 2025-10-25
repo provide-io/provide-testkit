@@ -6,6 +6,7 @@ Injectable time sources and sleep functions that don't rely on global mocking.
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
+
 from provide.testkit.mocking import Mock
 
 

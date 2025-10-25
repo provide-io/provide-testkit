@@ -13,9 +13,10 @@ from __future__ import annotations
 
 from collections.abc import Generator
 import sys
-from provide.testkit.mocking import MagicMock
 
 import pytest
+
+from provide.testkit.mocking import MagicMock
 
 
 @pytest.fixture(scope="session", autouse=True)

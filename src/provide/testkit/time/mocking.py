@@ -8,9 +8,10 @@ from __future__ import annotations
 from collections.abc import Callable
 import datetime
 import time
-from provide.testkit.mocking import Mock, patch
 
 import pytest
+
+from provide.testkit.mocking import Mock, patch
 
 
 @pytest.fixture

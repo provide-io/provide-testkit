@@ -12,9 +12,6 @@ Note: Testing information is displayed via pytest hooks in conftest.py
 
 from __future__ import annotations
 
-import sys
-from typing import Any
-
 # ============================================================================
 # Install setproctitle blocker IMMEDIATELY on package import
 # ============================================================================
@@ -25,11 +22,13 @@ from typing import Any
 # Projects should import provide.testkit in their tests/conftest.py to ensure
 # this blocker is installed before pytest initializes.
 # ============================================================================
-
 import os
+import sys
+from typing import Any
 
 # Ensure .pth file is installed (one-time setup, idempotent)
 from provide.testkit._install_pth import install_pth_file
+
 install_pth_file()  # Silently installs/symlinks if not present
 
 # DEBUG: Track when this module is loaded
@@ -48,10 +47,7 @@ if not any(isinstance(hook, SetproctitleImportBlocker) for hook in sys.meta_path
     sys.meta_path.insert(0, SetproctitleImportBlocker())
 else:
     with open(_debug_file, "a") as f:
-        f.write(
-            f"🐛 [PID {_pid}] SetproctitleImportBlocker already installed "
-            f"(likely via .pth early init)\n"
-        )
+        f.write(f"🐛 [PID {_pid}] SetproctitleImportBlocker already installed (likely via .pth early init)\n")
         f.flush()
 
 # Mapping of attribute names to their modules for lazy loading.

@@ -7,9 +7,10 @@ Core fixtures for creating threads, thread pools, mocks, and thread-local storag
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 import threading
-from provide.testkit.mocking import Mock
 
 import pytest
+
+from provide.testkit.mocking import Mock
 
 
 @pytest.fixture

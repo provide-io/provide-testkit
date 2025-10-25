@@ -95,7 +95,10 @@ def temp_config_file(
     """
     suffix = f".{format}"
 
-    with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as config_path, Path(config_path).open("w") as f:
+    with (
+        foundation_temp_file(suffix=suffix, text=True, cleanup=False) as config_path,
+        Path(config_path).open("w") as f,
+    ):
         if isinstance(content, dict):
             if format == "json":
                 json.dump(content, f, indent=2)

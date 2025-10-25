@@ -334,8 +334,8 @@ def assert_mock_calls():
 # Re-export commonly used mock utilities
 __all__ = [
     "ANY",
-    "AsyncMock",
     "DEFAULT",
+    "AsyncMock",
     "MagicMock",
     "Mock",
     "PropertyMock",

@@ -115,9 +115,7 @@ class CliTestRunner:
             full_output = self.get_full_output(result)
             if expected_output not in full_output:
                 raise AssertionError(
-                    f"Expected output not found.\n"
-                    f"Expected: {expected_output}\n"
-                    f"Actual: {full_output}"
+                    f"Expected output not found.\nExpected: {expected_output}\nActual: {full_output}"
                 )
 
     def assert_error(
@@ -141,17 +139,13 @@ class CliTestRunner:
             raise AssertionError(f"Command succeeded unexpectedly\nOutput: {full_output}")
 
         if exit_code is not None and result.exit_code != exit_code:
-            raise AssertionError(
-                f"Wrong exit code.\nExpected: {exit_code}\nActual: {result.exit_code}"
-            )
+            raise AssertionError(f"Wrong exit code.\nExpected: {exit_code}\nActual: {result.exit_code}")
 
         if expected_error:
             full_output = self.get_full_output(result)
             if expected_error not in full_output:
                 raise AssertionError(
-                    f"Expected error not found.\n"
-                    f"Expected: {expected_error}\n"
-                    f"Actual: {full_output}"
+                    f"Expected error not found.\nExpected: {expected_error}\nActual: {full_output}"
                 )
 
     def assert_output_contains(self, result: Result, expected: str) -> None:
@@ -167,9 +161,7 @@ class CliTestRunner:
         full_output = self.get_full_output(result)
         if expected not in full_output:
             raise AssertionError(
-                f"Expected string not found in output.\n"
-                f"Expected: {expected}\n"
-                f"Actual: {full_output}"
+                f"Expected string not found in output.\nExpected: {expected}\nActual: {full_output}"
             )
 
     def assert_output_not_contains(self, result: Result, unexpected: str) -> None:
@@ -185,9 +177,7 @@ class CliTestRunner:
         full_output = self.get_full_output(result)
         if unexpected in full_output:
             raise AssertionError(
-                f"Unexpected string found in output.\n"
-                f"Unexpected: {unexpected}\n"
-                f"Actual: {full_output}"
+                f"Unexpected string found in output.\nUnexpected: {unexpected}\nActual: {full_output}"
             )
 
 
@@ -210,6 +200,6 @@ def assert_cli_error(
 
 __all__ = [
     "CliTestRunner",
-    "assert_cli_success",
     "assert_cli_error",
+    "assert_cli_success",
 ]

@@ -10,7 +10,6 @@ from __future__ import annotations
 import asyncio
 from collections.abc import Generator
 from contextlib import contextmanager
-import time
 from typing import Any
 from unittest.mock import Mock, patch
 
@@ -176,8 +175,8 @@ def create_sleep_mock(instant: bool = True, track_calls: bool = True) -> Mock:
 
 __all__ = [
     "SleepTracker",
+    "create_sleep_mock",
+    "mock_asyncio_sleep",
     "mock_sleep",
     "mock_time_sleep",
-    "mock_asyncio_sleep",
-    "create_sleep_mock",
 ]
