@@ -49,6 +49,10 @@ Issues = "https://github.com/provide-io/provide-testkit/issues"
 
 [dependency-groups]
 dev = [
+    "mkdocs-autorefs>=1.4.3",
+    "mkdocs-macros-plugin>=1.4.0",
+    "mkdocstrings>=0.30.1",
+    "mkdocstrings-python>=1.18.2",
     "provide-testkit[quality,advanced-testing]",
 ]
 
