@@ -7,9 +7,10 @@ async context management across the provide-io ecosystem.
 
 import asyncio
 from collections.abc import AsyncGenerator, Callable
-from provide.testkit.mocking import AsyncMock
 
 import pytest
+
+from provide.testkit.mocking import AsyncMock
 
 
 @pytest.fixture

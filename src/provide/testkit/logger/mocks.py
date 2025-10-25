@@ -9,9 +9,9 @@ applications. These are logger-specific mocks that complement the Foundation
 reset orchestration.
 """
 
-from provide.testkit.mocking import Mock
-
 import pytest
+
+from provide.testkit.mocking import Mock
 
 
 @pytest.fixture

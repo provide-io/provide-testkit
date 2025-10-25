@@ -34,8 +34,8 @@ Time mocking utilities (from .time):
 
 from provide.testkit.mocking.fixtures import (
     ANY,
-    AsyncMock,
     DEFAULT,
+    AsyncMock,
     MagicMock,
     Mock,
     PropertyMock,
@@ -59,8 +59,8 @@ from provide.testkit.mocking.fixtures import (
 
 __all__ = [
     "ANY",
-    "AsyncMock",
     "DEFAULT",
+    "AsyncMock",
     "MagicMock",
     "Mock",
     "PropertyMock",

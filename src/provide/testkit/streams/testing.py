@@ -77,6 +77,7 @@ def enable_file_logging_for_testing(log_file_path: str) -> object:
         class FileLoggingHelper:
             def setup_after_reset(self):
                 from provide.foundation.streams.file import configure_file_logging
+
                 configure_file_logging(log_file_path)
 
         try:

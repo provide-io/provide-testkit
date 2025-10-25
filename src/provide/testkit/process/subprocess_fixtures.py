@@ -5,9 +5,9 @@ Provides fixtures for mocking and testing subprocess operations,
 stream handling, and process communication.
 """
 
-from provide.testkit.mocking import AsyncMock, Mock
-
 import pytest
+
+from provide.testkit.mocking import AsyncMock, Mock
 
 
 @pytest.fixture

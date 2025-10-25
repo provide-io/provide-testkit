@@ -119,7 +119,7 @@ def _install_blocker() -> None:
 _install_blocker()
 
 
-__all__ = ["_install_blocker", "_is_testing_context", "_get_logger"]
+__all__ = ["_get_logger", "_install_blocker", "_is_testing_context"]
 
 
 # 🔌⚡🚀🛡️

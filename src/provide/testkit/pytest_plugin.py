@@ -65,7 +65,7 @@ class SetproctitleImportBlocker:
             _debug_file = f"/tmp/testkit-debug-{_pid}.log"
             with open(_debug_file, "a") as f:
                 f.write(f"🐛🚫 [PID {_pid}] setproctitle import BLOCKED!\n")
-                f.write(f"🐛📍 Stack trace:\n")
+                f.write("🐛📍 Stack trace:\n")
                 for line in traceback.format_stack()[:-1]:
                     f.write(f"  {line.strip()}\n")
                 f.flush()

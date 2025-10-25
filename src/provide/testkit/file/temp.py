@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 import tempfile
-from typing import Any, TextIO
+from typing import Any
 
 from provide.foundation.file import temp_file as foundation_temp_file
 
@@ -287,6 +287,6 @@ def create_temp_dir(prefix: str = "test_") -> Path:
 
 __all__ = [
     "TempFileManager",
-    "create_temp_file",
     "create_temp_dir",
+    "create_temp_file",
 ]

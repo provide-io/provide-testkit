@@ -12,10 +12,9 @@ after package installation to ensure the .pth file is in the correct location.
 
 from __future__ import annotations
 
-import os
+from pathlib import Path
 import site
 import sys
-from pathlib import Path
 
 
 def install_pth_file(*, verbose: bool = False) -> int:
@@ -130,6 +129,7 @@ def _cli_uninstall() -> int:
 
 if __name__ == "__main__":
     import sys
+
     if len(sys.argv) > 1 and sys.argv[1] == "uninstall":
         sys.exit(_cli_uninstall())
     else:

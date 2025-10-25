@@ -7,9 +7,9 @@ in tests with automatic cleanup and restoration.
 
 from __future__ import annotations
 
-import os
 from collections.abc import Generator, Mapping
 from contextlib import contextmanager
+import os
 from typing import Any
 
 
@@ -179,8 +179,8 @@ class EnvContext:
 
 
 __all__ = [
+    "EnvContext",
+    "isolated_env",
     "temp_env",
     "temp_env_from_dict",
-    "isolated_env",
-    "EnvContext",
 ]
