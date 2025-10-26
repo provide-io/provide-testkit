@@ -91,20 +91,10 @@ def _install_blocker() -> None:
         if not _is_testing_context():
             return
 
-        # Import the blocker class
-        # This import is safe because we're already in provide.testkit namespace
-        from provide.testkit.pytest_plugin import SetproctitleImportBlocker
+        # Use centralized installation logic
+        from provide.testkit._install_blocker import install_setproctitle_blocker
 
-        # Check if blocker is already installed
-        if any(isinstance(hook, SetproctitleImportBlocker) for hook in sys.meta_path):
-            # Already installed - can't log because Foundation imports setproctitle
-            return
-
-        # Install the blocker at the front of sys.meta_path
-        sys.meta_path.insert(0, SetproctitleImportBlocker())
-
-        # Successfully installed - can't log because Foundation imports setproctitle
-        # The blocker will log its own activity via debug files
+        install_setproctitle_blocker()
 
     except Exception:
         # Silently ignore any errors during blocker installation
