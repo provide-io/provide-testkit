@@ -91,10 +91,13 @@ def _install_blocker() -> None:
         if not _is_testing_context():
             return
 
-        # Use centralized installation logic
+        # Use centralized installation logic with force=True
+        # We use force=True here because context detection can fail in pytest-xdist
+        # worker processes (different sys.argv, no PYTEST env vars yet), but we
+        # still need the blocker installed to prevent macOS freezing.
         from provide.testkit._install_blocker import install_setproctitle_blocker
 
-        install_setproctitle_blocker()
+        install_setproctitle_blocker(force=True)
 
     except Exception:
         # Silently ignore any errors during blocker installation
