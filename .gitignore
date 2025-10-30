@@ -418,3 +418,4 @@ memray-*.bin
 
 # Synced theme files (source: provide-foundry/shared-theme/)
 docs/.shared-theme/
+bf*.txt
