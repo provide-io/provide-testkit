@@ -23,13 +23,15 @@ Learning objectives:
 from pathlib import Path
 
 import click
+from click import Context
+from click.testing import CliRunner
 
 
 # Example CLI application for testing
 @click.group()
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 @click.pass_context
-def cli(ctx, verbose) -> None:
+def cli(ctx: Context, verbose: bool) -> None:
     """Example CLI application for testing purposes."""
     ctx.ensure_object(dict)
     ctx.obj["verbose"] = verbose
@@ -39,7 +41,7 @@ def cli(ctx, verbose) -> None:
 @click.argument("name")
 @click.option("--greeting", default="Hello", help="Greeting to use")
 @click.pass_context
-def greet(ctx, name, greeting) -> None:
+def greet(ctx: Context, name: str, greeting: str) -> None:
     """Greet someone with a customizable greeting."""
     if ctx.obj["verbose"]:
         click.echo(f"Verbose mode: Greeting {name}")
@@ -50,7 +52,7 @@ def greet(ctx, name, greeting) -> None:
 @click.argument("input_file", type=click.Path(exists=True, path_type=Path))
 @click.argument("output_file", type=click.Path(path_type=Path))
 @click.option("--format", "output_format", default="json", type=click.Choice(["json", "yaml", "txt"]))
-def convert(input_file, output_file, output_format) -> None:
+def convert(input_file: Path, output_file: Path, output_format: str) -> None:
     """Convert file from one format to another."""
     # Simulate file conversion
     content = input_file.read_text()
@@ -69,7 +71,7 @@ def convert(input_file, output_file, output_format) -> None:
 @cli.command()
 @click.option("--count", default=1, help="Number of items to process")
 @click.confirmation_option(prompt="Are you sure you want to proceed?")
-def process(count) -> None:
+def process(count: int) -> None:
     """Process items with confirmation."""
     for i in range(count):
         click.echo(f"Processing item {i + 1}")
@@ -78,7 +80,7 @@ def process(count) -> None:
 
 @cli.command()
 @click.option("--fail", is_flag=True, help="Force command to fail")
-def status(fail) -> None:
+def status(fail: bool) -> None:
     """Check application status."""
     if fail:
         click.echo("Error: Something went wrong!", err=True)
@@ -87,7 +89,7 @@ def status(fail) -> None:
 
 
 # Test cases
-def test_basic_command_execution(isolated_cli_runner) -> None:
+def test_basic_command_execution(isolated_cli_runner: CliRunner) -> None:
     """Test basic CLI command execution."""
     # Act: Run simple greet command
     result = isolated_cli_runner.invoke(cli, ["greet", "Alice"])
@@ -97,7 +99,7 @@ def test_basic_command_execution(isolated_cli_runner) -> None:
     assert "Hello, Alice!" in result.output
 
 
-def test_command_with_options(isolated_cli_runner) -> None:
+def test_command_with_options(isolated_cli_runner: CliRunner) -> None:
     """Test CLI command with options."""
     # Act: Run greet command with custom greeting
     result = isolated_cli_runner.invoke(cli, ["greet", "Bob", "--greeting", "Hi"])
@@ -107,7 +109,7 @@ def test_command_with_options(isolated_cli_runner) -> None:
     assert "Hi, Bob!" in result.output
 
 
-def test_verbose_flag(isolated_cli_runner) -> None:
+def test_verbose_flag(isolated_cli_runner: CliRunner) -> None:
     """Test global verbose flag."""
     # Act: Run command with verbose flag
     result = isolated_cli_runner.invoke(cli, ["--verbose", "greet", "Charlie"])
@@ -118,7 +120,7 @@ def test_verbose_flag(isolated_cli_runner) -> None:
     assert "Hello, Charlie!" in result.output
 
 
-def test_file_input_output(isolated_cli_runner, temp_directory) -> None:
+def test_file_input_output(isolated_cli_runner: CliRunner, temp_directory: Path) -> None:
     """Test CLI commands that work with files."""
     # Arrange: Create input file
     input_file = temp_directory / "input.txt"
@@ -138,7 +140,7 @@ def test_file_input_output(isolated_cli_runner, temp_directory) -> None:
     assert f"Converted {input_file} to {output_file} (json)" in result.output
 
 
-def test_different_output_formats(isolated_cli_runner, temp_directory) -> None:
+def test_different_output_formats(isolated_cli_runner: CliRunner, temp_directory: Path) -> None:
     """Test CLI command with different output format options."""
     # Arrange: Create input file
     input_file = temp_directory / "data.txt"
@@ -167,7 +169,7 @@ def test_different_output_formats(isolated_cli_runner, temp_directory) -> None:
     assert txt_output.read_text() == "TEST DATA"
 
 
-def test_interactive_confirmation(isolated_cli_runner) -> None:
+def test_interactive_confirmation(isolated_cli_runner: CliRunner) -> None:
     """Test CLI command with interactive confirmation."""
     # Act: Run process command with automatic 'yes' response
     result = isolated_cli_runner.invoke(cli, ["process", "--count", "3"], input="y\n")
@@ -180,7 +182,7 @@ def test_interactive_confirmation(isolated_cli_runner) -> None:
     assert "Processing completed!" in result.output
 
 
-def test_interactive_cancellation(isolated_cli_runner) -> None:
+def test_interactive_cancellation(isolated_cli_runner: CliRunner) -> None:
     """Test CLI command cancellation through interactive prompt."""
     # Act: Run process command with 'no' response
     result = isolated_cli_runner.invoke(cli, ["process", "--count", "2"], input="n\n")
@@ -190,7 +192,7 @@ def test_interactive_cancellation(isolated_cli_runner) -> None:
     assert "Processing item" not in result.output
 
 
-def test_error_handling(isolated_cli_runner) -> None:
+def test_error_handling(isolated_cli_runner: CliRunner) -> None:
     """Test CLI error handling."""
     # Act: Run status command with failure flag
     result = isolated_cli_runner.invoke(cli, ["status", "--fail"])
@@ -200,7 +202,7 @@ def test_error_handling(isolated_cli_runner) -> None:
     assert "Error: Something went wrong!" in result.output
 
 
-def test_missing_file_error(isolated_cli_runner, temp_directory) -> None:
+def test_missing_file_error(isolated_cli_runner: CliRunner, temp_directory: Path) -> None:
     """Test CLI error when input file doesn't exist."""
     # Arrange: Reference non-existent file
     missing_file = temp_directory / "missing.txt"
@@ -214,7 +216,7 @@ def test_missing_file_error(isolated_cli_runner, temp_directory) -> None:
     assert "does not exist" in result.output.lower()
 
 
-def test_invalid_option_value(isolated_cli_runner, temp_directory) -> None:
+def test_invalid_option_value(isolated_cli_runner: CliRunner, temp_directory: Path) -> None:
     """Test CLI error handling for invalid option values."""
     # Arrange: Create input file
     input_file = temp_directory / "input.txt"
@@ -231,7 +233,7 @@ def test_invalid_option_value(isolated_cli_runner, temp_directory) -> None:
     assert "invalid" in result.output.lower()
 
 
-def test_help_output(isolated_cli_runner) -> None:
+def test_help_output(isolated_cli_runner: CliRunner) -> None:
     """Test CLI help output."""
     # Act: Get help for main command
     result = isolated_cli_runner.invoke(cli, ["--help"])
@@ -251,7 +253,7 @@ def test_help_output(isolated_cli_runner) -> None:
     assert "--greeting" in result.output
 
 
-def test_cli_with_environment_variables(isolated_cli_runner) -> None:
+def test_cli_with_environment_variables(isolated_cli_runner: CliRunner) -> None:
     """Test CLI behavior with environment variables."""
     # Act: Run command with environment variable
     result = isolated_cli_runner.invoke(cli, ["greet", "Alice"], env={"GREETING_PREFIX": "Hi there"})

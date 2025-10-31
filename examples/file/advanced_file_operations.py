@@ -138,7 +138,7 @@ class ConfigManager:
 # Test Patterns
 
 
-def test_basic_file_operations(temp_directory) -> None:
+def test_basic_file_operations(temp_directory: Path) -> None:
     """Pattern 1: Basic file creation and manipulation."""
     file_manager = FileManager(temp_directory)
 
@@ -159,7 +159,7 @@ def test_basic_file_operations(temp_directory) -> None:
     assert file_manager.delete_file("nonexistent.txt") is False
 
 
-def test_binary_file_operations(temp_directory) -> None:
+def test_binary_file_operations(temp_directory: Path) -> None:
     """Pattern 2: Binary file handling."""
     file_manager = FileManager(temp_directory)
 
@@ -177,7 +177,7 @@ def test_binary_file_operations(temp_directory) -> None:
     assert large_file.read_bytes() == large_data
 
 
-def test_file_permissions(temp_directory) -> None:
+def test_file_permissions(temp_directory: Path) -> None:
     """Pattern 3: File permissions testing."""
     file_manager = FileManager(temp_directory)
 
@@ -198,7 +198,7 @@ def test_file_permissions(temp_directory) -> None:
     assert test_file.read_text() == "test content"
 
 
-def test_file_copying_and_moving(temp_directory) -> None:
+def test_file_copying_and_moving(temp_directory: Path) -> None:
     """Pattern 4: File copying and moving operations."""
     file_manager = FileManager(temp_directory)
 
@@ -219,7 +219,7 @@ def test_file_copying_and_moving(temp_directory) -> None:
     assert not (temp_directory / "copied.txt").exists()  # Original copy should be gone
 
 
-def test_directory_structure_creation(temp_directory) -> None:
+def test_directory_structure_creation(temp_directory: Path) -> None:
     """Pattern 5: Complex directory structure creation."""
 
     # Create nested directory structure
@@ -249,7 +249,7 @@ def test_directory_structure_creation(temp_directory) -> None:
             assert file_path.read_text() == f"Content of {filename}"
 
 
-def test_configuration_management(temp_directory) -> None:
+def test_configuration_management(temp_directory: Path) -> None:
     """Pattern 6: Configuration file management."""
     config_manager = ConfigManager(temp_directory / "configs")
 
@@ -274,7 +274,7 @@ api_timeout=30
 features=auth,logging,metrics
     """.strip()
 
-    text_path = config_manager.save_text_config("app_text", text_config)
+    config_manager.save_text_config("app_text", text_config)
     loaded_text = config_manager.load_text_config("app_text")
     assert loaded_text == text_config
 
@@ -289,11 +289,12 @@ features=auth,logging,metrics
     assert backup_config == app_config
 
 
-def test_file_encoding_handling(temp_directory) -> None:
+def test_file_encoding_handling(temp_directory: Path) -> None:
     """Pattern 7: Different file encodings."""
     file_manager = FileManager(temp_directory)
 
     # Test UTF-8 (default)
+    utf8_content = "Hello, UTF-8! Привет, мир!"
     utf8_file = file_manager.create_file_with_content("utf8.txt", utf8_content, "utf-8")
     assert utf8_file.read_text(encoding="utf-8") == utf8_content
 
@@ -307,7 +308,7 @@ def test_file_encoding_handling(temp_directory) -> None:
         file_manager.create_file_with_content("invalid.txt", "Hello, 世界!", "ascii")
 
 
-def test_large_file_operations(temp_directory) -> None:
+def test_large_file_operations(temp_directory: Path) -> None:
     """Pattern 8: Large file handling."""
     file_manager = FileManager(temp_directory)
 
@@ -320,12 +321,12 @@ def test_large_file_operations(temp_directory) -> None:
     assert info["size"] > 1000000  # At least 1MB
 
     # Test reading chunks
-    with open(large_file) as f:
+    with large_file.open() as f:
         first_chunk = f.read(1000)
         assert first_chunk.startswith("This is a test line.")
 
     # Test file truncation
-    with open(large_file, "r+") as f:
+    with large_file.open("r+") as f:
         f.truncate(1000)
 
     # Verify truncation
@@ -333,7 +334,7 @@ def test_large_file_operations(temp_directory) -> None:
     assert len(truncated_content) == 1000
 
 
-def test_concurrent_file_access_simulation(temp_directory) -> None:
+def test_concurrent_file_access_simulation(temp_directory: Path) -> None:
     """Pattern 9: Simulating concurrent file access."""
     file_manager = FileManager(temp_directory)
 
@@ -360,7 +361,7 @@ def test_concurrent_file_access_simulation(temp_directory) -> None:
     assert final_content.count("\n") >= 5
 
 
-def test_file_system_edge_cases(temp_directory) -> None:
+def test_file_system_edge_cases(temp_directory: Path) -> None:
     """Pattern 10: Edge cases and error conditions."""
     file_manager = FileManager(temp_directory)
 
@@ -389,7 +390,7 @@ def test_file_system_edge_cases(temp_directory) -> None:
         file_manager.get_file_info("nonexistent.txt")
 
 
-def test_symbolic_links_and_special_files(temp_directory) -> None:
+def test_symbolic_links_and_special_files(temp_directory: Path) -> None:
     """Pattern 11: Symbolic links and special file types."""
     file_manager = FileManager(temp_directory)
 
@@ -413,7 +414,7 @@ def test_symbolic_links_and_special_files(temp_directory) -> None:
         pytest.skip("Symbolic links not supported on this platform")
 
 
-def test_file_timestamps_and_metadata(temp_directory) -> None:
+def test_file_timestamps_and_metadata(temp_directory: Path) -> None:
     """Pattern 12: File timestamps and metadata operations."""
     file_manager = FileManager(temp_directory)
 

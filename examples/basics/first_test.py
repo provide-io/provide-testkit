@@ -18,7 +18,10 @@ Learning objectives:
 - Build confidence with testing"""
 
 
-def test_my_first_testkit_test(temp_directory) -> None:
+from pathlib import Path
+
+
+def test_my_first_testkit_test(temp_directory: Path) -> None:
     """My very first test using provide-testkit!
 
     This test demonstrates:
@@ -39,7 +42,7 @@ def test_my_first_testkit_test(temp_directory) -> None:
     # The temp_directory fixture automatically cleans up when the test ends
 
 
-def test_working_with_multiple_files(temp_directory) -> None:
+def test_working_with_multiple_files(temp_directory: Path) -> None:
     """A slightly more complex test with multiple files."""
     # Create several files
     file1 = temp_directory / "file1.txt"
@@ -62,7 +65,7 @@ def test_working_with_multiple_files(temp_directory) -> None:
     assert file3.read_text() == "Third file"
 
 
-def test_creating_directories(temp_directory) -> None:
+def test_creating_directories(temp_directory: Path) -> None:
     """Test creating subdirectories and files within them."""
     # Create a subdirectory
     sub_dir = temp_directory / "my_subdir"
@@ -115,7 +118,7 @@ def test_what_happens_without_fixture() -> None:
     # - More readable tests
 
 
-def test_common_mistake_example(temp_directory) -> None:
+def test_common_mistake_example(temp_directory: Path) -> None:
     """This shows a common mistake and how to avoid it."""
     # ❌ Common mistake: Trying to create files outside temp_directory
     # This would work but defeats the purpose of isolated testing:
