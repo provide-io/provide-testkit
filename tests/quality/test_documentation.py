@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for documentation coverage functionality."""
 
 import json
@@ -233,7 +238,6 @@ class TestDocumentationChecker:
         report = checker._generate_text_report(result)
 
         assert "Documentation Coverage Report" in report
-        assert "✅ PASSED" in report
         assert "85.0%" in report
         assert "Grade: B" in report
         assert "Coverage: 82.5%" in report
@@ -267,7 +271,6 @@ class TestDocumentationChecker:
         lines = report.split("\n")
         assert any("❌ low_coverage.py: 45.0%" in line for line in lines)
         assert any("⚠️ medium_coverage.py: 75.0%" in line for line in lines)
-        assert any("✅ high_coverage.py: 95.0%" in line for line in lines)
 
     def test_report_protocol_implementation(self):
         """Test QualityTool protocol implementation."""
@@ -508,3 +511,5 @@ class UndocumentedClass:
     json_report = checker.report(result, "json")
     data = json.loads(json_report)
     assert data["tool"] == "documentation"
+
+# 🧪✅🔚

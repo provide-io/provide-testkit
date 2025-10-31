@@ -1,5 +1,9 @@
-"""
-Mocking utilities for the provide-io ecosystem.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Mocking utilities for the provide-io ecosystem.
 
 Standardized mocking patterns, fixtures, and utilities to reduce
 boilerplate and ensure consistent mocking across all tests.
@@ -29,8 +33,7 @@ Provide-specific utilities:
 Time mocking utilities (from .time):
     mock_sleep, mock_time_sleep, mock_asyncio_sleep - Sleep function mocking
     SleepTracker - Track sleep call history and durations
-    create_sleep_mock - Factory for sleep mocks
-"""
+    create_sleep_mock - Factory for sleep mocks"""
 
 from provide.testkit.mocking.fixtures import (
     ANY,
@@ -81,3 +84,5 @@ __all__ = [
     "sentinel",
     "spy_fixture",
 ]
+
+# 🧪✅🔚

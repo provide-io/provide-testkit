@@ -1,9 +1,12 @@
-"""
-Thread execution and testing helper fixtures.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Thread execution and testing helper fixtures.
 
 Advanced fixtures for concurrent execution, synchronization testing, deadlock detection,
-and exception handling in threaded code.
-"""
+and exception handling in threaded code."""
 
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
@@ -266,3 +269,5 @@ __all__ = [
     "thread_exception_handler",
     "thread_synchronizer",
 ]
+
+# 🧪✅🔚

@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Complexity analysis integration for provide-testkit.
 
 Provides code complexity analysis using radon and other complexity tools.
@@ -18,8 +23,7 @@ Usage:
 
     # Complexity with quality gates
     runner = QualityRunner()
-    results = runner.run_with_gates(path, {"complexity": "B"})
-"""
+    results = runner.run_with_gates(path, {"complexity": "B"})"""
 
 from .analyzer import ComplexityAnalyzer
 from .fixture import ComplexityFixture
@@ -28,3 +32,5 @@ __all__ = [
     "ComplexityAnalyzer",
     "ComplexityFixture",
 ]
+
+# 🧪✅🔚

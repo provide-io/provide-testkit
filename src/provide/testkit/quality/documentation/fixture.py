@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Documentation coverage fixture for pytest integration."""
 
 from __future__ import annotations
@@ -185,3 +190,5 @@ def documentation_checker_strict(documentation_config: dict[str, Any]) -> Docume
     fixture.setup()
     yield fixture
     fixture.teardown()
+
+# 🧪✅🔚

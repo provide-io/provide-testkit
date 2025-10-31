@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""
-Example: Your First Test with provide-testkit
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Example: Your First Test with provide-testkit
 
 This is the absolute simplest example to get you started with provide-testkit.
 If you're completely new to testing or provide-testkit, start here!
@@ -12,11 +15,7 @@ Learning objectives:
 - Write your very first test using provide-testkit
 - Understand what a fixture is
 - See automatic cleanup in action
-- Build confidence with testing
-"""
-
-
-
+- Build confidence with testing"""
 
 def test_my_first_testkit_test(temp_directory):
     """My very first test using provide-testkit!
@@ -121,7 +120,6 @@ def test_common_mistake_example(temp_directory):
     # This would work but defeats the purpose of isolated testing:
     # bad_file = Path("/tmp/my_test_file.txt")  # Don't do this!
 
-    # ✅ Correct way: Always create files inside temp_directory
     good_file = temp_directory / "my_test_file.txt"
     good_file.write_text("This is isolated and will be cleaned up!")
 
@@ -138,7 +136,6 @@ if __name__ == "__main__":
     print("   A fixture is a piece of code that sets up something")
     print("   your test needs, then cleans it up afterward.")
     print("")
-    print("🔧 The temp_directory fixture:")
     print("   • Creates a temporary directory for your test")
     print("   • Automatically cleans it up when done")
     print("   • Keeps your tests isolated from each other")
@@ -148,3 +145,5 @@ if __name__ == "__main__":
     print("")
     print("📚 Next steps:")
     print("   Check out basic_usage.py for more examples!")
+
+# 🧪✅🔚

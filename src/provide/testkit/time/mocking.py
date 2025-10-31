@@ -1,7 +1,11 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Time mocking fixtures for testing.
 
-Fixtures for mocking time-related functions like sleep, datetime.now(), etc.
-"""
+Fixtures for mocking time-related functions like sleep, datetime.now(), etc."""
 
 from __future__ import annotations
 
@@ -131,3 +135,5 @@ __all__ = [
     "mock_sleep_with_callback",
     "time_travel",
 ]
+
+# 🧪✅🔚

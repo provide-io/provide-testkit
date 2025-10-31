@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Performance profiling fixture for pytest integration."""
 
 from __future__ import annotations
@@ -330,3 +335,5 @@ def cpu_profiler(profiling_config: dict[str, Any]) -> ProfilingFixture:
     fixture.setup()
     yield fixture
     fixture.teardown()
+
+# 🧪✅🔚

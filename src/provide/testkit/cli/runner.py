@@ -1,9 +1,12 @@
-"""
-Enhanced CLI Test Runner.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Enhanced CLI Test Runner.
 
 Provides comprehensive testing support for CLI applications with
-enhanced output processing, ANSI stripping, and detailed assertions.
-"""
+enhanced output processing, ANSI stripping, and detailed assertions."""
 
 from __future__ import annotations
 
@@ -203,3 +206,5 @@ __all__ = [
     "assert_cli_error",
     "assert_cli_success",
 ]
+
+# 🧪✅🔚

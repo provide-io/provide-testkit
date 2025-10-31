@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""
-Demonstration of quality decorators functionality.
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Demonstration of quality decorators functionality.
 
 This script shows how the quality decorators work by applying them to test functions
-and demonstrating both passing and failing scenarios.
-"""
+and demonstrating both passing and failing scenarios."""
 
 from __future__ import annotations
 
@@ -48,7 +50,6 @@ def demonstrate_performance_gates():
     print("Test 1: Fast function with reasonable limits")
     try:
         result = fast_function()
-        print(f"  ✅ PASSED - Result: {result}")
     except AssertionError as e:
         print(f"  ❌ FAILED - {e}")
 
@@ -58,7 +59,6 @@ def demonstrate_performance_gates():
     print("Test 2: Function with very strict limits")
     try:
         result = potentially_slow_function()
-        print(f"  ✅ PASSED - Result: {result}")
     except AssertionError as e:
         print(f"  ❌ FAILED - {e}")
 
@@ -68,7 +68,6 @@ def demonstrate_performance_gates():
     print("Test 3: Comprehensive quality check")
     try:
         result = comprehensive_test_function()
-        print(f"  ✅ PASSED - Result: {result}")
     except AssertionError as e:
         print(f"  ❌ FAILED - {e}")
 
@@ -77,7 +76,6 @@ def demonstrate_performance_gates():
 
 def demonstrate_manual_profiling():
     """Demonstrate manual profiling without decorators."""
-    print("🔧 Manual Profiling Demonstration")
     print("=" * 50)
 
     from provide.testkit.quality.profiling.profiler import PerformanceProfiler
@@ -93,7 +91,6 @@ def demonstrate_manual_profiling():
     print("Profiling example function...")
     result = profiler.profile_function(example_function)
 
-    print(f"Status: {'✅ PASSED' if result.passed else '❌ FAILED'}")
     if result.score is not None:
         print(f"Score: {result.score:.1f}%")
     else:
@@ -125,7 +122,6 @@ def main():
 
     print("🎉 Quality Decorators Demonstration Complete!")
     print()
-    print("✅ Successfully Demonstrated:")
     print("   • Performance gate decorators")
     print("   • Quality check decorators")
     print("   • Manual profiling interface")
@@ -134,3 +130,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# 🧪✅🔚

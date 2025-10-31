@@ -1,8 +1,12 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """I/O and file system chaos strategies.
 
 Provides Hypothesis strategies for generating file I/O failures, permission issues,
-disk space problems, and network-related chaos scenarios.
-"""
+disk space problems, and network-related chaos scenarios."""
 
 from __future__ import annotations
 
@@ -372,3 +376,5 @@ __all__ = [
     "path_traversal_patterns",
     "permission_patterns",
 ]
+
+# 🧪✅🔚

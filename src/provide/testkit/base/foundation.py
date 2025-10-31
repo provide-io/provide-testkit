@@ -1,9 +1,12 @@
-"""
-FoundationTestCase Base Class.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""FoundationTestCase Base Class.
 
 Provides a common base class for all Foundation-based tests with
-standard utilities, automatic setup/cleanup, and common assertions.
-"""
+standard utilities, automatic setup/cleanup, and common assertions."""
 
 from __future__ import annotations
 
@@ -88,3 +91,5 @@ class FoundationTestCase(MinimalTestCase):
 
 
 __all__ = ["FoundationTestCase"]
+
+# 🧪✅🔚

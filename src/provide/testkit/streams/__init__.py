@@ -1,8 +1,11 @@
-"""
-Stream Testing Utilities.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
 
-Provides utilities for redirecting and managing streams during testing.
-"""
+"""Stream Testing Utilities.
+
+Provides utilities for redirecting and managing streams during testing."""
 
 from provide.testkit.streams.testing import (
     enable_file_logging_for_testing,
@@ -17,3 +20,5 @@ __all__ = [
     "reset_log_stream",
     "set_log_stream_for_testing",
 ]
+
+# 🧪✅🔚

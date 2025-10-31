@@ -1,8 +1,11 @@
-"""
-Thread synchronization test fixtures.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
 
-Fixtures for thread barriers, events, conditions, and other synchronization primitives.
-"""
+"""Thread synchronization test fixtures.
+
+Fixtures for thread barriers, events, conditions, and other synchronization primitives."""
 
 import threading
 
@@ -96,3 +99,5 @@ __all__ = [
     "thread_condition",
     "thread_event",
 ]
+
+# 🧪✅🔚

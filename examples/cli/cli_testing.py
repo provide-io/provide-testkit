@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""
-Example: CLI Application Testing Patterns
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Example: CLI Application Testing Patterns
 
 This example demonstrates testing Click-based CLI applications using
 provide-testkit's CLI testing utilities and integration with provide-foundation.
@@ -15,8 +18,7 @@ Learning objectives:
 - Validate command output and exit codes
 - Test interactive CLI prompts
 - Handle file input/output in CLI tests
-- Test CLI error conditions
-"""
+- Test CLI error conditions"""
 
 from pathlib import Path
 
@@ -289,3 +291,5 @@ if __name__ == "__main__":
     print("\n🎉 CLI examples completed!")
     print("Run with pytest to see fixtures in action:")
     print("   pytest examples/cli_testing.py -v")
+
+# 🧪✅🔚

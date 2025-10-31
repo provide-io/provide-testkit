@@ -1,12 +1,12 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# streams.py
-#
-"""
-Stream Testing Utilities for Foundation.
+
+"""Stream Testing Utilities for Foundation.
 
 Provides utilities for redirecting and managing streams during testing,
-allowing tests to capture and control Foundation's output streams.
-"""
+allowing tests to capture and control Foundation's output streams."""
 
 from typing import Any, TextIO
 
@@ -95,3 +95,5 @@ __all__ = [
     "reset_log_stream",
     "set_log_stream_for_testing",
 ]
+
+# 🧪✅🔚

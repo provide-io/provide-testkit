@@ -1,8 +1,12 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Time testing classes for fixtures.
 
 Core classes used by time testing fixtures. Extracted from fixtures.py
-for better organization and discoverability.
-"""
+for better organization and discoverability."""
 
 from __future__ import annotations
 
@@ -319,3 +323,5 @@ __all__ = [
     "Timer",
     "get_active_time_machines",
 ]
+
+# 🧪✅🔚

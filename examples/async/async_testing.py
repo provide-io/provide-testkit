@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""
-Example: Async/Await Testing Patterns
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Example: Async/Await Testing Patterns
 
 This example demonstrates testing asynchronous operations, event loops,
 and concurrent code using provide-testkit's async utilities.
@@ -15,8 +18,7 @@ Learning objectives:
 - Handle async context managers
 - Test concurrent operations
 - Manage event loop lifecycle
-- Handle timeouts and cancellation
-"""
+- Handle timeouts and cancellation"""
 
 import asyncio
 from typing import Any
@@ -277,7 +279,6 @@ if __name__ == "__main__":
         """Demonstrate basic async operation."""
         print("⏳ Starting async operation...")
         await asyncio.sleep(0.1)
-        print("✅ Async operation completed!")
         return "demo_result"
 
     async def demo_concurrent_tasks():
@@ -292,7 +293,6 @@ if __name__ == "__main__":
         results = await asyncio.gather(*tasks)
 
         for result in results:
-            print(f"   ✅ {result}")
 
     async def main():
         """Run all demonstrations."""
@@ -304,3 +304,5 @@ if __name__ == "__main__":
 
     # Run the demo
     asyncio.run(main())
+
+# 🧪✅🔚

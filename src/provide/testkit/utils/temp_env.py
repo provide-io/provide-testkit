@@ -1,9 +1,12 @@
-"""
-Temporary Environment Utilities.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Temporary Environment Utilities.
 
 Provides context managers for safely modifying environment variables
-in tests with automatic cleanup and restoration.
-"""
+in tests with automatic cleanup and restoration."""
 
 from __future__ import annotations
 
@@ -184,3 +187,5 @@ __all__ = [
     "temp_env",
     "temp_env_from_dict",
 ]
+
+# 🧪✅🔚

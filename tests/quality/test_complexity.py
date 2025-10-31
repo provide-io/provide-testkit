@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for complexity analysis functionality."""
 
 import json
@@ -171,7 +176,6 @@ class TestComplexityAnalyzer:
         report = analyzer._generate_text_report(result)
 
         assert "Complexity Analysis Report" in report
-        assert "✅ PASSED" in report
         assert "85.0%" in report
         assert "Overall Grade: B" in report
         assert "Files Analyzed: 5" in report
@@ -365,3 +369,5 @@ def complex_function(data):
     json_report = analyzer.report(result, "json")
     data = json.loads(json_report)
     assert data["tool"] == "complexity"
+
+# 🧪✅🔚

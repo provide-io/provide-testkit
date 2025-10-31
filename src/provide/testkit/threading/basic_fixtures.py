@@ -1,8 +1,11 @@
-"""
-Basic threading test fixtures.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
 
-Core fixtures for creating threads, thread pools, mocks, and thread-local storage.
-"""
+"""Basic threading test fixtures.
+
+Core fixtures for creating threads, thread pools, mocks, and thread-local storage."""
 
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
@@ -102,3 +105,5 @@ __all__ = [
     "thread_local_storage",
     "thread_pool",
 ]
+
+# 🧪✅🔚

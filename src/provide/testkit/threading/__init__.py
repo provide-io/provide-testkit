@@ -1,9 +1,12 @@
-"""
-Threading testing utilities for the provide-io ecosystem.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Threading testing utilities for the provide-io ecosystem.
 
 Fixtures and utilities for testing multi-threaded code, thread synchronization,
-and concurrent operations across any project that depends on provide.foundation.
-"""
+and concurrent operations across any project that depends on provide.foundation."""
 
 from provide.testkit.threading.fixtures import (
     concurrent_executor,
@@ -36,3 +39,5 @@ __all__ = [
     "thread_safe_list",
     "thread_synchronizer",
 ]
+
+# 🧪✅🔚

@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Pytest configuration and fixtures for provide-testkit."""
 
 from __future__ import annotations
@@ -49,3 +54,5 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     sys.stdout.flush()
     sys.stderr.write(reset_sequence)
     sys.stderr.flush()
+
+# 🧪✅🔚

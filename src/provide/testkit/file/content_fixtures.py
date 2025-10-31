@@ -1,9 +1,12 @@
-"""
-Content-based file test fixtures.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Content-based file test fixtures.
 
 Fixtures for creating files with specific content types like text, binary,
-CSV, JSON, and other structured data.
-"""
+CSV, JSON, and other structured data."""
 
 import csv
 import json
@@ -273,3 +276,5 @@ __all__ = [
     "temp_json_file",
     "temp_named_file",
 ]
+
+# 🧪✅🔚

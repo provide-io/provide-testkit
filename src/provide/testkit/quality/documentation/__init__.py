@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Documentation coverage analysis for provide-testkit.
 
 Provides documentation coverage analysis using interrogate and other tools.
@@ -17,8 +22,7 @@ Usage:
 
     # Documentation with quality gates
     runner = QualityRunner()
-    results = runner.run_with_gates(path, {"documentation": 80.0})
-"""
+    results = runner.run_with_gates(path, {"documentation": 80.0})"""
 
 from .checker import DocumentationChecker
 from .fixture import DocumentationFixture
@@ -27,3 +31,5 @@ __all__ = [
     "DocumentationChecker",
     "DocumentationFixture",
 ]
+
+# 🧪✅🔚

@@ -1,12 +1,14 @@
-"""
-Process Test Fixtures.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Process Test Fixtures.
 
 Core process testing fixtures with re-exports from specialized modules.
 Utilities for testing async code, managing event loops, and handling
-async subprocess mocking across the provide-io ecosystem.
-"""
+async subprocess mocking across the provide-io ecosystem."""
 
-# Re-export all fixtures from specialized modules
 from provide.testkit.process.async_fixtures import (
     async_condition_waiter,
     async_context_manager,
@@ -52,3 +54,5 @@ __all__ = [
     "event_loop_policy",
     "mock_async_process",
 ]
+
+# 🧪✅🔚

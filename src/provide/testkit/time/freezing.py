@@ -1,7 +1,11 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Time freezing fixtures for testing.
 
-Fixtures for freezing time and controlling time flow in tests.
-"""
+Fixtures for freezing time and controlling time flow in tests."""
 
 from __future__ import annotations
 
@@ -101,3 +105,5 @@ __all__ = [
     "freeze_time",
     "time_machine",
 ]
+
+# 🧪✅🔚

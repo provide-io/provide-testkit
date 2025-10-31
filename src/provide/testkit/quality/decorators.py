@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Quality decorators for easy integration of quality checks."""
 
 from __future__ import annotations
@@ -378,3 +383,5 @@ complexity_required = complexity_gate
 documentation_required = documentation_gate
 performance_required = performance_gate
 quality_required = quality_check
+
+# 🧪✅🔚

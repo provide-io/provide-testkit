@@ -1,12 +1,14 @@
-"""
-File and Directory Test Fixtures.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""File and Directory Test Fixtures.
 
 Core file testing fixtures with re-exports from specialized modules.
 Common fixtures for testing file operations, creating temporary directories,
-and standard test file structures used across the provide-io ecosystem.
-"""
+and standard test file structures used across the provide-io ecosystem."""
 
-# Re-export all fixtures from specialized modules
 from provide.testkit.file.content_fixtures import (
     temp_binary_file,
     temp_csv_file,
@@ -47,3 +49,5 @@ __all__ = [
     "temp_csv_file",
     "temp_json_file",
 ]
+
+# 🧪✅🔚

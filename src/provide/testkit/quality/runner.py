@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Quality runner for orchestrating multiple quality tools."""
 
 from __future__ import annotations
@@ -317,3 +322,5 @@ class QualityGateResults:
     def __post_init__(self):
         if self.failed_gates is None:
             self.failed_gates = []
+
+# 🧪✅🔚

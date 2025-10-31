@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Security analysis integration for provide-testkit.
 
 Provides security vulnerability scanning using bandit and other security tools.
@@ -17,8 +22,7 @@ Usage:
 
     # Security with quality gates
     runner = QualityRunner()
-    results = runner.run_with_gates(path, {"security": True})
-"""
+    results = runner.run_with_gates(path, {"security": True})"""
 
 from .fixture import SecurityFixture
 from .scanner import SecurityScanner
@@ -27,3 +31,5 @@ __all__ = [
     "SecurityFixture",
     "SecurityScanner",
 ]
+
+# 🧪✅🔚

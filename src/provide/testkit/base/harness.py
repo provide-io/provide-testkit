@@ -1,8 +1,11 @@
-"""
-Harness Testing Utilities.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
 
-Provides utilities for testing CLI harnesses with artifact management.
-"""
+"""Harness Testing Utilities.
+
+Provides utilities for testing CLI harnesses with artifact management."""
 
 from pathlib import Path
 
@@ -120,3 +123,5 @@ class HarnessRunner:
 
 
 __all__ = ["HarnessRunner"]
+
+# 🧪✅🔚

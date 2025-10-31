@@ -1,8 +1,12 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Core Hypothesis strategies for chaos testing.
 
 Provides foundational strategies for generating chaotic test inputs that explore
-edge cases, boundary conditions, and failure scenarios.
-"""
+edge cases, boundary conditions, and failure scenarios."""
 
 from __future__ import annotations
 
@@ -340,3 +344,5 @@ __all__ = [
     "resource_limits",
     "unicode_chaos",
 ]
+
+# 🧪✅🔚

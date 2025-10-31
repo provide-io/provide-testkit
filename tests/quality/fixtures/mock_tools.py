@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""
-Test file to demonstrate quality tools working on actual Python code.
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Test file to demonstrate quality tools working on actual Python code.
 
 This file contains various patterns that quality tools would analyze:
 - Functions with and without docstrings
 - Simple and complex functions
 - Security patterns
-- Different levels of test coverage
-"""
+- Different levels of test coverage"""
 
 import subprocess
 
@@ -144,3 +146,5 @@ if __name__ == "__main__":
     print("- Code complexity (simple vs complex functions)")
     print("- Security issues (shell injection, assert usage)")
     print("- Test coverage (if run with coverage tracking)")
+
+# 🧪✅🔚

@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""
-Demonstration script for the provide-testkit quality module.
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Demonstration script for the provide-testkit quality module.
 
 This script runs all quality tools on the testkit itself and generates
-comprehensive reports in multiple formats to prove the implementation works.
-"""
+comprehensive reports in multiple formats to prove the implementation works."""
 
 from __future__ import annotations
 
@@ -29,14 +31,12 @@ def install_quality_tools():
         # Note: memray is optional and complex to install
     ]
 
-    print("🔧 Installing quality analysis tools...")
     for tool in tools:
         try:
             print(f"  Installing {tool}...")
             subprocess.run(
                 [sys.executable, "-m", "pip", "install", tool], check=True, capture_output=True, text=True
             )
-            print(f"  ✅ {tool} installed successfully")
         except subprocess.CalledProcessError as e:
             print(f"  ⚠️  Failed to install {tool}: {e}")
             print(f"     Error output: {e.stderr}")
@@ -129,7 +129,6 @@ def run_quality_analysis(reports_dir: Path) -> dict[str, any]:
     print("-" * 30)
 
     for tool_name, result in results.items():
-        status = "✅ PASSED" if result.passed else "❌ FAILED"
         score_text = f" ({result.score:.1f}%)" if result.score else ""
         time_text = f" [{result.execution_time:.2f}s]" if result.execution_time else ""
 
@@ -164,7 +163,6 @@ def generate_comprehensive_reports(results: dict[str, any], reports_dir: Path):
     summary_dir = reports_dir / "summary"
 
     # 1. JSON Report (comprehensive data)
-    print("  📄 Generating JSON report...")
     json_report = report_gen.generate(results, "json")
     (summary_dir / "overall_report.json").write_text(json_report)
 
@@ -187,7 +185,6 @@ def generate_comprehensive_reports(results: dict[str, any], reports_dir: Path):
     for tool_name, result in results.items():
         tool_dir = reports_dir / tool_name
 
-        print(f"  🔧 Generating {tool_name} specific reports...")
 
         # Tool-specific JSON
         tool_json = {
@@ -227,7 +224,6 @@ def generate_coverage_analysis(result: any, output_dir: Path):
 - **Total Lines**: {details.get("total_lines", 0)}
 
 ## Status
-- **Passed**: {"✅" if result.passed else "❌"}
 - **Score**: {result.score:.1f}%
 
 ## Artifacts
@@ -249,7 +245,6 @@ def generate_security_analysis(result: any, output_dir: Path):
 ## Summary
 - **Security Score**: {result.score:.1f}%
 - **Total Issues**: {details.get("total_issues", 0)}
-- **Status**: {"✅ PASSED" if result.passed else "❌ FAILED"}
 
 ## Issue Breakdown
 """
@@ -314,7 +309,6 @@ def generate_documentation_analysis(result: any, output_dir: Path):
 - **Total Items**: {details.get("total_count", 0)}
 
 ## Status
-- **Passed**: {"✅" if result.passed else "❌"}
 - **Score**: {result.score:.1f}%
 
 ## File Coverage
@@ -323,7 +317,6 @@ def generate_documentation_analysis(result: any, output_dir: Path):
     if "file_coverage" in details:
         for file_info in details["file_coverage"][:10]:  # Top 10 files
             coverage = file_info["coverage"]
-            status = "✅" if coverage >= 80 else "⚠️" if coverage >= 60 else "❌"
             summary += f"- {status} `{file_info['file']}`: {coverage:.1f}% ({file_info['covered']}/{file_info['covered'] + file_info['missing']})\n"
 
     (output_dir / "documentation_summary.md").write_text(summary)
@@ -364,7 +357,6 @@ Generated on: {time.strftime("%Y-%m-%d %H:%M:%S")}
 - [Markdown Summary](summary/README.md) - Human-readable overview
 - [Terminal Output](summary/terminal_output.txt) - CLI-style report
 
-## 🔧 Tool-Specific Reports
 
 ### Coverage Analysis
 - [Coverage Report](coverage/coverage_report.json)
@@ -382,7 +374,6 @@ Generated on: {time.strftime("%Y-%m-%d %H:%M:%S")}
 - [Documentation Report](documentation/documentation_report.json)
 - [Documentation Summary](documentation/documentation_summary.md)
 
-## 📁 Artifacts
 - [Artifact Index](artifacts/index.json)
 - [Generated Files](artifacts/)
 
@@ -410,7 +401,6 @@ def main():
 
     # Setup reports directory
     reports_dir = setup_reports_directory()
-    print(f"📁 Reports directory: {reports_dir.absolute()}")
     print()
 
     # Run quality analysis
@@ -428,7 +418,6 @@ def main():
     # Final summary
     print("🎉 Quality Analysis Complete!")
     print("=" * 40)
-    print(f"📁 All reports saved to: {reports_dir.absolute()}")
     print(f"🌐 Open {reports_dir / 'summary' / 'dashboard.html'} in your browser")
     print(f"📋 See {reports_dir / 'index.md'} for complete overview")
 
@@ -444,3 +433,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# 🧪✅🔚

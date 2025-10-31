@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Documentation coverage checker implementation using interrogate."""
 
 from __future__ import annotations
@@ -280,7 +285,6 @@ class DocumentationChecker:
         lines = [
             f"Documentation Coverage Report - {result.tool}",
             "=" * 50,
-            f"Status: {'✅ PASSED' if result.passed else '❌ FAILED'}",
             f"Grade: {result.details.get('grade', 'N/A')}",
             f"Coverage: {result.details.get('total_coverage', 0)}%",
             f"Score: {result.score}%",
@@ -328,7 +332,6 @@ class DocumentationChecker:
 
         for file_info in sorted_files:
             coverage = file_info["coverage"]
-            status = "✅" if coverage >= 80 else "⚠️" if coverage >= 60 else "❌"
             lines.append(
                 f"{status} {file_info['file']}: {coverage:.1f}% ({file_info['covered']}/{file_info['covered'] + file_info['missing']})"
             )
@@ -359,3 +362,5 @@ class DocumentationChecker:
             )
         else:
             return str(result.details)
+
+# 🧪✅🔚

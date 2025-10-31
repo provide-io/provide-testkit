@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""
-Example: File and Directory Testing Patterns
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Example: File and Directory Testing Patterns
 
 This example demonstrates common patterns for testing file operations,
 directory structures, and file content validation using provide-testkit.
@@ -14,8 +17,7 @@ Learning objectives:
 - Test file creation and modification
 - Validate directory structures
 - Test file permissions and metadata
-- Handle file content assertions
-"""
+- Handle file content assertions"""
 
 from pathlib import Path
 
@@ -188,33 +190,30 @@ if __name__ == "__main__":
     # Run examples directly for demonstration
     import tempfile
 
-    print("🧪 File Testing Examples")
     print("=" * 50)
 
     # Create temporary directory for demonstration
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
 
-        print(f"📁 Working in: {temp_path}")
 
         # Demonstrate basic file operations
         demo_file = temp_path / "demo.txt"
         demo_file.write_text("Hello, provide-testkit!")
-        print(f"✅ Created: {demo_file.name}")
 
         # Demonstrate directory creation
         demo_dir = temp_path / "demo_structure"
         demo_dir.mkdir()
         (demo_dir / "subdir").mkdir()
-        print(f"✅ Created: {demo_dir.name}/ structure")
 
         # Show file listing
         print("📋 Files created:")
         for item in temp_path.rglob("*"):
             relative_path = item.relative_to(temp_path)
-            file_type = "📁" if item.is_dir() else "📄"
             print(f"   {file_type} {relative_path}")
 
     print("\n🎉 File testing examples completed!")
     print("Run with pytest to see fixtures in action:")
     print("   pytest examples/file_testing.py -v")
+
+# 🧪✅🔚

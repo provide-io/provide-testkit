@@ -1,13 +1,12 @@
-# tests/test_early_init.py
-#
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
+#
 
 """Unit tests for _early_init.py module.
 
 Tests the early initialization logic that runs via .pth file during
-Python's site initialization.
-"""
+Python's site initialization."""
 
 from __future__ import annotations
 
@@ -255,5 +254,4 @@ class TestIntegrationWithFoundationLogger:
             # Restore Foundation modules
             sys.modules.update(foundation_modules)
 
-
-# 🧪✅🔬🛡️
+# 🧪✅🔚

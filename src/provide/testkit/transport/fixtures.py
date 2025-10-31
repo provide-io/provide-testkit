@@ -1,9 +1,12 @@
-"""
-Transport and Network Testing Fixtures.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Transport and Network Testing Fixtures.
 
 Fixtures and helpers for testing network operations, including
-mock servers, free port allocation, and HTTP client mocking.
-"""
+mock servers, free port allocation, and HTTP client mocking."""
 
 from collections.abc import Generator
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -276,3 +279,5 @@ def mock_http_headers():
         "X-Request-ID": "test-request-123",
         "X-Correlation-ID": "test-correlation-456",
     }
+
+# 🧪✅🔚

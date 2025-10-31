@@ -1,8 +1,12 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Time-based chaos strategies for testing temporal behavior.
 
 Provides Hypothesis strategies for generating chaotic time patterns, clock skew,
-timeout scenarios, and timing-related edge cases.
-"""
+timeout scenarios, and timing-related edge cases."""
 
 from __future__ import annotations
 
@@ -297,3 +301,5 @@ __all__ = [
     "time_advances",
     "timeout_patterns",
 ]
+
+# 🧪✅🔚

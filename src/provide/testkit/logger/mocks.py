@@ -1,13 +1,13 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# mocks.py
-#
-"""
-Logger Mock Utilities for Testing.
+
+"""Logger Mock Utilities for Testing.
 
 Provides mock logger fixtures and factories for testing Foundation-based
 applications. These are logger-specific mocks that complement the Foundation
-reset orchestration.
-"""
+reset orchestration."""
 
 import pytest
 
@@ -90,3 +90,5 @@ __all__ = [
     "mock_logger",
     "mock_logger_factory",
 ]
+
+# 🧪✅🔚

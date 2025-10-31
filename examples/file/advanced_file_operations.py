@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""
-Example: Advanced File Operations Testing
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Example: Advanced File Operations Testing
 
 This example demonstrates advanced file and directory testing patterns
 using provide-testkit fixtures for complex file system scenarios.
@@ -14,8 +17,7 @@ Learning objectives:
 - Handle file permissions and ownership scenarios
 - Test file watching and monitoring
 - Validate file content and metadata
-- Test concurrent file operations
-"""
+- Test concurrent file operations"""
 
 import json
 from pathlib import Path
@@ -292,7 +294,6 @@ def test_file_encoding_handling(temp_directory):
     file_manager = FileManager(temp_directory)
 
     # Test UTF-8 (default)
-    utf8_content = "Hello, 世界! 🌍"
     utf8_file = file_manager.create_file_with_content("utf8.txt", utf8_content, "utf-8")
     assert utf8_file.read_text(encoding="utf-8") == utf8_content
 
@@ -434,11 +435,9 @@ def test_file_timestamps_and_metadata(temp_directory):
 
 
 if __name__ == "__main__":
-    print("📁 Advanced File Operations Testing with provide-testkit")
     print("=" * 65)
     print("This example demonstrates advanced file system testing:")
     print("")
-    print("🔧 File Operations Covered:")
     print("  • Basic file creation, reading, writing, deletion")
     print("  • Binary file handling")
     print("  • File permissions and metadata")
@@ -468,3 +467,5 @@ if __name__ == "__main__":
     print("  • Test both success and failure scenarios")
     print("  • Handle platform-specific limitations")
     print("  • Verify file metadata and properties")
+
+# 🧪✅🔚

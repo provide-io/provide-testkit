@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Pytest fixtures for coverage tracking."""
 
 from __future__ import annotations
@@ -234,3 +239,5 @@ def auto_coverage_marker(request):
             yield
     else:
         yield
+
+# 🧪✅🔚

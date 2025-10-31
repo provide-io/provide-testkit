@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for time mocking utilities."""
 
 from __future__ import annotations
@@ -231,3 +236,5 @@ class TestCreateSleepMock:
         assert mock.called
         assert mock.call_count == 1
         mock.assert_called_once_with(1.5)
+
+# 🧪✅🔚

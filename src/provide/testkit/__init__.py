@@ -1,14 +1,14 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# __init__.py
-#
-"""
-Provide TestKit.
+
+"""Provide TestKit.
 
 Unified testing utilities for the provide ecosystem with automatic context detection.
 Comprehensive fixtures and utilities for testing Foundation-based applications.
 
-Note: Testing information is displayed via pytest hooks in conftest.py
-"""
+Note: Testing information is displayed via pytest hooks in conftest.py"""
 
 from __future__ import annotations
 
@@ -283,3 +283,5 @@ for _attributes in _LAZY_IMPORTS.values():
     _all_lazy_attributes.extend(_attributes)
 
 __all__ = sorted(list(set(_all_lazy_attributes)))
+
+# 🧪✅🔚

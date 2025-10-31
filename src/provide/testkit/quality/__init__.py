@@ -1,5 +1,9 @@
-"""
-Code quality analysis utilities for the provide testkit.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Code quality analysis utilities for the provide testkit.
 
 This module provides pytest fixtures and utilities for integrating code quality
 tools into testing workflows. All quality tools are optional and only activated
@@ -23,10 +27,8 @@ Usage:
         pass
 
     # CLI usage
-    provide-testkit quality analyze src/
-"""
+    provide-testkit quality analyze src/"""
 
-# Core exports
 from .base import BaseQualityFixture, QualityResult, QualityTool
 from .report import ReportGenerator
 from .runner import QualityRunner
@@ -99,3 +101,5 @@ def __getattr__(name: str):
         return locals()[name]
 
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+
+# 🧪✅🔚

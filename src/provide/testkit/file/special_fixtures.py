@@ -1,9 +1,12 @@
-"""
-Special file test fixtures.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Special file test fixtures.
 
 Fixtures for creating specialized files like binary files, read-only files,
-symbolic links, and executable files.
-"""
+symbolic links, and executable files."""
 
 from collections.abc import Generator
 from pathlib import Path
@@ -139,3 +142,5 @@ __all__ = [
     "temp_executable_file",
     "temp_symlink",
 ]
+
+# 🧪✅🔚

@@ -1,7 +1,11 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Controlled time utilities for testing.
 
-Injectable time sources and sleep functions that don't rely on global mocking.
-"""
+Injectable time sources and sleep functions that don't rely on global mocking."""
 
 from __future__ import annotations
 
@@ -80,3 +84,5 @@ __all__ = [
     "advance_time",
     "make_controlled_time",
 ]
+
+# 🧪✅🔚

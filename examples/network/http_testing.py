@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""
-Example: HTTP Client Testing Patterns
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Example: HTTP Client Testing Patterns
 
 This example demonstrates testing HTTP clients and network operations
 using provide-testkit's network fixtures and testing patterns.
@@ -14,8 +17,7 @@ Learning objectives:
 - Test HTTP clients without external dependencies
 - Mock HTTP responses and simulate network conditions
 - Test error handling and timeouts
-- Validate request/response patterns
-"""
+- Validate request/response patterns"""
 
 import json
 from pathlib import Path
@@ -430,7 +432,6 @@ if __name__ == "__main__":
     print("=" * 60)
     print("This example demonstrates HTTP client testing patterns:")
     print("")
-    print("🔧 Testing Techniques:")
     print("  • Mocking HTTP responses with unittest.mock")
     print("  • Testing error conditions and timeouts")
     print("  • Validating request parameters and headers")
@@ -455,3 +456,5 @@ if __name__ == "__main__":
     print("  • Simulate network conditions")
     print("  • Validate request/response patterns")
     print("  • Ensure proper error handling")
+
+# 🧪✅🔚
