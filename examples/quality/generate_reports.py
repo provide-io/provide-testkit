@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 import time
 
 from provide.testkit.quality.artifacts import ArtifactManager
@@ -43,7 +44,7 @@ def install_quality_tools() -> None:
     print()
 
 
-def create_quality_config() -> dict[str, any]:
+def create_quality_config() -> dict[str, object]:
     """Create configuration for quality tools."""
     return {
         "coverage": {
@@ -99,7 +100,7 @@ def setup_reports_directory() -> Path:
     return reports_dir
 
 
-def run_quality_analysis(reports_dir: Path) -> dict[str, any]:
+def run_quality_analysis(reports_dir: Path) -> dict[str, object]:
     """Run comprehensive quality analysis."""
     print("🔍 Running Quality Analysis")
     print("=" * 50)
@@ -129,10 +130,11 @@ def run_quality_analysis(reports_dir: Path) -> dict[str, any]:
     print("-" * 30)
 
     for tool_name, result in results.items():
+        status_text = "PASSED" if result.passed else "FAILED"
         score_text = f" ({result.score:.1f}%)" if result.score else ""
         time_text = f" [{result.execution_time:.2f}s]" if result.execution_time else ""
 
-        print(f"{tool_name.title()}: {status}{score_text}{time_text}")
+        print(f"{tool_name.title()}: {status_text}{score_text}{time_text}")
 
         # Show key details
         if tool_name == "coverage" and "coverage_percentage" in result.details:
@@ -151,7 +153,7 @@ def run_quality_analysis(reports_dir: Path) -> dict[str, any]:
     return results
 
 
-def generate_comprehensive_reports(results: dict[str, any], reports_dir: Path) -> None:
+def generate_comprehensive_reports(results: dict[str, object], reports_dir: Path) -> None:
     """Generate comprehensive reports in multiple formats."""
     print("📝 Generating Comprehensive Reports")
     print("=" * 50)
@@ -314,14 +316,19 @@ def generate_documentation_analysis(result: any, output_dir: Path) -> None:
 """
 
     if "file_coverage" in details:
+        min_coverage = details.get("thresholds", {}).get("min_coverage", 0.0)
         for file_info in details["file_coverage"][:10]:  # Top 10 files
             coverage = file_info["coverage"]
-            summary += f"- {status} `{file_info['file']}`: {coverage:.1f}% ({file_info['covered']}/{file_info['covered'] + file_info['missing']})\n"
+            status_icon = "✅" if coverage >= min_coverage else "⚠️"
+            summary += (
+                f"- {status_icon} `{file_info['file']}`: {coverage:.1f}% "
+                f"({file_info['covered']}/{file_info['covered'] + file_info['missing']})\n"
+            )
 
     (output_dir / "documentation_summary.md").write_text(summary)
 
 
-def create_artifact_index(results: dict[str, any], reports_dir: Path) -> None:
+def create_artifact_index(results: dict[str, object], reports_dir: Path) -> None:
     """Create a comprehensive artifact index."""
     print("📚 Creating Artifact Index")
     print("=" * 30)

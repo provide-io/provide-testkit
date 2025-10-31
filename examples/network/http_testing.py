@@ -21,6 +21,7 @@ Learning objectives:
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 import requests
@@ -41,24 +42,24 @@ class ApiClient:
         if api_key:
             self.session.headers.update({"Authorization": f"Bearer {api_key}"})
 
-    def get_user(self, user_id: int) -> dict[str, any]:
+    def get_user(self, user_id: int) -> dict[str, object]:
         """Get user by ID."""
         url = f"{self.base_url}/api/users/{user_id}"
         response = self.session.get(url, timeout=self.timeout)
         response.raise_for_status()
         return response.json()
 
-    def create_user(self, user_data: dict[str, any]) -> dict[str, any]:
+    def create_user(self, user_data: dict[str, object]) -> dict[str, object]:
         """Create a new user."""
         url = f"{self.base_url}/api/users"
         response = self.session.post(url, json=user_data, timeout=self.timeout)
         response.raise_for_status()
         return response.json()
 
-    def upload_file(self, file_path: Path, endpoint: str = "/api/upload") -> dict[str, any]:
+    def upload_file(self, file_path: Path, endpoint: str = "/api/upload") -> dict[str, object]:
         """Upload a file to the API."""
         url = f"{self.base_url}{endpoint}"
-        with open(file_path, "rb") as f:
+        with file_path.open("rb") as f:
             files = {"file": (file_path.name, f, "application/octet-stream")}
             response = self.session.post(url, files=files, timeout=self.timeout)
         response.raise_for_status()
@@ -86,13 +87,13 @@ class ConfigurableClient:
             timeout=self.config.get("timeout", 30.0),
         )
 
-    def _load_config(self) -> dict[str, any]:
+    def _load_config(self) -> dict[str, object]:
         """Load configuration from file."""
         if not self.config_path.exists():
             raise FileNotFoundError(f"Config file not found: {self.config_path}")
         return json.loads(self.config_path.read_text())
 
-    def get_all_users(self) -> list[dict[str, any]]:
+    def get_all_users(self) -> list[dict[str, object]]:
         """Get all users with pagination."""
         all_users = []
         page = 1
@@ -240,7 +241,7 @@ def test_health_check_scenarios() -> None:
         assert client.health_check() is False
 
 
-def test_file_upload_mocking(temp_directory) -> None:
+def test_file_upload_mocking(temp_directory: Path) -> None:
     """Pattern 5: Mocking file upload operations."""
 
     # Create a test file
@@ -279,7 +280,7 @@ def test_file_upload_mocking(temp_directory) -> None:
         assert result["filename"] == "test_upload.txt"
 
 
-def test_configuration_based_client(temp_directory) -> None:
+def test_configuration_based_client(temp_directory: Path) -> None:
     """Pattern 6: Testing clients that use configuration files."""
 
     # Create configuration file
@@ -294,7 +295,7 @@ def test_configuration_based_client(temp_directory) -> None:
 
     with patch.object(requests.Session, "get") as mock_get:
         # Mock paginated response
-        def mock_paginated_response(url, **kwargs):
+        def mock_paginated_response(url: str, **kwargs: Any) -> Mock:
             params = kwargs.get("params", {})
             page = params.get("page", 1)
 
@@ -332,7 +333,7 @@ def test_configuration_based_client(temp_directory) -> None:
         assert users[1]["name"] == "User 2"
 
 
-def test_missing_config_file(temp_directory) -> None:
+def test_missing_config_file(temp_directory: Path) -> None:
     """Pattern 7: Testing error handling for missing configuration."""
 
     missing_config = temp_directory / "nonexistent_config.json"
