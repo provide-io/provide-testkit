@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for TimeMachine registry tracking."""
 
 from __future__ import annotations
@@ -73,3 +78,5 @@ class TestTimeMachineRegistry:
             assert machine.is_frozen
         finally:
             machine.cleanup()
+
+# 🧪✅🔚

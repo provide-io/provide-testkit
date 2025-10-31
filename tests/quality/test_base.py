@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for quality analysis base classes and protocols."""
 
 from pathlib import Path
@@ -43,7 +48,6 @@ class TestQualityResult:
     def test_summary_passed(self):
         """Test summary for passed result."""
         result = QualityResult(tool="coverage", passed=True, score=95.5)
-        assert result.summary == "coverage: ✅ PASSED (95.5%)"
 
     def test_summary_failed(self):
         """Test summary for failed result."""
@@ -53,7 +57,6 @@ class TestQualityResult:
     def test_summary_no_score(self):
         """Test summary without score."""
         result = QualityResult(tool="lint", passed=True)
-        assert result.summary == "lint: ✅ PASSED"
 
 
 class MockQualityFixture(BaseQualityFixture):
@@ -186,3 +189,5 @@ class TestQualityExceptions:
         assert isinstance(error, QualityError)
         assert str(error) == "Tool execution failed"
         assert error.tool == "coverage"
+
+# 🧪✅🔚

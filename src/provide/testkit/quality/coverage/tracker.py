@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Coverage tracking implementation."""
 
 from __future__ import annotations
@@ -160,7 +165,6 @@ class CoverageTracker:
             lines = [
                 f"Coverage Report - {result.tool}",
                 "=" * 40,
-                f"Status: {'✅ PASSED' if result.passed else '❌ FAILED'}",
             ]
 
             if result.score is not None:
@@ -311,3 +315,5 @@ class CoverageTracker:
         except Exception as e:
             # Add error to result details but don't fail
             result.details["artifact_error"] = str(e)
+
+# 🧪✅🔚

@@ -1,9 +1,12 @@
-"""
-Crypto Testing Fixtures for Foundation.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Crypto Testing Fixtures for Foundation.
 
 Provides comprehensive pytest fixtures for testing certificate functionality,
-including valid/invalid certificates, keys, chains, and edge cases.
-"""
+including valid/invalid certificates, keys, chains, and edge cases."""
 
 import pytest
 
@@ -161,3 +164,5 @@ BTADAQH/MB0GA1UdDgQWBBTGX00Gq7b09y/0C9eK0XgJp0mY7DAKBggqhkjOPQQD
 AgNJADBGAiEAx1xH/b83/u5t7r29a/THZnFjQ7pvT2N0L4hG4BgGgXACIQD02W2+
 MHB78ZWM+JOgikYj99qD6nLp0nkMyGmkSC7RYg==
 -----END CERTIFICATE-----"""
+
+# 🧪✅🔚

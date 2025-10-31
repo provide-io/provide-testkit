@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Base classes and protocols for quality analysis tools."""
 
 from __future__ import annotations
@@ -31,7 +36,6 @@ class QualityResult:
     @property
     def summary(self) -> str:
         """Human-readable summary of the result."""
-        status = "✅ PASSED" if self.passed else "❌ FAILED"
         score_text = f" ({self.score}%)" if self.score is not None else ""
         return f"{self.tool}: {status}{score_text}"
 
@@ -156,3 +160,5 @@ class QualityToolError(QualityError):
     """Exception for tool execution errors."""
 
     pass
+
+# 🧪✅🔚

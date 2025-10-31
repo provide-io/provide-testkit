@@ -1,8 +1,12 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Pytest fixtures for chaos testing.
 
 Provides reusable fixtures that enable chaos injection and control
-in property-based tests.
-"""
+in property-based tests."""
 
 from __future__ import annotations
 
@@ -265,3 +269,5 @@ __all__ = [
     "chaos_time_source_factory",
     "hypothesis_chaos_settings",
 ]
+
+# 🧪✅🔚

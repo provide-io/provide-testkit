@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Performance profiling implementation using memray and cProfile."""
 
 from __future__ import annotations
@@ -340,7 +345,6 @@ class PerformanceProfiler:
         lines = [
             f"Performance Profiling Report - {result.tool}",
             "=" * 50,
-            f"Status: {'✅ PASSED' if result.passed else '❌ FAILED'}",
             f"Overall Score: {result.score:.1f}%",
         ]
 
@@ -426,3 +430,5 @@ class PerformanceProfiler:
             Formatted report
         """
         return self.generate_report(result, format)
+
+# 🧪✅🔚

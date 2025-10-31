@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Chaos testing utilities for property-based testing with Hypothesis.
 
 This module provides reusable Hypothesis strategies and fixtures for chaos engineering
@@ -23,8 +28,7 @@ Example:
     async def test_with_chaos(timing, failures):
         # Your chaos test here
         pass
-    ```
-"""
+    ```"""
 
 from __future__ import annotations
 
@@ -101,3 +105,5 @@ __all__ = [
     "timeout_patterns",
     "unicode_chaos",
 ]
+
+# 🧪✅🔚

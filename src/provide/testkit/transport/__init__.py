@@ -1,9 +1,12 @@
-"""
-Transport and network testing fixtures for the provide-io ecosystem.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Transport and network testing fixtures for the provide-io ecosystem.
 
 Standard fixtures for testing HTTP clients, WebSocket connections, and
-network operations across any project that depends on provide.foundation.
-"""
+network operations across any project that depends on provide.foundation."""
 
 from provide.testkit.transport.fixtures import (
     free_port,
@@ -28,3 +31,5 @@ __all__ = [
     "network_timeout",
     "tcp_client_server",
 ]
+
+# 🧪✅🔚

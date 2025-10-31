@@ -1,9 +1,12 @@
-"""
-CLI Testing Utilities for Foundation.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""CLI Testing Utilities for Foundation.
 
 Provides comprehensive testing support for CLI applications including
-context mocking, isolated runners, and configuration helpers.
-"""
+context mocking, isolated runners, and configuration helpers."""
 
 from collections.abc import Generator
 from contextlib import contextmanager
@@ -229,3 +232,5 @@ def click_testing_mode() -> Generator[None, None, None]:
             os.environ.pop("CLICK_TESTING", None)
         else:
             os.environ["CLICK_TESTING"] = original_value
+
+# 🧪✅🔚

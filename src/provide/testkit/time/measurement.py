@@ -1,7 +1,11 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Time measurement fixtures for testing.
 
-Fixtures for measuring execution time and benchmarking.
-"""
+Fixtures for measuring execution time and benchmarking."""
 
 from __future__ import annotations
 
@@ -46,3 +50,5 @@ __all__ = [
     "benchmark_timer",
     "timer",
 ]
+
+# 🧪✅🔚

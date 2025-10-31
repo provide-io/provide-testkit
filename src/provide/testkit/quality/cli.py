@@ -1,3 +1,15 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """CLI commands for quality analysis."""
 
 from __future__ import annotations
@@ -185,7 +197,6 @@ def _handle_gate_results(results: Any, verbose: bool) -> None:
     """Handle and display gate results, exit on failure."""
     # Print summary
     if results.passed:
-        click.echo("✅ All quality gates passed!", fg="green")
     else:
         click.echo("❌ Quality gates failed!", fg="red")
 
@@ -202,7 +213,6 @@ def _print_detailed_results(results: Any) -> None:
     """Print detailed results for each tool."""
     click.echo("\nDetailed Results:")
     for tool, result in results.results.items():
-        status = "✅ PASS" if result.passed else "❌ FAIL"
         score_text = f" (Score: {result.score:.1f}%)" if result.score is not None else ""
         click.echo(f"  {tool}: {status}{score_text}")
 
@@ -231,7 +241,6 @@ def coverage_command(
         tracker = CoverageTracker(config)
         result = tracker.analyze(path, artifact_dir=artifact_dir)
 
-        status = "✅ PASSED" if result.passed else "❌ FAILED"
         coverage_pct = result.details.get("coverage_percentage", 0)
 
         click.echo(f"Coverage Analysis: {status}")
@@ -269,7 +278,6 @@ def security_command(path: Path, min_score: float, artifact_dir: Path, verbose: 
         scanner = SecurityScanner(config)
         result = scanner.analyze(path, artifact_dir=artifact_dir)
 
-        status = "✅ PASSED" if result.passed else "❌ FAILED"
         score = result.score or 0
 
         click.echo(f"Security Analysis: {status}")
@@ -320,7 +328,6 @@ def complexity_command(
         analyzer = ComplexityAnalyzer(config)
         result = analyzer.analyze(path, artifact_dir=artifact_dir)
 
-        status = "✅ PASSED" if result.passed else "❌ FAILED"
         grade = result.details.get("overall_grade", "N/A")
         avg_complexity = result.details.get("average_complexity", 0)
 
@@ -346,7 +353,6 @@ def _print_terminal_results(results: dict[str, Any], verbose: bool) -> None:
     click.echo("=" * 50)
 
     for tool, result in results.items():
-        status = "✅ PASSED" if result.passed else "❌ FAILED"
         score_text = f" ({result.score:.1f}%)" if result.score is not None else ""
 
         click.echo(f"{tool.title()}: {status}{score_text}")
@@ -376,16 +382,16 @@ def _print_summary(results: dict[str, Any], verbose: bool) -> None:
     total = len(results)
 
     if passed == total:
-        click.echo(f"✅ All {total} quality checks passed!", fg="green")
     else:
         failed = total - passed
         click.echo(f"❌ {failed}/{total} quality checks failed!", fg="red")
 
     if verbose:
         for tool, result in results.items():
-            status_icon = "✅" if result.passed else "❌"
             click.echo(f"  {status_icon} {tool}")
 
 
 if __name__ == "__main__":
     quality_cli()
+
+# 🧪✅🔚

@@ -1,9 +1,12 @@
-"""
-Mocking Fixtures and Utilities.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Mocking Fixtures and Utilities.
 
 Standardized mocking patterns and fixtures for the provide-io ecosystem.
-Reduces boilerplate and ensures consistent mocking across all tests.
-"""
+Reduces boilerplate and ensures consistent mocking across all tests."""
 
 from typing import Any
 from unittest.mock import (
@@ -356,3 +359,5 @@ __all__ = [
     "sentinel",
     "spy_fixture",
 ]
+
+# 🧪✅🔚

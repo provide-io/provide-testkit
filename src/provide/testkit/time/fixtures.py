@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Time Testing Fixtures and Utilities.
 
 Fixtures for mocking time, freezing time, and testing time-dependent code
@@ -12,8 +17,7 @@ organization:
 - measurement.py: Timer fixtures
 - mocking.py: Mock fixtures
 - controlled.py: Controlled time utilities
-- rate_limiting.py: Rate limiter mocks
-"""
+- rate_limiting.py: Rate limiter mocks"""
 
 from __future__ import annotations
 
@@ -74,3 +78,5 @@ __all__ = [
     "time_travel",
     "timer",
 ]
+
+# 🧪✅🔚

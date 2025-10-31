@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Main CLI entry point for provide-testkit."""
 
 from __future__ import annotations
@@ -20,3 +25,5 @@ main.add_command(quality_cli)
 
 if __name__ == "__main__":
     main()
+
+# 🧪✅🔚

@@ -1,9 +1,12 @@
-"""
-Async-specific test fixtures for process testing.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Async-specific test fixtures for process testing.
 
 Provides fixtures for testing async operations, event loops, and
-async context management across the provide-io ecosystem.
-"""
+async context management across the provide-io ecosystem."""
 
 import asyncio
 from collections.abc import AsyncGenerator, Callable
@@ -389,3 +392,5 @@ __all__ = [
     "clean_event_loop",
     "event_loop_policy",
 ]
+
+# 🧪✅🔚

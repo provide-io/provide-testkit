@@ -1,8 +1,12 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Time testing utilities for the provide-io ecosystem.
 
 Fixtures and utilities for mocking time, freezing time, and testing
-time-dependent code across any project that depends on provide.foundation.
-"""
+time-dependent code across any project that depends on provide.foundation."""
 
 from provide.testkit.time.fixtures import (
     BenchmarkTimer,
@@ -45,3 +49,5 @@ __all__ = [
     "time_travel",
     "timer",
 ]
+
+# 🧪✅🔚

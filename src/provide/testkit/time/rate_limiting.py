@@ -1,7 +1,11 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Rate limiting mock fixtures for testing.
 
-Fixtures for testing rate-limited code.
-"""
+Fixtures for testing rate-limited code."""
 
 from __future__ import annotations
 
@@ -31,3 +35,5 @@ def rate_limiter_mock():
 __all__ = [
     "rate_limiter_mock",
 ]
+
+# 🧪✅🔚

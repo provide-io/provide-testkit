@@ -1,9 +1,12 @@
-"""
-Process and async testing fixtures for the provide-io ecosystem.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Process and async testing fixtures for the provide-io ecosystem.
 
 Standard fixtures for testing async code, subprocess operations, and
-event loop management across any project that depends on provide.foundation.
-"""
+event loop management across any project that depends on provide.foundation."""
 
 from provide.testkit.process.fixtures import (
     async_condition_waiter,
@@ -46,3 +49,5 @@ __all__ = [
     "event_loop_policy",
     "mock_async_process",
 ]
+
+# 🧪✅🔚

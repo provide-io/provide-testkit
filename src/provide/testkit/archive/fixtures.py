@@ -1,9 +1,12 @@
-"""
-Archive Testing Fixtures.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Archive Testing Fixtures.
 
 Fixtures specific to testing archive operations like tar, zip, gzip, bzip2.
-Builds on top of file fixtures for archive-specific test scenarios.
-"""
+Builds on top of file fixtures for archive-specific test scenarios."""
 
 from collections.abc import Generator
 from pathlib import Path
@@ -215,3 +218,5 @@ def archive_stress_test_files() -> Generator[Path, None, None]:
             bin_file.write_bytes(bytes(range(256)) * 10)
 
         yield stress_dir
+
+# 🧪✅🔚

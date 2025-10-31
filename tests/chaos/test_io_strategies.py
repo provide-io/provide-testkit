@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for I/O and file system chaos strategies."""
 
 from __future__ import annotations
@@ -260,3 +265,5 @@ class TestPathTraversalPatterns:
             except Exception:
                 # Some malicious paths might also fail Path() validation
                 pass
+
+# 🧪✅🔚

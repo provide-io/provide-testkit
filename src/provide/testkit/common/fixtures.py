@@ -1,9 +1,12 @@
-"""
-Common Test Fixtures for Foundation.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Common Test Fixtures for Foundation.
 
 Provides pytest fixtures for capturing output, setting up telemetry,
-and other common testing scenarios across the Foundation test suite.
-"""
+and other common testing scenarios across the Foundation test suite."""
 
 from collections.abc import Callable, Generator
 import io
@@ -162,3 +165,5 @@ def mock_transport() -> Mock:
     mock.connect.return_value = None
     mock.disconnect.return_value = None
     return mock
+
+# 🧪✅🔚

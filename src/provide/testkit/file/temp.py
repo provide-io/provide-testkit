@@ -1,9 +1,12 @@
-"""
-Consolidated Temporary File Utilities.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Consolidated Temporary File Utilities.
 
 Provides unified utilities for creating and managing temporary files
-and directories in tests with automatic cleanup capabilities.
-"""
+and directories in tests with automatic cleanup capabilities."""
 
 from __future__ import annotations
 
@@ -290,3 +293,5 @@ __all__ = [
     "create_temp_dir",
     "create_temp_file",
 ]
+
+# 🧪✅🔚

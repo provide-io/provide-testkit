@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Hub testing utilities."""
 
 from __future__ import annotations
@@ -13,3 +18,5 @@ __all__ = [
     "isolated_container",
     "isolated_hub",
 ]
+
+# 🧪✅🔚

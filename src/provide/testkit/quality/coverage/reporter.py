@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Coverage reporting utilities."""
 
 from __future__ import annotations
@@ -30,7 +35,6 @@ class CoverageReporter:
         lines = [
             f"Coverage Report - {result.tool}",
             "=" * 40,
-            f"Status: {'✅ PASSED' if result.passed else '❌ FAILED'}",
         ]
 
         if result.score is not None:
@@ -148,3 +152,5 @@ class CoverageReporter:
             )
 
         return dashboard_data
+
+# 🧪✅🔚

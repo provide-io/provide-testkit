@@ -1,15 +1,13 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# __init__.py
-#
-"""
-Logger Testing Utilities.
+
+"""Logger Testing Utilities.
 
 Provides utilities for logger testing, including state reset,
-mock fixtures, and pytest hooks for managing noisy loggers.
-"""
+mock fixtures, and pytest hooks for managing noisy loggers."""
 
-# Import reset utilities
-# Import hook utilities
 from provide.testkit.logger.hooks import (
     DEFAULT_NOISY_LOGGERS,
     get_log_level_for_noisy_loggers,
@@ -37,3 +35,5 @@ __all__ = [
     "pytest_runtest_setup",
     "suppress_loggers",
 ]
+
+# 🧪✅🔚

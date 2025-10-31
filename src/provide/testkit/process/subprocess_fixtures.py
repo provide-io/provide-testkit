@@ -1,9 +1,12 @@
-"""
-Subprocess-specific test fixtures for process testing.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Subprocess-specific test fixtures for process testing.
 
 Provides fixtures for mocking and testing subprocess operations,
-stream handling, and process communication.
-"""
+stream handling, and process communication."""
 
 import pytest
 
@@ -206,3 +209,5 @@ __all__ = [
     "async_test_client",
     "mock_async_process",
 ]
+
+# 🧪✅🔚

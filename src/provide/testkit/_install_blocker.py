@@ -1,13 +1,12 @@
-# provide/testkit/_install_blocker.py
-#
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
+#
 
 """Centralized setproctitle blocker installation logic.
 
 This module provides a single function to conditionally install the
-setproctitle import blocker only when running under pytest.
-"""
+setproctitle import blocker only when running under pytest."""
 
 from __future__ import annotations
 
@@ -54,5 +53,4 @@ def install_setproctitle_blocker(force: bool = False) -> None:
 
 __all__ = ["install_setproctitle_blocker", "should_install_blocker"]
 
-
-# <3 🧱🤝🚫🪄
+# 🧪✅🔚

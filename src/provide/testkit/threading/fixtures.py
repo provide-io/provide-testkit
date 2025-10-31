@@ -1,12 +1,14 @@
-"""
-Threading Test Fixtures and Utilities.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Threading Test Fixtures and Utilities.
 
 Core threading fixtures with re-exports from specialized modules.
 Fixtures for testing multi-threaded code, thread synchronization,
-and concurrent operations across the provide-io ecosystem.
-"""
+and concurrent operations across the provide-io ecosystem."""
 
-# Re-export all fixtures from specialized modules
 from provide.testkit.threading.basic_fixtures import (
     mock_thread,
     test_thread,
@@ -48,3 +50,5 @@ __all__ = [
     "deadlock_detector",
     "thread_exception_handler",
 ]
+
+# 🧪✅🔚

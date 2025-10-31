@@ -1,13 +1,12 @@
-# provide/testkit/process/system_fixtures.py
-#
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
+#
 
 """System-level process management fixtures for testing.
 
 This module provides fixtures for managing system-level process behaviors
-during tests, including process title manipulation and system resource management.
-"""
+during tests, including process title manipulation and system resource management."""
 
 from __future__ import annotations
 
@@ -75,5 +74,4 @@ __all__ = [
     "disable_setproctitle",
 ]
 
-
-# 🖥️🔧🚫📋🪄
+# 🧪✅🔚

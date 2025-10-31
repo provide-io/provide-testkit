@@ -1,9 +1,12 @@
-"""
-Time Mocking Utilities.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Time Mocking Utilities.
 
 Provides utilities for mocking time-related functions in tests,
-particularly sleep functions from both time and asyncio modules.
-"""
+particularly sleep functions from both time and asyncio modules."""
 
 from __future__ import annotations
 
@@ -180,3 +183,5 @@ __all__ = [
     "mock_sleep",
     "mock_time_sleep",
 ]
+
+# 🧪✅🔚

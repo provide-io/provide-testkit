@@ -1,9 +1,12 @@
-"""
-Directory-specific test fixtures.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Directory-specific test fixtures.
 
 Fixtures for creating temporary directories, nested structures,
-and standard test directory layouts.
-"""
+and standard test directory layouts."""
 
 from collections.abc import Generator
 from pathlib import Path
@@ -103,3 +106,5 @@ __all__ = [
     "temp_directory",
     "test_files_structure",
 ]
+
+# 🧪✅🔚

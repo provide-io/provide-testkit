@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""
-Example: Basic Usage Patterns
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Example: Basic Usage Patterns
 
 This example demonstrates the most commonly used provide-testkit fixtures
 and basic testing patterns. Start here if you're new to provide-testkit.
@@ -14,8 +17,7 @@ Learning objectives:
 - Understand basic fixture usage
 - Learn common testing patterns
 - See how fixtures provide automatic cleanup
-- Practice the Arrange-Act-Assert pattern
-"""
+- Practice the Arrange-Act-Assert pattern"""
 
 import asyncio
 import json
@@ -287,3 +289,5 @@ if __name__ == "__main__":
     print("  ✓ Arrange-Act-Assert pattern")
     print("  ✓ Combining multiple fixtures")
     print("  ✓ Error condition testing")
+
+# 🧪✅🔚

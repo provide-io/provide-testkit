@@ -1,9 +1,12 @@
-"""
-Environment management utilities for testing.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Environment management utilities for testing.
 
 Provides context managers and utilities for managing test environments,
-environment variables, and foundation setup/cleanup.
-"""
+environment variables, and foundation setup/cleanup."""
 
 import os
 from pathlib import Path
@@ -77,3 +80,5 @@ def add_src_to_path() -> Path:
 def reset_test_environment() -> None:
     """Reset the test environment to a clean state."""
     reset_foundation_setup_for_testing()
+
+# 🧪✅🔚

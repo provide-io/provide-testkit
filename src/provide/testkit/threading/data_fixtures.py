@@ -1,8 +1,11 @@
-"""
-Thread-safe data structure test fixtures.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
 
-Fixtures for thread-safe lists, counters, and other data structures for testing.
-"""
+"""Thread-safe data structure test fixtures.
+
+Fixtures for thread-safe lists, counters, and other data structures for testing."""
 
 import threading
 from typing import Any
@@ -99,3 +102,5 @@ __all__ = [
     "thread_safe_counter",
     "thread_safe_list",
 ]
+
+# 🧪✅🔚

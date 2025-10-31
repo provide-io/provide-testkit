@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""
-Example: Mocking and Test Double Patterns
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Example: Mocking and Test Double Patterns
 
 This example demonstrates common mocking patterns and test doubles
 using provide-testkit's mocking utilities and fixtures.
@@ -14,8 +17,7 @@ Learning objectives:
 - Understand different types of test doubles
 - Learn when to use mocks vs real objects
 - Practice mocking external dependencies
-- See fixture composition for complex scenarios
-"""
+- See fixture composition for complex scenarios"""
 
 import json
 from pathlib import Path
@@ -446,7 +448,6 @@ if __name__ == "__main__":
     print("=" * 50)
     print("This example demonstrates various mocking patterns:")
     print("")
-    print("🔧 Test Double Types:")
     print("  • Mock - Programmable objects that verify behavior")
     print("  • Stub - Simple objects that return fixed values")
     print("  • Spy - Objects that record how they were used")
@@ -469,3 +470,5 @@ if __name__ == "__main__":
     print("  • Stubs: When you just need consistent return values")
     print("  • Spies: When you need to observe behavior")
     print("  • Fakes: When you need working test implementations")
+
+# 🧪✅🔚

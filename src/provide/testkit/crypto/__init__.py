@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Crypto testing fixtures for Foundation."""
 
 from provide.testkit.crypto.fixtures import (
@@ -35,3 +40,5 @@ __all__ = [
     "valid_cert_pem",
     "valid_key_pem",
 ]
+
+# 🧪✅🔚

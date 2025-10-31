@@ -1,7 +1,7 @@
-# provide/testkit/_early_init.py
-#
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
+#
 
 """Early initialization for provide-testkit.
 
@@ -17,8 +17,7 @@ The .pth file approach ensures the blocker is installed:
 - At the same time as sitecustomize.py would run
 
 This provides the best developer experience - completely automatic activation
-with zero configuration needed.
-"""
+with zero configuration needed."""
 
 from __future__ import annotations
 
@@ -114,5 +113,4 @@ _install_blocker()
 
 __all__ = ["_get_logger", "_install_blocker", "_is_testing_context"]
 
-
-# 🔌⚡🚀🛡️
+# 🧪✅🔚

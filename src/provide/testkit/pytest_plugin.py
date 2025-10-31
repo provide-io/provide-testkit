@@ -1,7 +1,7 @@
-# provide/testkit/pytest_plugin.py
-#
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
+#
 
 """Pytest plugin that disables setproctitle to prevent pytest-xdist issues on macOS.
 
@@ -16,8 +16,7 @@ This approach is clean because:
 - It leverages xdist's existing try/except ImportError fallback
 - Works in both main process and worker subprocesses automatically
 - Requires no manual installation or .venv modification
-- Uses standard Python import hook mechanism
-"""
+- Uses standard Python import hook mechanism"""
 
 from __future__ import annotations
 
@@ -38,5 +37,4 @@ def pytest_load_initial_conftests() -> None:
     """
     pass
 
-
-# 🔌🚫📋🪄
+# 🧪✅🔚

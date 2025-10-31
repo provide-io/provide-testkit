@@ -1,10 +1,13 @@
-"""
-MinimalTestCase Base Class.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""MinimalTestCase Base Class.
 
 Provides a lightweight base class for tests that need common utilities
 but don't require Foundation state reset. Ideal for timing-sensitive
-tests or tests that don't use Foundation components.
-"""
+tests or tests that don't use Foundation components."""
 
 from __future__ import annotations
 
@@ -121,3 +124,5 @@ class MinimalTestCase:
 
 
 __all__ = ["MinimalTestCase"]
+
+# 🧪✅🔚

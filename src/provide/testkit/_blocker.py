@@ -1,12 +1,11 @@
-# provide/testkit/_blocker.py
-#
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
+#
 
 """SetproctitleImportBlocker class for preventing macOS freezing with pytest-xdist.
 
-This module contains only the blocker class definition to avoid circular imports.
-"""
+This module contains only the blocker class definition to avoid circular imports."""
 
 from __future__ import annotations
 
@@ -84,5 +83,4 @@ class SetproctitleImportBlocker:
 
 __all__ = ["SetproctitleImportBlocker"]
 
-
-# <3 🧱🤝🚫🪄
+# 🧪✅🔚

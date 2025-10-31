@@ -1,8 +1,9 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# reset.py
-#
-"""
-Foundation Reset Utilities for Testing.
+
+"""Foundation Reset Utilities for Testing.
 
 Thin wrapper around Foundation's orchestrated reset functionality.
 Provides backward-compatible API while delegating to Foundation's
@@ -30,10 +31,8 @@ testing patterns:
        ...     # Test has clean, isolated state
 
 The reset functions in this module support the traditional global state pattern.
-Tests using isolated containers can skip these reset calls entirely.
-"""
+Tests using isolated containers can skip these reset calls entirely."""
 
-# Re-export mock utilities from mocks module
 from provide.testkit.logger.mocks import mock_logger, mock_logger_factory
 
 # Note: Removed module-level imports to avoid circular imports
@@ -94,3 +93,5 @@ __all__ = [
     "reset_foundation_setup_for_testing",
     "reset_foundation_state",
 ]
+
+# 🧪✅🔚

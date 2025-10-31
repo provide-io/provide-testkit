@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Coverage analysis integration for provide-testkit.
 
 Provides pytest fixtures and utilities for tracking code coverage during tests.
@@ -20,8 +25,7 @@ Usage:
     # Session-wide coverage
     def test_example(session_coverage):
         # Coverage automatically tracked across all tests
-        pass
-"""
+        pass"""
 
 from .fixture import CoverageFixture, coverage_tracker, session_coverage
 from .reporter import CoverageReporter
@@ -34,3 +38,5 @@ __all__ = [
     "coverage_tracker",
     "session_coverage",
 ]
+
+# 🧪✅🔚

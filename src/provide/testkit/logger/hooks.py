@@ -1,12 +1,12 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# hooks.py
-#
-"""
-Pytest Hooks for Logger Management.
+
+"""Pytest Hooks for Logger Management.
 
 Provides pytest hooks for suppressing noisy loggers during test runs.
-This helps reduce test output noise from third-party libraries.
-"""
+This helps reduce test output noise from third-party libraries."""
 
 import logging
 import os
@@ -98,3 +98,5 @@ __all__ = [
     "pytest_runtest_setup",
     "suppress_loggers",
 ]
+
+# 🧪✅🔚

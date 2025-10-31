@@ -1,14 +1,13 @@
-# tests/test_pth_installation.py
-#
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
+#
 
 """Integration tests for .pth file installation and loading.
 
 Tests that the .pth file is correctly installed to site-packages and
 that it successfully loads the setproctitle blocker early enough to
-prevent pytest-xdist from importing setproctitle.
-"""
+prevent pytest-xdist from importing setproctitle."""
 
 from __future__ import annotations
 
@@ -258,5 +257,4 @@ class TestPthFileUninstallation:
                     ) or "site-packages" in str(pth_path.parent)
                     break
 
-
-# 🧪🔌⚡📦
+# 🧪✅🔚

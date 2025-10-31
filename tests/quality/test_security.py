@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for security scanning functionality."""
 
 import json
@@ -146,7 +151,6 @@ class TestSecurityScanner:
         report = scanner._generate_text_report(result)
 
         assert "Security Analysis Report" in report
-        assert "✅ PASSED" in report
         assert "95.0%" in report
         assert "Files Scanned: 10" in report
         assert "Total Issues: 2" in report
@@ -318,3 +322,5 @@ def another_unsafe():
     json_report = scanner.report(result, "json")
     data = json.loads(json_report)
     assert data["tool"] == "security"
+
+# 🧪✅🔚

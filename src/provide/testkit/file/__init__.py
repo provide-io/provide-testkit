@@ -1,9 +1,12 @@
-"""
-File testing fixtures for the provide-io ecosystem.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""File testing fixtures for the provide-io ecosystem.
 
 Standard fixtures for file and directory operations that can be used
-across any project that depends on provide.foundation.
-"""
+across any project that depends on provide.foundation."""
 
 from provide.testkit.file.fixtures import (
     binary_file,
@@ -38,3 +41,5 @@ __all__ = [
     "temp_symlink",
     "test_files_structure",
 ]
+
+# 🧪✅🔚

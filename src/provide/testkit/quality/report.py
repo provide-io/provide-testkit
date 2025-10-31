@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Report generation for quality analysis results."""
 
 from __future__ import annotations
@@ -85,7 +90,6 @@ class ReportGenerator:
 
     def _format_tool_result(self, result: QualityResult) -> str:
         """Format a single tool result for terminal display."""
-        status_icon = "✅" if result.passed else "❌"
         score_text = f" ({result.score:.1f}%)" if result.score is not None else ""
         time_text = f" [{result.execution_time:.2f}s]" if result.execution_time is not None else ""
 
@@ -153,7 +157,6 @@ class ReportGenerator:
             html += f"""
     <div class="tool-result {status_class}">
         <h3>{result.tool.title()}{score_text}</h3>
-        <p class="score">Status: {"✅ PASSED" if result.passed else "❌ FAILED"}</p>
 """
 
             if result.details:
@@ -194,7 +197,6 @@ class ReportGenerator:
         lines.append("|------|--------|-------|------|")
 
         for tool_name, result in results.items():
-            status = "✅ PASSED" if result.passed else "❌ FAILED"
             score = f"{result.score:.1f}%" if result.score is not None else "N/A"
             time = f"{result.execution_time:.2f}s" if result.execution_time is not None else "N/A"
             lines.append(f"| {result.tool.title()} | {status} | {score} | {time} |")
@@ -264,3 +266,5 @@ class ReportGenerator:
         report_content = self.generate(results, format)
         ensure_dir(output_path.parent)
         atomic_write_text(output_path, report_content)
+
+# 🧪✅🔚

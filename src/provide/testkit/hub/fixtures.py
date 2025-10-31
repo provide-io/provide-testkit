@@ -1,5 +1,9 @@
-"""
-Hub Testing Fixtures for Foundation.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Hub Testing Fixtures for Foundation.
 
 Provides pytest fixtures for testing hub and component functionality,
 including container directories and component registration scenarios.
@@ -20,8 +24,7 @@ Example usage:
     ...     # Each test gets its own Hub with clean state
     ...     # No need to call reset_foundation_setup_for_testing()
     ...     client = UniversalClient(hub=isolated_hub)
-    ...     # Test proceeds with isolated dependencies
-"""
+    ...     # Test proceeds with isolated dependencies"""
 
 from __future__ import annotations
 
@@ -112,3 +115,5 @@ def isolated_hub() -> Any:
         command_registry=command_registry,
         use_shared_registries=False,
     )
+
+# 🧪✅🔚

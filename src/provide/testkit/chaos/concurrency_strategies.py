@@ -1,8 +1,12 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Concurrency and parallelism chaos strategies.
 
 Provides Hypothesis strategies for generating concurrent execution patterns,
-race conditions, deadlock scenarios, and threading/async edge cases.
-"""
+race conditions, deadlock scenarios, and threading/async edge cases."""
 
 from __future__ import annotations
 
@@ -394,3 +398,5 @@ __all__ = [
     "task_cancellation_patterns",
     "thread_counts",
 ]
+
+# 🧪✅🔚

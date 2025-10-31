@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Performance profiling and analysis for provide-testkit.
 
 Provides performance profiling analysis using memray, cProfile, and other tools.
@@ -18,8 +23,7 @@ Usage:
 
     # CPU profiling with quality gates
     runner = QualityRunner()
-    results = runner.run_with_gates(path, {"profiling": {"max_memory_mb": 100}})
-"""
+    results = runner.run_with_gates(path, {"profiling": {"max_memory_mb": 100}})"""
 
 from .fixture import ProfilingFixture
 from .profiler import PerformanceProfiler
@@ -28,3 +32,5 @@ __all__ = [
     "PerformanceProfiler",
     "ProfilingFixture",
 ]
+
+# 🧪✅🔚

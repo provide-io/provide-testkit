@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Security vulnerability scanner implementation."""
 
 from __future__ import annotations
@@ -250,7 +255,6 @@ class SecurityScanner:
         lines = [
             f"Security Analysis Report - {result.tool}",
             "=" * 50,
-            f"Status: {'✅ PASSED' if result.passed else '❌ FAILED'}",
             f"Security Score: {result.score}%",
         ]
 
@@ -336,3 +340,5 @@ class SecurityScanner:
             )
         else:
             return str(result.details)
+
+# 🧪✅🔚

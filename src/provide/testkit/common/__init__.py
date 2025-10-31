@@ -1,9 +1,12 @@
-"""
-Common testing fixtures for the provide-io ecosystem.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Common testing fixtures for the provide-io ecosystem.
 
 Standard mock objects and fixtures that are used across multiple modules
-in any project that depends on provide.foundation.
-"""
+in any project that depends on provide.foundation."""
 
 from provide.testkit.common.fixtures import (
     mock_cache,
@@ -30,3 +33,5 @@ __all__ = [
     "mock_telemetry_config",
     "mock_transport",
 ]
+
+# 🧪✅🔚

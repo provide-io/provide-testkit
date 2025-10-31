@@ -1,3 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Complexity analysis implementation using radon."""
 
 from __future__ import annotations
@@ -309,7 +314,6 @@ class ComplexityAnalyzer:
         lines = [
             f"Complexity Analysis Report - {result.tool}",
             "=" * 50,
-            f"Status: {'✅ PASSED' if result.passed else '❌ FAILED'}",
             f"Overall Grade: {result.details.get('overall_grade', 'N/A')}",
             f"Score: {result.score}%",
         ]
@@ -390,3 +394,5 @@ class ComplexityAnalyzer:
             )
         else:
             return str(result.details)
+
+# 🧪✅🔚

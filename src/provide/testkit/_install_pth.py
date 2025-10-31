@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-# _install_pth.py
-#
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
+#
 
 """Post-install script to symlink .pth file to site-packages root.
 
 This script is called automatically via pip's console_scripts entry point
-after package installation to ensure the .pth file is in the correct location.
-"""
+after package installation to ensure the .pth file is in the correct location."""
 
 from __future__ import annotations
 
@@ -135,5 +133,4 @@ if __name__ == "__main__":
     else:
         sys.exit(_cli_install())
 
-
-# 📦🔗⚙️✨
+# 🧪✅🔚
