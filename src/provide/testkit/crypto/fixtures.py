@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -7,6 +7,9 @@
 
 Provides comprehensive pytest fixtures for testing certificate functionality,
 including valid/invalid certificates, keys, chains, and edge cases."""
+
+from pathlib import Path
+from urllib.request import pathname2url
 
 import pytest
 
@@ -119,6 +122,10 @@ def temporary_cert_file(tmp_path: any, client_cert: Certificate) -> str:
     """Creates a temporary file containing the client certificate."""
     cert_file = tmp_path / "client_cert.pem"
     cert_file.write_text(client_cert.cert_pem)
+    # Handle Windows drive letters in file URIs
+    cert_path = Path(cert_file)
+    if cert_path.drive:  # Windows path with drive letter
+        return f"file:///{pathname2url(str(cert_file))}"
     return f"file://{cert_file}"
 
 
@@ -127,6 +134,10 @@ def temporary_key_file(tmp_path: any, client_cert: Certificate) -> str:
     """Creates a temporary file containing the client private key."""
     key_file = tmp_path / "client_key.pem"
     key_file.write_text(client_cert.key_pem)
+    # Handle Windows drive letters in file URIs
+    key_path = Path(key_file)
+    if key_path.drive:  # Windows path with drive letter
+        return f"file:///{pathname2url(str(key_file))}"
     return f"file://{key_file}"
 
 

@@ -27,14 +27,14 @@ class TestPthFileInstallation:
         """Verify .pth file exists in source package."""
         # Find the package root
         testkit_root = Path(__file__).parent.parent
-        pth_file = testkit_root / "src" / "provide_testkit_init.pth"
+        pth_file = testkit_root / "src" / "provide" / "testkit" / "provide_testkit_init.pth"
 
         assert pth_file.exists(), f".pth file should exist at {pth_file}"
 
     def test_pth_file_content(self) -> None:
         """Verify .pth file contains correct import statement."""
         testkit_root = Path(__file__).parent.parent
-        pth_file = testkit_root / "src" / "provide_testkit_init.pth"
+        pth_file = testkit_root / "src" / "provide" / "testkit" / "provide_testkit_init.pth"
 
         content = pth_file.read_text().strip()
         assert (
