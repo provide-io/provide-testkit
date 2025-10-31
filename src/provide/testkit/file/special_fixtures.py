@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -11,6 +11,7 @@ symbolic links, and executable files."""
 from collections.abc import Generator
 from pathlib import Path
 import stat
+import sys
 
 import pytest
 
@@ -48,12 +49,20 @@ def readonly_file() -> Generator[Path, None, None]:
         path.write_text("Read-only content")
 
     # Make file read-only
-    path.chmod(0o444)
+    if sys.platform == "win32":
+        # Windows: Only read-only bit is meaningful
+        path.chmod(stat.S_IREAD)
+    else:
+        # Unix: Full permission control
+        path.chmod(0o444)
 
     yield path
 
     # Restore write permission for cleanup
-    path.chmod(0o644)
+    if sys.platform == "win32":
+        path.chmod(stat.S_IWRITE | stat.S_IREAD)
+    else:
+        path.chmod(0o644)
     safe_delete(path, missing_ok=True)
 
 
@@ -77,6 +86,9 @@ def temp_symlink():
 
         Returns:
             Path to created symlink
+
+        Raises:
+            pytest.skip: On Windows if symlinks require admin/developer mode
         """
         target = Path(target)
 
@@ -86,7 +98,17 @@ def temp_symlink():
         else:
             link_name = Path(link_name)
 
-        link_name.symlink_to(target)
+        # On Windows, symlink creation requires special permissions
+        if sys.platform == "win32":
+            try:
+                link_name.symlink_to(target)
+            except OSError as e:
+                pytest.skip(
+                    f"Symlink creation requires admin rights or Developer Mode on Windows: {e}"
+                )
+        else:
+            link_name.symlink_to(target)
+
         created_links.append(link_name)
 
         return link_name
@@ -108,23 +130,30 @@ def temp_executable_file():
     """
     created_files = []
 
-    def _make_executable(content: str = "#!/bin/sh\necho 'test'\n", suffix: str = ".sh") -> Path:
+    def _make_executable(content: str = None, suffix: str = None) -> Path:
         """
         Create a temporary executable file.
 
         Args:
-            content: Script content
-            suffix: File suffix
+            content: Script content (platform-specific default if None)
+            suffix: File suffix (platform-specific default if None)
 
         Returns:
             Path to created executable file
         """
+        # Platform-specific defaults
+        if content is None:
+            content = "@echo off\necho test\n" if sys.platform == "win32" else "#!/bin/sh\necho 'test'\n"
+        if suffix is None:
+            suffix = ".bat" if sys.platform == "win32" else ".sh"
+
         with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as path:
             path.write_text(content)
 
-        # Make executable
-        current = path.stat().st_mode
-        path.chmod(current | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
+        # Make executable (Unix only - Windows uses file extension)
+        if sys.platform != "win32":
+            current = path.stat().st_mode
+            path.chmod(current | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
 
         created_files.append(path)
         return path

@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -47,10 +47,12 @@ class SetproctitleImportBlocker:
         if fullname == "setproctitle":
             # DEBUG: Track setproctitle import attempts
             import os
+            import tempfile
             import traceback
+            from pathlib import Path
 
             _pid = os.getpid()
-            _debug_file = f"/tmp/testkit-debug-{_pid}.log"
+            _debug_file = Path(tempfile.gettempdir()) / f"testkit-debug-{_pid}.log"
             with open(_debug_file, "a") as f:
                 f.write(f"🐛🚫 [PID {_pid}] setproctitle import BLOCKED!\n")
                 f.write("🐛📍 Stack trace:\n")

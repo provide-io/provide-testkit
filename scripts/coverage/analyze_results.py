@@ -12,7 +12,7 @@ Usage:
     python analyze_results.py [LOG_DIR]
 
 Arguments:
-    LOG_DIR - Directory containing .log files (default: /tmp/pytest-logs)
+    LOG_DIR - Directory containing .log files (default: <tempdir>/pytest-logs)
 
 Output:
     - Console: Formatted report with summary table and observations
@@ -27,6 +27,7 @@ Features:
 
 import re
 import sys
+import tempfile
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional
@@ -267,7 +268,8 @@ def generate_report(results: list[TestResult]) -> str:
 
 def main():
     # Allow log directory to be specified via command line
-    log_dir_arg = sys.argv[1] if len(sys.argv) > 1 else "/tmp/pytest-logs"
+    default_log_dir = Path(tempfile.gettempdir()) / "pytest-logs"
+    log_dir_arg = sys.argv[1] if len(sys.argv) > 1 else str(default_log_dir)
     log_dir = Path(log_dir_arg)
 
     if not log_dir.exists():
