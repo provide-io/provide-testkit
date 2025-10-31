@@ -20,7 +20,7 @@ from .analyzer import RADON_AVAILABLE, ComplexityAnalyzer
 class ComplexityFixture(BaseQualityFixture):
     """Pytest fixture for complexity analysis integration."""
 
-    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None):
+    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None) -> None:
         """Initialize complexity fixture.
 
         Args:
@@ -170,7 +170,7 @@ def parametrized_complexity(request, tmp_path) -> Generator[ComplexityFixture, N
 
 
 # Pytest hooks for automatic complexity integration
-def pytest_configure(config):
+def pytest_configure(config) -> None:
     """Configure pytest with complexity markers."""
     config.addinivalue_line("markers", "complexity: mark test to run with complexity analysis")
     config.addinivalue_line("markers", "no_complexity: mark test to skip complexity analysis")

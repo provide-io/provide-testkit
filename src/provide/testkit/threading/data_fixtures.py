@@ -23,16 +23,16 @@ def thread_safe_list():
     """
 
     class ThreadSafeList:
-        def __init__(self):
+        def __init__(self) -> None:
             self._list = []
             self._lock = threading.Lock()
 
-        def append(self, item: Any):
+        def append(self, item: Any) -> None:
             """Thread-safe append."""
             with self._lock:
                 self._list.append(item)
 
-        def extend(self, items):
+        def extend(self, items) -> None:
             """Thread-safe extend."""
             with self._lock:
                 self._list.extend(items)
@@ -42,7 +42,7 @@ def thread_safe_list():
             with self._lock:
                 return self._list.copy()
 
-        def clear(self):
+        def clear(self) -> None:
             """Clear the list."""
             with self._lock:
                 self._list.clear()
@@ -68,7 +68,7 @@ def thread_safe_counter():
     """
 
     class ThreadSafeCounter:
-        def __init__(self, initial: int = 0):
+        def __init__(self, initial: int = 0) -> None:
             self._value = initial
             self._lock = threading.Lock()
 
@@ -90,7 +90,7 @@ def thread_safe_counter():
             with self._lock:
                 return self._value
 
-        def reset(self, value: int = 0):
+        def reset(self, value: int = 0) -> None:
             """Reset counter."""
             with self._lock:
                 self._value = value

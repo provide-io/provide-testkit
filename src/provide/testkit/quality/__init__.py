@@ -67,7 +67,7 @@ def __getattr__(name: str):
         return DocumentationFixture
 
     # Quality decorators
-    elif name in [
+    elif name in {
         "quality_gate",
         "coverage_gate",
         "security_gate",
@@ -81,24 +81,26 @@ def __getattr__(name: str):
         "documentation_required",
         "performance_required",
         "quality_required",
-    ]:
-        from .decorators import (
-            complexity_gate,
-            complexity_required,
-            coverage_gate,
-            coverage_required,
-            documentation_gate,
-            documentation_required,
-            performance_gate,
-            performance_required,
-            quality_check,
-            quality_gate,
-            quality_required,
-            security_gate,
-            security_required,
-        )
+    }:
+        from . import decorators
 
-        return locals()[name]
+        decorator_map = {
+            "quality_gate": decorators.quality_gate,
+            "coverage_gate": decorators.coverage_gate,
+            "security_gate": decorators.security_gate,
+            "complexity_gate": decorators.complexity_gate,
+            "documentation_gate": decorators.documentation_gate,
+            "performance_gate": decorators.performance_gate,
+            "quality_check": decorators.quality_check,
+            "coverage_required": decorators.coverage_required,
+            "security_required": decorators.security_required,
+            "complexity_required": decorators.complexity_required,
+            "documentation_required": decorators.documentation_required,
+            "performance_required": decorators.performance_required,
+            "quality_required": decorators.quality_required,
+        }
+
+        return decorator_map[name]
 
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 

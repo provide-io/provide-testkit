@@ -36,7 +36,7 @@ class DocumentationChecker:
     artifact management and integration with the quality framework.
     """
 
-    def __init__(self, config: dict[str, Any] | None = None):
+    def __init__(self, config: dict[str, Any] | None = None) -> None:
         """Initialize documentation checker.
 
         Args:
@@ -329,11 +329,13 @@ class DocumentationChecker:
 
         # Sort by coverage (lowest first to highlight problem files)
         sorted_files = sorted(file_coverage, key=lambda x: x["coverage"])
+        min_coverage = result.details.get("thresholds", {}).get("min_coverage", 0.0)
 
         for file_info in sorted_files:
             coverage = file_info["coverage"]
+            status_icon = "✅" if coverage >= min_coverage else "❌"
             lines.append(
-                f"{status} {file_info['file']}: {coverage:.1f}% ({file_info['covered']}/{file_info['covered'] + file_info['missing']})"
+                f"{status_icon} {file_info['file']}: {coverage:.1f}% ({file_info['covered']}/{file_info['covered'] + file_info['missing']})"
             )
 
         return "\n".join(lines)

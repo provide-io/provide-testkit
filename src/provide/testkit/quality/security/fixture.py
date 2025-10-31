@@ -20,7 +20,7 @@ from .scanner import BANDIT_AVAILABLE, SecurityScanner
 class SecurityFixture(BaseQualityFixture):
     """Pytest fixture for security scanning integration."""
 
-    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None):
+    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None) -> None:
         """Initialize security fixture.
 
         Args:
@@ -170,7 +170,7 @@ def parametrized_security(request, tmp_path) -> Generator[SecurityFixture, None,
 
 
 # Pytest hooks for automatic security integration
-def pytest_configure(config):
+def pytest_configure(config) -> None:
     """Configure pytest with security markers."""
     config.addinivalue_line("markers", "security: mark test to run with security scanning")
     config.addinivalue_line("markers", "no_security: mark test to skip security scanning")

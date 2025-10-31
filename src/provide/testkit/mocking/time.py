@@ -84,8 +84,8 @@ def mock_sleep(
             return result
 
     with (
-        patch("time.sleep", side_effect=time_sleep_mock) as time_mock,
-        patch("asyncio.sleep", side_effect=asyncio_sleep_mock) as asyncio_mock,
+        patch("time.sleep", side_effect=time_sleep_mock),
+        patch("asyncio.sleep", side_effect=asyncio_sleep_mock),
     ):
         try:
             yield tracker

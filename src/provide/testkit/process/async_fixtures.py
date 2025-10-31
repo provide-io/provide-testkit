@@ -133,7 +133,7 @@ async def async_iterator():
         """
 
         class AsyncIterator:
-            def __init__(self, vals):
+            def __init__(self, vals) -> None:
                 self.vals = vals
                 self.index = 0
 
@@ -212,7 +212,7 @@ def async_task_group():
     """
 
     class AsyncTaskGroup:
-        def __init__(self):
+        def __init__(self) -> None:
             self.tasks = []
 
         def create_task(self, coro):
@@ -241,7 +241,7 @@ def async_task_group():
 
             return results
 
-        async def cancel_all(self):
+        async def cancel_all(self) -> None:
             """Cancel all tasks."""
             for task in self.tasks:
                 if not task.done():
@@ -268,7 +268,7 @@ def async_condition_waiter():
         Function to wait for conditions with timeout.
     """
 
-    async def _wait_for(condition: Callable[[], bool], timeout: float = 5.0, interval: float = 0.1):
+    async def _wait_for(condition: Callable[[], bool], timeout: float = 5.0, interval: float = 0.1) -> bool:
         """
         Wait for a condition to become true.
 
@@ -302,7 +302,7 @@ def async_pipeline():
     """
 
     class AsyncPipeline:
-        def __init__(self):
+        def __init__(self) -> None:
             self.stages = []
             self.results = []
 
@@ -327,7 +327,7 @@ def async_pipeline():
             tasks = [self.process(item) for item in items]
             return await asyncio.gather(*tasks)
 
-        def clear(self):
+        def clear(self) -> None:
             """Clear stages and results."""
             self.stages.clear()
             self.results.clear()
@@ -345,13 +345,13 @@ def async_rate_limiter():
     """
 
     class AsyncRateLimiter:
-        def __init__(self, rate: int = 10, per: float = 1.0):
+        def __init__(self, rate: int = 10, per: float = 1.0) -> None:
             self.rate = rate
             self.per = per
             self.allowance = rate
             self.last_check = asyncio.get_event_loop().time()
 
-        async def acquire(self):
+        async def acquire(self) -> None:
             """Acquire permission to proceed."""
             current = asyncio.get_event_loop().time()
             time_passed = current - self.last_check

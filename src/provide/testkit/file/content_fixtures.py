@@ -8,10 +8,14 @@
 Fixtures for creating files with specific content types like text, binary,
 CSV, JSON, and other structured data."""
 
+from __future__ import annotations
+
+from collections.abc import Callable, Generator, Sequence
 import csv
 import json
 from pathlib import Path
 import random
+from typing import Any
 
 import pytest
 
@@ -20,14 +24,14 @@ from provide.foundation.file.safe import safe_delete
 
 
 @pytest.fixture
-def temp_file():
+def temp_file() -> Generator[Callable[..., Path], None, None]:
     """
     Create a temporary file factory with optional content.
 
     Returns:
         A function that creates temporary files with specified content and suffix.
     """
-    created_files = []
+    created_files: list[Path] = []
 
     def _make_temp_file(content: str = "test content", suffix: str = ".txt") -> Path:
         """
@@ -53,20 +57,20 @@ def temp_file():
 
 
 @pytest.fixture
-def temp_named_file():
+def temp_named_file() -> Generator[Callable[..., Path], None, None]:
     """
     Create a named temporary file factory.
 
     Returns:
         Function that creates named temporary files.
     """
-    created_files = []
+    created_files: list[Path] = []
 
     def _make_named_file(
-        content: bytes | str = None,
+        content: str | bytes | None = None,
         suffix: str = "",
         prefix: str = "tmp",
-        dir: Path | str = None,
+        dir: Path | str | None = None,
         mode: str = "w+b",
         delete: bool = False,
     ) -> Path:
@@ -113,14 +117,14 @@ def temp_named_file():
 
 
 @pytest.fixture
-def temp_file_with_content():
+def temp_file_with_content() -> Generator[Callable[..., Path], None, None]:
     """
     Create temporary files with specific content.
 
     Returns:
         Function that creates files with content.
     """
-    created_files = []
+    created_files: list[Path] = []
 
     def _make_file(content: str | bytes, suffix: str = ".txt", encoding: str = "utf-8") -> Path:
         """
@@ -152,16 +156,16 @@ def temp_file_with_content():
 
 
 @pytest.fixture
-def temp_binary_file():
+def temp_binary_file() -> Generator[Callable[..., Path], None, None]:
     """
     Create temporary binary files.
 
     Returns:
         Function that creates binary files.
     """
-    created_files = []
+    created_files: list[Path] = []
 
-    def _make_binary(size: int = 1024, pattern: bytes = None, suffix: str = ".bin") -> Path:
+    def _make_binary(size: int = 1024, pattern: bytes | None = None, suffix: str = ".bin") -> Path:
         """
         Create a temporary binary file.
 
@@ -195,16 +199,20 @@ def temp_binary_file():
 
 
 @pytest.fixture
-def temp_csv_file():
+def temp_csv_file() -> Generator[Callable[..., Path], None, None]:
     """
     Create temporary CSV files for testing.
 
     Returns:
         Function that creates CSV files.
     """
-    created_files = []
+    created_files: list[Path] = []
 
-    def _make_csv(headers: list[str], rows: list[list], suffix: str = ".csv") -> Path:
+    def _make_csv(
+        headers: Sequence[str],
+        rows: Sequence[Sequence[Any]],
+        suffix: str = ".csv",
+    ) -> Path:
         """
         Create a temporary CSV file.
 
@@ -216,11 +224,12 @@ def temp_csv_file():
         Returns:
             Path to created CSV file
         """
-        with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as path:
-            with open(path, "w", newline="") as f:
-                writer = csv.writer(f)
-                writer.writerow(headers)
-                writer.writerows(rows)
+        with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as path, path.open(
+            "w", newline=""
+        ) as f:
+            writer = csv.writer(f)
+            writer.writerow(headers)
+            writer.writerows(rows)
 
         created_files.append(path)
         return path
@@ -233,16 +242,16 @@ def temp_csv_file():
 
 
 @pytest.fixture
-def temp_json_file():
+def temp_json_file() -> Generator[Callable[..., Path], None, None]:
     """
     Create temporary JSON files for testing.
 
     Returns:
         Function that creates JSON files.
     """
-    created_files = []
+    created_files: list[Path] = []
 
-    def _make_json(data: dict | list, suffix: str = ".json", indent: int = 2) -> Path:
+    def _make_json(data: dict[str, Any] | list[Any], suffix: str = ".json", indent: int = 2) -> Path:
         """
         Create a temporary JSON file.
 
@@ -254,9 +263,8 @@ def temp_json_file():
         Returns:
             Path to created JSON file
         """
-        with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as path:
-            with open(path, "w") as f:
-                json.dump(data, f, indent=indent)
+        with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as path, path.open("w") as f:
+            json.dump(data, f, indent=indent)
 
         created_files.append(path)
         return path

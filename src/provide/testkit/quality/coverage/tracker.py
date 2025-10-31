@@ -29,7 +29,7 @@ class CoverageTracker:
     artifact management and integration with the quality framework.
     """
 
-    def __init__(self, config: dict[str, Any] | None = None):
+    def __init__(self, config: dict[str, Any] | None = None) -> None:
         """Initialize coverage tracker.
 
         Args:

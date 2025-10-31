@@ -24,7 +24,7 @@ class ArtifactManager:
     and metadata tracking capabilities.
     """
 
-    def __init__(self, base_dir: Path | str = ".quality-artifacts"):
+    def __init__(self, base_dir: Path | str = ".quality-artifacts") -> None:
         """Initialize artifact manager.
 
         Args:
@@ -118,7 +118,7 @@ class ArtifactManager:
         }
 
         metadata_path = target_dir / f"{result.tool}_metadata.json"
-        with open(metadata_path, "w") as f:
+        with metadata_path.open("w") as f:
             import json
 
             json.dump(metadata, f, indent=2)
@@ -182,7 +182,7 @@ class ArtifactManager:
             }
 
         # Write summary
-        with open(summary_path, "w") as f:
+        with summary_path.open("w") as f:
             import json
 
             json.dump(summary, f, indent=2)
@@ -357,7 +357,7 @@ class ArtifactManager:
             index_data["tools"][tool_dir.name] = tool_info
 
         # Write index
-        with open(index_path, "w") as f:
+        with index_path.open("w") as f:
             import json
 
             json.dump(index_data, f, indent=2)

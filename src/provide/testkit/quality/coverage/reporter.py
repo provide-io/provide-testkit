@@ -15,7 +15,7 @@ from ..base import QualityResult
 class CoverageReporter:
     """Specialized reporter for coverage results."""
 
-    def __init__(self, config: dict[str, Any] | None = None):
+    def __init__(self, config: dict[str, Any] | None = None) -> None:
         """Initialize coverage reporter.
 
         Args:

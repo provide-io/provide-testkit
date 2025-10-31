@@ -121,24 +121,24 @@ def async_mock_server():
     """
 
     class AsyncMockServer:
-        def __init__(self):
+        def __init__(self) -> None:
             self.started = False
             self.connections = []
             self.requests = []
 
-        async def start(self, host: str = "localhost", port: int = 8080):
+        async def start(self, host: str = "localhost", port: int = 8080) -> None:
             """Start the mock server."""
             self.started = True
             self.host = host
             self.port = port
 
-        async def stop(self):
+        async def stop(self) -> None:
             """Stop the mock server."""
             self.started = False
             for conn in self.connections:
                 await conn.close()
 
-        async def handle_connection(self, reader, writer):
+        async def handle_connection(self, reader, writer) -> None:
             """Mock connection handler."""
             conn = {"reader": reader, "writer": writer}
             self.connections.append(conn)
@@ -171,11 +171,11 @@ def async_test_client():
     """
 
     class AsyncTestClient:
-        def __init__(self):
+        def __init__(self) -> None:
             self.responses = {}
             self.requests = []
 
-        def set_response(self, url: str, response: dict):
+        def set_response(self, url: str, response: dict) -> None:
             """Set a mock response for a URL."""
             self.responses[url] = response
 
@@ -189,7 +189,7 @@ def async_test_client():
             self.requests.append({"method": "POST", "url": url, "data": data, "kwargs": kwargs})
             return self.responses.get(url, {"status": 200, "body": "OK"})
 
-        async def close(self):
+        async def close(self) -> None:
             """Close the client."""
             pass
 
