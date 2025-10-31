@@ -21,10 +21,11 @@ Learning objectives:
 
 import json
 from pathlib import Path
-from provide.testkit.mocking import Mock, patch
 
 import pytest
 import requests
+
+from provide.testkit.mocking import Mock, patch
 
 
 # Example HTTP client to demonstrate testing patterns

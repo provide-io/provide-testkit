@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -7,10 +7,10 @@
 
 import json
 from pathlib import Path
-from provide.testkit.mocking import Mock, patch
 
 import pytest
 
+from provide.testkit.mocking import Mock, patch
 from provide.testkit.quality.base import QualityResult
 from provide.testkit.quality.documentation.checker import INTERROGATE_AVAILABLE, DocumentationChecker
 from provide.testkit.quality.documentation.fixture import DocumentationFixture
@@ -511,5 +511,6 @@ class UndocumentedClass:
     json_report = checker.report(result, "json")
     data = json.loads(json_report)
     assert data["tool"] == "documentation"
+
 
 # 🧪✅🔚

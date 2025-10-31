@@ -341,4 +341,5 @@ class SecurityScanner:
         else:
             return str(result.details)
 
+
 # 🧪✅🔚

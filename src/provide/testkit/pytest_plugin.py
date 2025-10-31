@@ -37,4 +37,5 @@ def pytest_load_initial_conftests() -> None:
     """
     pass
 
+
 # 🧪✅🔚

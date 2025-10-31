@@ -103,9 +103,7 @@ def temp_symlink():
             try:
                 link_name.symlink_to(target)
             except OSError as e:
-                pytest.skip(
-                    f"Symlink creation requires admin rights or Developer Mode on Windows: {e}"
-                )
+                pytest.skip(f"Symlink creation requires admin rights or Developer Mode on Windows: {e}")
         else:
             link_name.symlink_to(target)
 

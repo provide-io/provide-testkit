@@ -1,14 +1,13 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
 """Tests for coverage tracking functionality."""
 
-from provide.testkit.mocking import Mock, patch
-
 import pytest
 
+from provide.testkit.mocking import Mock, patch
 from provide.testkit.quality.base import QualityResult
 from provide.testkit.quality.coverage.fixture import CoverageFixture
 from provide.testkit.quality.coverage.tracker import COVERAGE_AVAILABLE, CoverageTracker
@@ -347,5 +346,6 @@ def multiply(a, b):
 
     html_report = tracker.generate_report("html")
     assert "htmlcov" in html_report
+
 
 # 🧪✅🔚

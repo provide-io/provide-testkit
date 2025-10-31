@@ -21,9 +21,10 @@ Learning objectives:
 
 import json
 from pathlib import Path
-from provide.testkit.mocking import Mock, patch
 
 import pytest
+
+from provide.testkit.mocking import Mock, patch
 
 
 # Example classes to demonstrate mocking patterns

@@ -25,12 +25,12 @@ Features:
     - Generates summary statistics
     - Highlights high/low performers"""
 
+from dataclasses import dataclass
+from pathlib import Path
 import re
 import sys
 import tempfile
-from pathlib import Path
-from dataclasses import dataclass
-from typing import Optional
+
 
 @dataclass
 class TestResult:
@@ -40,10 +40,10 @@ class TestResult:
     skipped: int = 0
     warnings: int = 0
     errors: list[str] = None
-    coverage_line: Optional[float] = None
-    coverage_branch: Optional[float] = None
-    total_coverage: Optional[float] = None
-    execution_time: Optional[str] = None
+    coverage_line: float | None = None
+    coverage_branch: float | None = None
+    total_coverage: float | None = None
+    execution_time: str | None = None
     status: str = "UNKNOWN"
 
     def __post_init__(self):
@@ -69,12 +69,12 @@ def parse_log_file(log_path: Path) -> TestResult:
     content = log_path.read_text()
 
     # Strip ANSI color codes
-    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
-    content = ansi_escape.sub('', content)
+    ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+    content = ansi_escape.sub("", content)
 
     # Check for errors
     if "ERROR:" in content or "INTERNALERROR" in content:
-        error_lines = [line for line in content.split('\n') if 'ERROR' in line]
+        error_lines = [line for line in content.split("\n") if "ERROR" in line]
         result.errors.extend(error_lines[:5])  # First 5 errors
         if "Cannot change to directory" in content or "No such file" in content:
             result.status = "NO_TESTS"
@@ -91,7 +91,7 @@ def parse_log_file(log_path: Path) -> TestResult:
     #          "======================== 82 passed in 65.01s ========================="
     #          "==================== 128 passed, 2 skipped in 61.40s ===================="
     # Look for the pattern with passed/failed/skipped/errors
-    summary_pattern = r'=+\s*(?:(\d+)\s+(?:failed|error)s?[,\s]+)?(?:(\d+)\s+passed)?(?:[,\s]+(\d+)\s+skipped)?.*?\s+in\s+([\d:.]+s)'
+    summary_pattern = r"=+\s*(?:(\d+)\s+(?:failed|error)s?[,\s]+)?(?:(\d+)\s+passed)?(?:[,\s]+(\d+)\s+skipped)?.*?\s+in\s+([\d:.]+s)"
     summary_match = re.search(summary_pattern, content, re.IGNORECASE)
 
     if summary_match:
@@ -106,7 +106,7 @@ def parse_log_file(log_path: Path) -> TestResult:
             result.status = "PASSED"
 
     # Parse coverage (look for "Total coverage: XX.XX%")
-    total_cov_pattern = r'Total coverage:\s*([\d.]+)%'
+    total_cov_pattern = r"Total coverage:\s*([\d.]+)%"
     total_cov_match = re.search(total_cov_pattern, content)
     if total_cov_match:
         result.total_coverage = float(total_cov_match.group(1))
@@ -115,13 +115,13 @@ def parse_log_file(log_path: Path) -> TestResult:
     # Look for TOTAL line: "TOTAL   1234  567   89%   45%" or "TOTAL  3558    149   1496    125    94%"
     # Format can be: TOTAL <stmts> <miss> <coverage%> [<branch%>]
     # Or with branch: TOTAL <stmts> <miss> <branch> <partial> <coverage%>
-    coverage_total_pattern = r'TOTAL\s+\d+\s+\d+(?:\s+\d+)?(?:\s+\d+)?\s+([\d.]+)%'
+    coverage_total_pattern = r"TOTAL\s+\d+\s+\d+(?:\s+\d+)?(?:\s+\d+)?\s+([\d.]+)%"
     cov_match = re.search(coverage_total_pattern, content)
     if cov_match:
         result.coverage_line = float(cov_match.group(1))
 
     # Extract failed test names
-    failed_pattern = r'FAILED ([\w/.:-]+)'
+    failed_pattern = r"FAILED ([\w/.:-]+)"
     failed_tests = re.findall(failed_pattern, content)
     if failed_tests:
         result.errors.extend([f"FAILED: {test}" for test in failed_tests[:5]])
@@ -145,12 +145,7 @@ def generate_report(results: list[TestResult]) -> str:
     report.append("-" * 100)
 
     for r in sorted(results, key=lambda x: x.package):
-        status_emoji = {
-            "PASSED": "✓",
-            "FAILED": "✗",
-            "NO_TESTS": "○",
-            "UNKNOWN": "?"
-        }.get(r.status, "?")
+        status_emoji = {"PASSED": "✓", "FAILED": "✗", "NO_TESTS": "○", "UNKNOWN": "?"}.get(r.status, "?")
 
         tests_str = f"{r.passed}P/{r.failed}F/{r.skipped}S" if r.total_tests > 0 else "N/A"
         pass_rate_str = f"{r.pass_rate:.1f}%" if r.total_tests > 0 else "N/A"
@@ -179,7 +174,11 @@ def generate_report(results: list[TestResult]) -> str:
     total_tests = total_passed + total_failed + total_skipped
 
     packages_with_tests = [r for r in results if r.total_tests > 0]
-    avg_coverage = sum(r.total_coverage or r.coverage_line or 0 for r in packages_with_tests) / len(packages_with_tests) if packages_with_tests else 0
+    avg_coverage = (
+        sum(r.total_coverage or r.coverage_line or 0 for r in packages_with_tests) / len(packages_with_tests)
+        if packages_with_tests
+        else 0
+    )
 
     report.append("OVERALL STATISTICS")
     report.append("-" * 100)
@@ -189,7 +188,9 @@ def generate_report(results: list[TestResult]) -> str:
     report.append(f"  - Passed: {total_passed}")
     report.append(f"  - Failed: {total_failed}")
     report.append(f"  - Skipped: {total_skipped}")
-    report.append(f"Overall Pass Rate: {(total_passed/total_tests*100):.2f}%" if total_tests > 0 else "N/A")
+    report.append(
+        f"Overall Pass Rate: {(total_passed / total_tests * 100):.2f}%" if total_tests > 0 else "N/A"
+    )
     report.append(f"Average Coverage: {avg_coverage:.2f}%")
     report.append("")
 
@@ -254,9 +255,11 @@ def generate_report(results: list[TestResult]) -> str:
         report.append("")
 
     # High performers
-    high_perf = [r for r in packages_with_tests
-                 if r.status == "PASSED"
-                 and (r.total_coverage or r.coverage_line or 0) >= 80]
+    high_perf = [
+        r
+        for r in packages_with_tests
+        if r.status == "PASSED" and (r.total_coverage or r.coverage_line or 0) >= 80
+    ]
     if high_perf:
         for r in sorted(high_perf, key=lambda x: -(x.total_coverage or x.coverage_line or 0)):
             cov = r.total_coverage or r.coverage_line or 0

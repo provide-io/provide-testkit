@@ -17,6 +17,7 @@ Learning objectives:
 - See automatic cleanup in action
 - Build confidence with testing"""
 
+
 def test_my_first_testkit_test(temp_directory):
     """My very first test using provide-testkit!
 

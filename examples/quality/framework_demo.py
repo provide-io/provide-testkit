@@ -269,7 +269,6 @@ def demonstrate_quality_gates():
     print("Running with quality gates...")
     gate_results = runner.run_with_gates(target_path, gates)
 
-
     if gate_results.failed_gates:
         print(f"Failed Gates: {', '.join(gate_results.failed_gates)}")
 

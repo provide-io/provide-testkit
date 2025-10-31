@@ -431,4 +431,5 @@ class PerformanceProfiler:
         """
         return self.generate_report(result, format)
 
+
 # 🧪✅🔚

@@ -47,9 +47,9 @@ class SetproctitleImportBlocker:
         if fullname == "setproctitle":
             # DEBUG: Track setproctitle import attempts
             import os
+            from pathlib import Path
             import tempfile
             import traceback
-            from pathlib import Path
 
             _pid = os.getpid()
             _debug_file = Path(tempfile.gettempdir()) / f"testkit-debug-{_pid}.log"

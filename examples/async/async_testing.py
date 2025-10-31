@@ -293,6 +293,7 @@ if __name__ == "__main__":
         results = await asyncio.gather(*tasks)
 
         for result in results:
+            print(f"  ✅ {result}")
 
     async def main():
         """Run all demonstrations."""

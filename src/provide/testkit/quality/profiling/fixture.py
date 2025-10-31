@@ -336,4 +336,5 @@ def cpu_profiler(profiling_config: dict[str, Any]) -> ProfilingFixture:
     yield fixture
     fixture.teardown()
 
+
 # 🧪✅🔚

@@ -22,19 +22,31 @@ Usage:
 
 import argparse
 import os
-import sys
 from pathlib import Path
+import sys
 from typing import NamedTuple
 
 # Directories to exclude when scanning
 EXCLUDE_DIRS = {
-    '.venv', 'venv', 'workenv', '.git', 'build', 'dist', '__pycache__',
-    '.pytest_cache', '.ruff_cache', '.mypy_cache', '.hypothesis', '.eggs', '.tox'
+    ".venv",
+    "venv",
+    "workenv",
+    ".git",
+    "build",
+    "dist",
+    "__pycache__",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".mypy_cache",
+    ".hypothesis",
+    ".eggs",
+    ".tox",
 }
 
 
 class ComplianceStats(NamedTuple):
     """Statistics for a repository's compliance."""
+
     repo_name: str
     total_files: int
     files_with_spdx: int
@@ -59,7 +71,7 @@ def find_python_files(directory: Path) -> list[Path]:
         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
 
         for file in files:
-            if file.endswith('.py'):
+            if file.endswith(".py"):
                 python_files.append(Path(root) / file)
 
     return sorted(python_files)
@@ -76,7 +88,7 @@ def check_file_compliance(filepath: Path) -> tuple[bool, bool]:
         Tuple of (has_spdx, has_footer)
     """
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding="utf-8") as f:
             content = f.read()
             lines = content.splitlines()
     except Exception:
@@ -87,14 +99,41 @@ def check_file_compliance(filepath: Path) -> tuple[bool, bool]:
 
     # Check for SPDX header in first 10 lines
     has_spdx = False
-    first_10 = '\n'.join(lines[:10])
-    if 'SPDX-FileCopyrightText' in first_10 and 'SPDX-License-Identifier' in first_10:
+    first_10 = "\n".join(lines[:10])
+    if "SPDX-FileCopyrightText" in first_10 and "SPDX-License-Identifier" in first_10:
         has_spdx = True
 
     # Check for footer in last 10 lines
     has_footer = False
-    last_10 = '\n'.join(lines[-10:])
-    footer_emojis = ['🏗️', '🐍', '🧱', '🐝', '📁', '🍽️', '📖', '🧪', '✅', '🧩', '🔧', '🌊', '🪢', '🔌', '📞', '📄', '⚙️', '🥣', '🔬', '🔼', '🌶️', '📦', '🧰', '🌍', '🪄', '🔚']
+    last_10 = "\n".join(lines[-10:])
+    footer_emojis = [
+        "🏗️",
+        "🐍",
+        "🧱",
+        "🐝",
+        "📁",
+        "🍽️",
+        "📖",
+        "🧪",
+        "✅",
+        "🧩",
+        "🔧",
+        "🌊",
+        "🪢",
+        "🔌",
+        "📞",
+        "📄",
+        "⚙️",
+        "🥣",
+        "🔬",
+        "🔼",
+        "🌶️",
+        "📦",
+        "🧰",
+        "🌍",
+        "🪄",
+        "🔚",
+    ]
     if any(emoji in last_10 for emoji in footer_emojis):
         has_footer = True
 
@@ -119,7 +158,7 @@ def check_repository(repo_path: Path) -> ComplianceStats:
             total_files=0,
             files_with_spdx=0,
             files_with_footer=0,
-            files_fully_compliant=0
+            files_fully_compliant=0,
         )
 
     spdx_count = 0
@@ -141,7 +180,7 @@ def check_repository(repo_path: Path) -> ComplianceStats:
         total_files=len(python_files),
         files_with_spdx=spdx_count,
         files_with_footer=footer_count,
-        files_fully_compliant=fully_compliant
+        files_fully_compliant=fully_compliant,
     )
 
 
@@ -206,18 +245,10 @@ def main():
     parser = argparse.ArgumentParser(
         description="Check header and footer compliance of Python files",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=__doc__
+        epilog=__doc__,
     )
-    parser.add_argument(
-        "repositories",
-        nargs="*",
-        help="Repository paths to check"
-    )
-    parser.add_argument(
-        "--all",
-        metavar="PARENT_DIR",
-        help="Check all subdirectories in parent directory"
-    )
+    parser.add_argument("repositories", nargs="*", help="Repository paths to check")
+    parser.add_argument("--all", metavar="PARENT_DIR", help="Check all subdirectories in parent directory")
 
     args = parser.parse_args()
 
@@ -231,7 +262,7 @@ def main():
 
         # Find all subdirectories
         for item in parent.iterdir():
-            if item.is_dir() and not item.name.startswith('.'):
+            if item.is_dir() and not item.name.startswith("."):
                 repos_to_check.append(item)
     elif args.repositories:
         for repo in args.repositories:

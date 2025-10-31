@@ -267,4 +267,5 @@ class ReportGenerator:
         ensure_dir(output_path.parent)
         atomic_write_text(output_path, report_content)
 
+
 # 🧪✅🔚

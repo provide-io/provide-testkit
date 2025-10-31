@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -7,10 +7,10 @@
 
 import json
 from pathlib import Path
-from provide.testkit.mocking import Mock, patch
 
 import pytest
 
+from provide.testkit.mocking import Mock, patch
 from provide.testkit.quality.base import QualityResult
 from provide.testkit.quality.security.fixture import SecurityFixture
 from provide.testkit.quality.security.scanner import BANDIT_AVAILABLE, SecurityScanner
@@ -322,5 +322,6 @@ def another_unsafe():
     json_report = scanner.report(result, "json")
     data = json.loads(json_report)
     assert data["tool"] == "security"
+
 
 # 🧪✅🔚
