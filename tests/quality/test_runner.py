@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -7,8 +7,8 @@
 
 import json
 from pathlib import Path
-from provide.testkit.mocking import Mock, patch
 
+from provide.testkit.mocking import Mock, patch
 from provide.testkit.quality.base import QualityResult
 from provide.testkit.quality.runner import QualityRunner
 
@@ -247,5 +247,6 @@ class TestQualityRunner:
 
         available = runner.get_available_tools()
         assert set(available) == {"tool1", "tool2"}
+
 
 # 🧪✅🔚

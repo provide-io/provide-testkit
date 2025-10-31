@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -249,5 +249,6 @@ class TestPidRecyclingScenarios:
         """Test PIDs are in valid range."""
         assert 1 <= scenario["original_pid"] <= 65535
         assert 1 <= scenario["recycled_pid"] <= 65535
+
 
 # 🧪✅🔚

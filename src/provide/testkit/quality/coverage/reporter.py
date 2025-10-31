@@ -153,4 +153,5 @@ class CoverageReporter:
 
         return dashboard_data
 
+
 # 🧪✅🔚

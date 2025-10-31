@@ -55,4 +55,5 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     sys.stderr.write(reset_sequence)
     sys.stderr.flush()
 
+
 # 🧪✅🔚

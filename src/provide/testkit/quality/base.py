@@ -161,4 +161,5 @@ class QualityToolError(QualityError):
 
     pass
 
+
 # 🧪✅🔚

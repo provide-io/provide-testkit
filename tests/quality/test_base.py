@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -189,5 +189,6 @@ class TestQualityExceptions:
         assert isinstance(error, QualityError)
         assert str(error) == "Tool execution failed"
         assert error.tool == "coverage"
+
 
 # 🧪✅🔚

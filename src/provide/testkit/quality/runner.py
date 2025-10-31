@@ -323,4 +323,5 @@ class QualityGateResults:
         if self.failed_gates is None:
             self.failed_gates = []
 
+
 # 🧪✅🔚

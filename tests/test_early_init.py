@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import os
 import sys
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -104,9 +104,9 @@ class TestInstallBlocker:
                 _early_init._install_blocker()
 
             # Verify blocker was installed
-            assert any(
-                isinstance(hook, SetproctitleImportBlocker) for hook in sys.meta_path
-            ), "Blocker should be installed in testing context"
+            assert any(isinstance(hook, SetproctitleImportBlocker) for hook in sys.meta_path), (
+                "Blocker should be installed in testing context"
+            )
 
         finally:
             # Restore original meta_path
@@ -144,9 +144,7 @@ class TestInstallBlocker:
             sys.meta_path.insert(0, SetproctitleImportBlocker())
 
         # Count current blockers
-        initial_count = sum(
-            1 for hook in sys.meta_path if isinstance(hook, SetproctitleImportBlocker)
-        )
+        initial_count = sum(1 for hook in sys.meta_path if isinstance(hook, SetproctitleImportBlocker))
 
         # Try to install again
         with patch.object(sys, "argv", ["pytest"]):
@@ -198,9 +196,9 @@ class TestModuleLevelExecution:
         from provide.testkit.pytest_plugin import SetproctitleImportBlocker
 
         # Since we're in a test context, blocker should be installed
-        assert any(
-            isinstance(hook, SetproctitleImportBlocker) for hook in sys.meta_path
-        ), "Blocker should be installed when module is imported in test context"
+        assert any(isinstance(hook, SetproctitleImportBlocker) for hook in sys.meta_path), (
+            "Blocker should be installed when module is imported in test context"
+        )
 
 
 class TestIntegrationWithFoundationLogger:
@@ -220,9 +218,9 @@ class TestIntegrationWithFoundationLogger:
 
             # Should install blocker without calling Foundation logger
             # (Foundation logger would cause circular dependency)
-            assert any(
-                isinstance(hook, SetproctitleImportBlocker) for hook in sys.meta_path
-            ), "Blocker should be installed without Foundation logger"
+            assert any(isinstance(hook, SetproctitleImportBlocker) for hook in sys.meta_path), (
+                "Blocker should be installed without Foundation logger"
+            )
 
         finally:
             sys.meta_path = original_meta_path
@@ -245,13 +243,14 @@ class TestIntegrationWithFoundationLogger:
                 _early_init._install_blocker()
 
             # Verify Foundation was NOT imported
-            assert not any(
-                k.startswith("provide.foundation") for k in sys.modules
-            ), "Foundation should not be imported during blocker installation"
+            assert not any(k.startswith("provide.foundation") for k in sys.modules), (
+                "Foundation should not be imported during blocker installation"
+            )
 
         finally:
             sys.meta_path = original_meta_path
             # Restore Foundation modules
             sys.modules.update(foundation_modules)
+
 
 # 🧪✅🔚

@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -7,10 +7,10 @@
 
 import json
 from pathlib import Path
-from provide.testkit.mocking import Mock, patch
 
 import pytest
 
+from provide.testkit.mocking import Mock, patch
 from provide.testkit.quality.base import QualityResult
 from provide.testkit.quality.complexity.analyzer import RADON_AVAILABLE, ComplexityAnalyzer
 from provide.testkit.quality.complexity.fixture import ComplexityFixture
@@ -369,5 +369,6 @@ def complex_function(data):
     json_report = analyzer.report(result, "json")
     data = json.loads(json_report)
     assert data["tool"] == "complexity"
+
 
 # 🧪✅🔚

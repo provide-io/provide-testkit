@@ -23,9 +23,8 @@ Usage:
 import argparse
 import ast
 import os
-import sys
 from pathlib import Path
-from typing import Optional, Tuple
+import sys
 
 # --- Protocol Constants ---
 
@@ -40,13 +39,25 @@ PLACEHOLDER_DOCSTRING = '"""TODO: Add module docstring."""'
 
 # Directories to exclude when scanning
 EXCLUDE_DIRS = {
-    '.venv', 'venv', 'workenv', '.git', 'build', 'dist', '__pycache__',
-    '.pytest_cache', '.ruff_cache', '.mypy_cache', '.hypothesis', '.eggs', '.tox'
+    ".venv",
+    "venv",
+    "workenv",
+    ".git",
+    "build",
+    "dist",
+    "__pycache__",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".mypy_cache",
+    ".hypothesis",
+    ".eggs",
+    ".tox",
 }
 
 # --- Logic ---
 
-def find_module_docstring_and_body_start(content: str) -> Tuple[Optional[str], int]:
+
+def find_module_docstring_and_body_start(content: str) -> tuple[str | None, int]:
     """
     Parses the Python source code to find the module-level docstring
     and the line number where the main body of the code starts.
@@ -72,7 +83,7 @@ def find_module_docstring_and_body_start(content: str) -> Tuple[Optional[str], i
                 start_lineno = tree.body[1].lineno
             else:
                 # The file ONLY contains a docstring
-                start_lineno = len(content.splitlines()) + 1 # End of file
+                start_lineno = len(content.splitlines()) + 1  # End of file
 
         return docstring, start_lineno
     except SyntaxError:
@@ -89,20 +100,21 @@ def conform_file(filepath: str, footer: str) -> None:
         filepath: Path to the Python file
     """
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             lines = f.readlines()
             content = "".join(lines)
-    except (IOError, UnicodeDecodeError) as e:
+    except (OSError, UnicodeDecodeError) as e:
         print(f"Error reading file {filepath}: {e}", file=sys.stderr)
         return
 
     if not lines:
         # Handle empty files
-        final_content = "\n".join([HEADER_LIBRARY] + SPDX_BLOCK) + "\n\n" + PLACEHOLDER_DOCSTRING + "\n\n" + footer + "\n"
+        final_content = (
+            "\n".join([HEADER_LIBRARY] + SPDX_BLOCK) + "\n\n" + PLACEHOLDER_DOCSTRING + "\n\n" + footer + "\n"
+        )
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(final_content)
         return
-
 
     # 1. Determine Header Type
     is_executable = lines[0].strip().startswith("#!")
@@ -117,17 +129,43 @@ def conform_file(filepath: str, footer: str) -> None:
         # Preserve original docstring formatting
         docstring_str = f'"""{docstring}"""'
 
-
     # 3. Extract the code body
     # The body is everything from the determined start line to the end,
     # minus any old footers.
-    body_lines = lines[body_start_lineno - 1:]
+    body_lines = lines[body_start_lineno - 1 :]
     body_content = "".join(body_lines).rstrip()
 
     # Strip any old footers - look for emoji patterns that indicate footers
     body_lines_stripped = body_content.splitlines()
     cleaned_body_lines = []
-    footer_emojis = ['🏗️', '🐍', '🧱', '🐝', '📁', '🍽️', '📖', '🧪', '✅', '🧩', '🔧', '🌊', '🪢', '🔌', '📞', '📄', '⚙️', '🥣', '🔬', '🔼', '🌶️', '📦', '🧰', '🌍', '🪄', '🔚']
+    footer_emojis = [
+        "🏗️",
+        "🐍",
+        "🧱",
+        "🐝",
+        "📁",
+        "🍽️",
+        "📖",
+        "🧪",
+        "✅",
+        "🧩",
+        "🔧",
+        "🌊",
+        "🪢",
+        "🔌",
+        "📞",
+        "📄",
+        "⚙️",
+        "🥣",
+        "🔬",
+        "🔼",
+        "🌶️",
+        "📦",
+        "🧰",
+        "🌍",
+        "🪄",
+        "🔚",
+    ]
     for line in body_lines_stripped:
         # Skip lines that contain footer emojis
         has_footer_emoji = any(emoji in line for emoji in footer_emojis)
@@ -136,22 +174,20 @@ def conform_file(filepath: str, footer: str) -> None:
 
     body_content = "\n".join(cleaned_body_lines).rstrip()
 
-
     # 4. Construct the new file content
     final_header = "\n".join([header_first_line] + SPDX_BLOCK)
 
     # Ensure there's content to separate from the footer
     if body_content:
         final_content = f"{final_header}\n\n{docstring_str}\n\n{body_content}\n\n{footer}\n"
-    else: # Handles files that might only have a docstring
+    else:  # Handles files that might only have a docstring
         final_content = f"{final_header}\n\n{docstring_str}\n\n{footer}\n"
-
 
     # 5. Write the conformed content back to the file
     try:
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(final_content)
-    except IOError as e:
+    except OSError as e:
         print(f"Error writing to file {filepath}: {e}", file=sys.stderr)
 
 
@@ -172,7 +208,7 @@ def find_python_files(directory: Path) -> list[Path]:
         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
 
         for file in files:
-            if file.endswith('.py'):
+            if file.endswith(".py"):
                 python_files.append(Path(root) / file)
 
     return sorted(python_files)
@@ -182,22 +218,17 @@ def main():
     parser = argparse.ArgumentParser(
         description="Enforce header and footer conformance on Python files",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=__doc__
+        epilog=__doc__,
     )
     parser.add_argument(
         "--footer",
         required=True,
     )
     parser.add_argument(
-        "directory",
-        nargs="?",
-        default=".",
-        help="Directory to process (default: current directory)"
+        "directory", nargs="?", default=".", help="Directory to process (default: current directory)"
     )
     parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Show which files would be processed without making changes"
+        "--dry-run", action="store_true", help="Show which files would be processed without making changes"
     )
 
     args = parser.parse_args()
@@ -230,7 +261,6 @@ def main():
     # Process each file
     for filepath in python_files:
         conform_file(str(filepath), args.footer)
-
 
 
 if __name__ == "__main__":

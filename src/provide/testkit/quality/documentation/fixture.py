@@ -191,4 +191,5 @@ def documentation_checker_strict(documentation_config: dict[str, Any]) -> Docume
     yield fixture
     fixture.teardown()
 
+
 # 🧪✅🔚

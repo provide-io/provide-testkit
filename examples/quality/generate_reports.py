@@ -185,7 +185,6 @@ def generate_comprehensive_reports(results: dict[str, any], reports_dir: Path):
     for tool_name, result in results.items():
         tool_dir = reports_dir / tool_name
 
-
         # Tool-specific JSON
         tool_json = {
             "tool": result.tool,

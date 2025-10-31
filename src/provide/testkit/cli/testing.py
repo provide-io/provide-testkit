@@ -233,4 +233,5 @@ def click_testing_mode() -> Generator[None, None, None]:
         else:
             os.environ["CLICK_TESTING"] = original_value
 
+
 # 🧪✅🔚

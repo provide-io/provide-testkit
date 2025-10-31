@@ -1,11 +1,11 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
 """TODO: Add module docstring."""
 
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -197,6 +197,7 @@ def _handle_gate_results(results: Any, verbose: bool) -> None:
     """Handle and display gate results, exit on failure."""
     # Print summary
     if results.passed:
+        click.echo("✅ Quality gates passed!", fg="green")
     else:
         click.echo("❌ Quality gates failed!", fg="red")
 
@@ -382,6 +383,7 @@ def _print_summary(results: dict[str, Any], verbose: bool) -> None:
     total = len(results)
 
     if passed == total:
+        click.echo(f"✅ {passed}/{total} quality checks passed!", fg="green")
     else:
         failed = total - passed
         click.echo(f"❌ {failed}/{total} quality checks failed!", fg="red")

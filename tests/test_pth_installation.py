@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -11,11 +11,10 @@ prevent pytest-xdist from importing setproctitle."""
 
 from __future__ import annotations
 
-import os
+from pathlib import Path
 import site
 import subprocess
 import sys
-from pathlib import Path
 
 import pytest
 
@@ -37,12 +36,8 @@ class TestPthFileInstallation:
         pth_file = testkit_root / "src" / "provide" / "testkit" / "provide_testkit_init.pth"
 
         content = pth_file.read_text().strip()
-        assert (
-            "import provide.testkit._early_init" in content
-        ), ".pth file should import _early_init module"
-        assert (
-            "TESTKIT_PTH_LOG" in content
-        ), ".pth file should support TESTKIT_PTH_LOG for debugging"
+        assert "import provide.testkit._early_init" in content, ".pth file should import _early_init module"
+        assert "TESTKIT_PTH_LOG" in content, ".pth file should support TESTKIT_PTH_LOG for debugging"
 
     def test_pth_file_installed_in_site_packages(self) -> None:
         """Verify .pth file is installed to site-packages after package install."""
@@ -68,8 +63,7 @@ class TestPthFileInstallation:
                 break
 
         assert pth_found, (
-            "provide_testkit_init.pth should be installed in site-packages. "
-            f"Searched in: {site_packages}"
+            f"provide_testkit_init.pth should be installed in site-packages. Searched in: {site_packages}"
         )
 
 
@@ -81,9 +75,9 @@ class TestEarlyInitExecution:
         from provide.testkit.pytest_plugin import SetproctitleImportBlocker
 
         # Since we're already running in pytest, the blocker should be installed
-        assert any(
-            isinstance(hook, SetproctitleImportBlocker) for hook in sys.meta_path
-        ), "Blocker should be installed in sys.meta_path"
+        assert any(isinstance(hook, SetproctitleImportBlocker) for hook in sys.meta_path), (
+            "Blocker should be installed in sys.meta_path"
+        )
 
     def test_blocker_position_in_meta_path(self) -> None:
         """Verify blocker is at the front of sys.meta_path."""
@@ -98,9 +92,9 @@ class TestEarlyInitExecution:
 
         # First blocker should be near the front (position 0 or 1)
         # Position 1 is acceptable because some other hooks might be inserted
-        assert (
-            blocker_indices[0] <= 1
-        ), f"Blocker should be at front of meta_path, but found at index {blocker_indices[0]}"
+        assert blocker_indices[0] <= 1, (
+            f"Blocker should be at front of meta_path, but found at index {blocker_indices[0]}"
+        )
 
 
 class TestSetproctitleBlocking:
@@ -185,9 +179,7 @@ class TestPthFileLoadOrder:
     def test_early_init_imported_before_conftest(self) -> None:
         """Verify _early_init is imported before conftest.py."""
         # If we're running this test, _early_init should already be imported
-        assert (
-            "provide.testkit._early_init" in sys.modules
-        ), "_early_init should be imported via .pth file"
+        assert "provide.testkit._early_init" in sys.modules, "_early_init should be imported via .pth file"
 
     def test_early_init_imported_before_pytest_plugin(self) -> None:
         """Verify _early_init is imported before pytest plugin entry point."""
@@ -222,9 +214,7 @@ class TestPthFileEdgeCases:
         from provide.testkit.pytest_plugin import SetproctitleImportBlocker
 
         # Count blockers
-        initial_count = sum(
-            1 for hook in sys.meta_path if isinstance(hook, SetproctitleImportBlocker)
-        )
+        initial_count = sum(1 for hook in sys.meta_path if isinstance(hook, SetproctitleImportBlocker))
 
         # Importing _early_init again should not add more blockers
         import importlib
@@ -233,9 +223,7 @@ class TestPthFileEdgeCases:
 
         importlib.reload(provide.testkit._early_init)
 
-        final_count = sum(
-            1 for hook in sys.meta_path if isinstance(hook, SetproctitleImportBlocker)
-        )
+        final_count = sum(1 for hook in sys.meta_path if isinstance(hook, SetproctitleImportBlocker))
 
         # Count should be the same (idempotent)
         assert final_count == initial_count, "Multiple loads should not duplicate blockers"
@@ -252,9 +240,8 @@ class TestPthFileUninstallation:
                 pth_path = Path(path) / "provide_testkit_init.pth"
                 if pth_path.exists():
                     # Verify it's in a location that pip/uv will clean up
-                    assert "provide-testkit" in str(
-                        pth_path.parent
-                    ) or "site-packages" in str(pth_path.parent)
+                    assert "provide-testkit" in str(pth_path.parent) or "site-packages" in str(pth_path.parent)
                     break
+
 
 # 🧪✅🔚

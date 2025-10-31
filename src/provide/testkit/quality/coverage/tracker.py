@@ -316,4 +316,5 @@ class CoverageTracker:
             # Add error to result details but don't fail
             result.details["artifact_error"] = str(e)
 
+
 # 🧪✅🔚

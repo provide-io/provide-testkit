@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -7,9 +7,8 @@
 
 from __future__ import annotations
 
-from hypothesis import Phase, Verbosity, settings
+from hypothesis import Verbosity, settings
 import pytest
-
 
 # Use smoke profile for testing the strategies themselves (fast)
 settings.register_profile(
@@ -25,5 +24,6 @@ settings.register_profile(
 def configure_hypothesis_for_chaos_tests() -> None:
     """Configure Hypothesis for chaos strategy tests."""
     settings.load_profile("chaos_test")
+
 
 # 🧪✅🔚

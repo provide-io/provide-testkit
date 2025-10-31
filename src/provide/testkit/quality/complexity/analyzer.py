@@ -395,4 +395,5 @@ class ComplexityAnalyzer:
         else:
             return str(result.details)
 
+
 # 🧪✅🔚

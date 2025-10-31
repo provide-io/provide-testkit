@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -104,7 +104,7 @@ class TestChaosFailureInjector:
         # Call 3: IOError
         try:
             injector.check()
-        except IOError:
+        except OSError:
             pass
 
     def test_reset_counter(self) -> None:
