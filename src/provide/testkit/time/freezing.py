@@ -9,6 +9,8 @@ Fixtures for freezing time and controlling time flow in tests."""
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from contextlib import suppress
 import datetime
 
 import pytest
@@ -17,7 +19,7 @@ from provide.testkit.time.classes import FrozenTime, TimeMachine
 
 
 @pytest.fixture
-def freeze_time():
+def freeze_time() -> Callable[[datetime.datetime | None], FrozenTime]:
     """Fixture to freeze time at a specific point.
 
     Returns:
@@ -76,19 +78,15 @@ def time_machine(request: pytest.FixtureRequest) -> TimeMachine:
         try:
             import asyncio
 
-            try:
+            with suppress(RuntimeError):
                 loop = asyncio.get_event_loop()
                 if not loop.is_running() and not loop.is_closed():
                     loop.close()
-            except RuntimeError:
-                pass
 
             # Also close the running loop if there is one
-            try:
+            with suppress(RuntimeError):
                 asyncio.get_running_loop()
                 # Can't close running loop, but we can stop it
-            except RuntimeError:
-                pass
 
         except Exception:
             pass

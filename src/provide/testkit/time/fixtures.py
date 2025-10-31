@@ -57,15 +57,12 @@ from provide.testkit.time.rate_limiting import (
 )
 
 __all__ = [
-    # Classes
     "BenchmarkTimer",
     "FrozenTime",
     "MockRateLimiter",
     "TimeMachine",
     "Timer",
-    # Utilities
     "advance_time",
-    # Fixtures
     "benchmark_timer",
     "freeze_time",
     "get_active_time_machines",

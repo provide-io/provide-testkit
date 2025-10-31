@@ -115,7 +115,7 @@ class DocumentationChecker:
             return self._process_interrogate_results(results, config)
 
         except Exception as e:
-            raise QualityToolError(f"Interrogate analysis failed: {e}", tool="documentation")
+            raise QualityToolError(f"Interrogate analysis failed: {e}", tool="documentation") from e
 
     def _build_interrogate_config(self) -> dict[str, Any]:
         """Build interrogate configuration from config."""

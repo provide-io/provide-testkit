@@ -7,9 +7,12 @@
 
 Core fixtures for creating threads, thread pools, mocks, and thread-local storage."""
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 import threading
+from typing import Any
 
 import pytest
 
@@ -17,17 +20,23 @@ from provide.testkit.mocking import Mock
 
 
 @pytest.fixture
-def test_thread():
+def test_thread() -> Callable[
+    [Callable[..., Any], tuple[Any, ...], dict[str, Any] | None, bool],
+    threading.Thread,
+]:
     """
     Create a test thread with automatic cleanup.
 
     Returns:
         Function to create and manage test threads.
     """
-    threads = []
+    threads: list[threading.Thread] = []
 
     def _create_thread(
-        target: Callable, args: tuple = (), kwargs: dict = None, daemon: bool = True
+        target: Callable[..., Any],
+        args: tuple[Any, ...] = (),
+        kwargs: dict[str, Any] | None = None,
+        daemon: bool = True,
     ) -> threading.Thread:
         """
         Create a test thread.
@@ -56,7 +65,7 @@ def test_thread():
 
 
 @pytest.fixture
-def thread_pool():
+def thread_pool() -> ThreadPoolExecutor:
     """
     Create a thread pool executor for testing.
 
@@ -69,7 +78,7 @@ def thread_pool():
 
 
 @pytest.fixture
-def mock_thread():
+def mock_thread() -> Mock:
     """
     Create a mock thread for testing without actual threading.
 
@@ -89,7 +98,7 @@ def mock_thread():
 
 
 @pytest.fixture
-def thread_local_storage():
+def thread_local_storage() -> threading.local:
     """
     Create thread-local storage for testing.
 

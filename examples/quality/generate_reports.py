@@ -19,7 +19,7 @@ from provide.testkit.quality.report import ReportGenerator
 from provide.testkit.quality.runner import QualityRunner
 
 
-def install_quality_tools():
+def install_quality_tools() -> None:
     """Install required quality tools."""
     import subprocess
 
@@ -151,7 +151,7 @@ def run_quality_analysis(reports_dir: Path) -> dict[str, any]:
     return results
 
 
-def generate_comprehensive_reports(results: dict[str, any], reports_dir: Path):
+def generate_comprehensive_reports(results: dict[str, any], reports_dir: Path) -> None:
     """Generate comprehensive reports in multiple formats."""
     print("📝 Generating Comprehensive Reports")
     print("=" * 50)
@@ -209,7 +209,7 @@ def generate_comprehensive_reports(results: dict[str, any], reports_dir: Path):
     print()
 
 
-def generate_coverage_analysis(result: any, output_dir: Path):
+def generate_coverage_analysis(result: any, output_dir: Path) -> None:
     """Generate detailed coverage analysis."""
     details = result.details
 
@@ -234,7 +234,7 @@ def generate_coverage_analysis(result: any, output_dir: Path):
     (output_dir / "coverage_summary.md").write_text(summary)
 
 
-def generate_security_analysis(result: any, output_dir: Path):
+def generate_security_analysis(result: any, output_dir: Path) -> None:
     """Generate detailed security analysis."""
     details = result.details
 
@@ -262,7 +262,7 @@ def generate_security_analysis(result: any, output_dir: Path):
     (output_dir / "security_summary.md").write_text(summary)
 
 
-def generate_complexity_analysis(result: any, output_dir: Path):
+def generate_complexity_analysis(result: any, output_dir: Path) -> None:
     """Generate detailed complexity analysis."""
     details = result.details
 
@@ -293,7 +293,7 @@ def generate_complexity_analysis(result: any, output_dir: Path):
     (output_dir / "complexity_summary.md").write_text(summary)
 
 
-def generate_documentation_analysis(result: any, output_dir: Path):
+def generate_documentation_analysis(result: any, output_dir: Path) -> None:
     """Generate detailed documentation analysis."""
     details = result.details
 
@@ -321,7 +321,7 @@ def generate_documentation_analysis(result: any, output_dir: Path):
     (output_dir / "documentation_summary.md").write_text(summary)
 
 
-def create_artifact_index(results: dict[str, any], reports_dir: Path):
+def create_artifact_index(results: dict[str, any], reports_dir: Path) -> None:
     """Create a comprehensive artifact index."""
     print("📚 Creating Artifact Index")
     print("=" * 30)
@@ -344,7 +344,7 @@ def create_artifact_index(results: dict[str, any], reports_dir: Path):
     print()
 
 
-def create_master_index(reports_dir: Path):
+def create_master_index(reports_dir: Path) -> None:
     """Create master index of all reports."""
     index_content = f"""# Quality Analysis Reports
 
@@ -389,7 +389,7 @@ Generated on: {time.strftime("%Y-%m-%d %H:%M:%S")}
     print(f"📋 Master index created: {reports_dir / 'index.md'}")
 
 
-def main():
+def main() -> None:
     """Main demonstration function."""
     print("🚀 Provide-Testkit Quality Module Demonstration")
     print("=" * 60)

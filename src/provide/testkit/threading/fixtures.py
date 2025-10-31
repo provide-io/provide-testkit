@@ -32,23 +32,19 @@ from provide.testkit.threading.sync_fixtures import (
 )
 
 __all__ = [
-    # Basic threading fixtures
-    "test_thread",
-    "thread_pool",
-    "mock_thread",
-    "thread_local_storage",
-    # Synchronization fixtures
-    "thread_barrier",
-    "thread_event",
-    "thread_condition",
-    # Thread-safe data structures
-    "thread_safe_list",
-    "thread_safe_counter",
-    # Execution and testing helpers
     "concurrent_executor",
-    "thread_synchronizer",
     "deadlock_detector",
+    "mock_thread",
+    "test_thread",
+    "thread_barrier",
+    "thread_condition",
+    "thread_event",
     "thread_exception_handler",
+    "thread_local_storage",
+    "thread_pool",
+    "thread_safe_counter",
+    "thread_safe_list",
+    "thread_synchronizer",
 ]
 
 # 🧪✅🔚

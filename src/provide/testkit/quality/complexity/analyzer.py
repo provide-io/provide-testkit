@@ -154,7 +154,7 @@ class ComplexityAnalyzer:
             return self._process_complexity_results(all_complexity, all_raw_metrics, all_maintainability)
 
         except Exception as e:
-            raise QualityToolError(f"Radon analysis failed: {e}", tool="complexity")
+            raise QualityToolError(f"Radon analysis failed: {e}", tool="complexity") from e
 
     def _discover_python_files(self, path: Path) -> list[Path]:
         """Discover Python files to analyze."""

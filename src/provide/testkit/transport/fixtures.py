@@ -8,11 +8,14 @@
 Fixtures and helpers for testing network operations, including
 mock servers, free port allocation, and HTTP client mocking."""
 
+from __future__ import annotations
+
 from collections.abc import Generator
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import socket
 import threading
 from typing import Any
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 
@@ -33,7 +36,7 @@ def free_port() -> int:
 
 
 @pytest.fixture
-def mock_server(free_port) -> Generator[dict[str, Any], None, None]:
+def mock_server(free_port: int) -> Generator[dict[str, Any], None, None]:
     """
     Create a simple mock HTTP server for testing.
 
@@ -81,7 +84,7 @@ def mock_server(free_port) -> Generator[dict[str, Any], None, None]:
             self.end_headers()
             self.wfile.write(response["body"])
 
-        def log_message(self, format, *args) -> None:
+        def log_message(self, format: str, *args: Any) -> None:
             """Suppress log messages."""
             pass
 
@@ -103,7 +106,7 @@ def mock_server(free_port) -> Generator[dict[str, Any], None, None]:
 
 
 @pytest.fixture
-def httpx_mock_responses():
+def httpx_mock_responses() -> dict[str, dict[str, Any]]:
     """
     Pre-configured responses for HTTPX mocking.
 
@@ -140,15 +143,13 @@ def httpx_mock_responses():
 
 
 @pytest.fixture
-def mock_websocket():
+def mock_websocket() -> Mock:
     """
     Mock WebSocket connection for testing.
 
     Returns:
         Mock WebSocket with send, receive, close methods.
     """
-    from unittest.mock import AsyncMock, Mock
-
     ws = Mock()
     ws.send = AsyncMock()
     ws.receive = AsyncMock(return_value={"type": "text", "data": "message"})
@@ -165,15 +166,13 @@ def mock_websocket():
 
 
 @pytest.fixture
-def mock_dns_resolver():
+def mock_dns_resolver() -> Mock:
     """
     Mock DNS resolver for testing.
 
     Returns:
         Mock resolver with resolve method.
     """
-    from unittest.mock import Mock
-
     resolver = Mock()
     resolver.resolve = Mock(return_value=["127.0.0.1", "::1"])
     resolver.reverse = Mock(return_value="localhost")
@@ -183,7 +182,7 @@ def mock_dns_resolver():
 
 
 @pytest.fixture
-def tcp_client_server(free_port) -> Generator[dict[str, Any], None, None]:
+def tcp_client_server(free_port: int) -> Generator[dict[str, Any], None, None]:
     """
     Create a TCP client-server pair for testing.
 
@@ -227,7 +226,7 @@ def tcp_client_server(free_port) -> Generator[dict[str, Any], None, None]:
 
 
 @pytest.fixture
-def mock_ssl_context():
+def mock_ssl_context() -> Mock:
     """
     Mock SSL context for testing secure connections.
 
@@ -248,7 +247,7 @@ def mock_ssl_context():
 
 
 @pytest.fixture
-def network_timeout():
+def network_timeout() -> dict[str, float]:
     """
     Provide network timeout configuration for tests.
 
@@ -264,7 +263,7 @@ def network_timeout():
 
 
 @pytest.fixture
-def mock_http_headers():
+def mock_http_headers() -> dict[str, str]:
     """
     Common HTTP headers for testing.
 

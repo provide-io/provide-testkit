@@ -319,7 +319,7 @@ class QualityGateResults:
     results: dict[str, QualityResult]
     failed_gates: list[str] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.failed_gates is None:
             self.failed_gates = []
 

@@ -21,7 +21,7 @@ Learning objectives:
 - Handle timeouts and cancellation"""
 
 import asyncio
-from typing import Any
+from collections.abc import AsyncGenerator
 
 import pytest
 
@@ -29,7 +29,7 @@ from provide.testkit import async_timeout
 
 
 @pytest.mark.asyncio
-async def test_basic_async_operation(clean_event_loop):
+async def test_basic_async_operation() -> None:
     """Test basic async function execution."""
 
     async def fetch_data(delay: float = 0.1) -> str:
@@ -45,7 +45,7 @@ async def test_basic_async_operation(clean_event_loop):
 
 
 @pytest.mark.asyncio
-async def test_async_with_timeout(async_timeout):
+async def test_async_with_timeout() -> None:
     """Test async operations with timeout control."""
 
     async def slow_operation() -> str:
@@ -60,7 +60,7 @@ async def test_async_with_timeout(async_timeout):
 
 
 @pytest.mark.asyncio
-async def test_async_timeout_failure():
+async def test_async_timeout_failure() -> None:
     """Test timeout failure handling."""
 
     async def very_slow_operation() -> str:
@@ -75,10 +75,10 @@ async def test_async_timeout_failure():
 
 
 @pytest.mark.asyncio
-async def test_concurrent_operations(clean_event_loop):
+async def test_concurrent_operations() -> None:
     """Test multiple concurrent async operations."""
 
-    async def process_item(item_id: int, delay: float = 0.1) -> dict[str, Any]:
+    async def process_item(item_id: int, delay: float = 0.1) -> dict[str, object]:
         """Process an item asynchronously."""
         await asyncio.sleep(delay)
         return {"id": item_id, "status": "processed", "timestamp": asyncio.get_event_loop().time()}
@@ -96,27 +96,32 @@ async def test_concurrent_operations(clean_event_loop):
 
 
 @pytest.mark.asyncio
-async def test_async_context_manager():
+async def test_async_context_manager() -> None:
     """Test async context managers."""
 
     class AsyncResource:
-        def __init__(self, name: str):
+        def __init__(self, name: str) -> None:
             self.name = name
             self.is_open = False
             self.data: list[str] = []
 
-        async def __aenter__(self):
+        async def __aenter__(self) -> "AsyncResource":
             # Simulate async initialization
             await asyncio.sleep(0.01)
             self.is_open = True
             return self
 
-        async def __aexit__(self, exc_type, exc_val, exc_tb):
+        async def __aexit__(
+            self,
+            exc_type: type[BaseException] | None,
+            exc_val: BaseException | None,
+            exc_tb: BaseException | None,
+        ) -> None:
             # Simulate async cleanup
             await asyncio.sleep(0.01)
             self.is_open = False
 
-        async def add_data(self, item: str):
+        async def add_data(self, item: str) -> None:
             if not self.is_open:
                 raise RuntimeError("Resource not open")
             await asyncio.sleep(0.01)
@@ -134,7 +139,7 @@ async def test_async_context_manager():
 
 
 @pytest.mark.asyncio
-async def test_async_exception_handling():
+async def test_async_exception_handling() -> None:
     """Test exception handling in async operations."""
 
     async def failing_operation(should_fail: bool = True) -> str:
@@ -154,10 +159,10 @@ async def test_async_exception_handling():
 
 
 @pytest.mark.asyncio
-async def test_async_generator():
+async def test_async_generator() -> None:
     """Test async generators and iteration."""
 
-    async def async_number_generator(count: int):
+    async def async_number_generator(count: int) -> AsyncGenerator[int, None]:
         """Generate numbers asynchronously."""
         for i in range(count):
             await asyncio.sleep(0.01)  # Simulate async work
@@ -173,10 +178,10 @@ async def test_async_generator():
 
 
 @pytest.mark.asyncio
-async def test_async_queue_operations():
+async def test_async_queue_operations() -> None:
     """Test async queue operations."""
 
-    async def producer(queue: asyncio.Queue, items: list[str]):
+    async def producer(queue: asyncio.Queue, items: list[str]) -> None:
         """Produce items into the queue."""
         for item in items:
             await asyncio.sleep(0.01)
@@ -195,7 +200,7 @@ async def test_async_queue_operations():
         return results
 
     # Act: Set up producer-consumer pattern
-    queue: asyncio.Queue = asyncio.Queue()
+    queue: asyncio.Queue[str | None] = asyncio.Queue()
     items = ["apple", "banana", "cherry"]
 
     # Start producer and consumer concurrently
@@ -211,13 +216,13 @@ async def test_async_queue_operations():
 
 
 @pytest.mark.asyncio
-async def test_async_lock_and_synchronization():
+async def test_async_lock_and_synchronization() -> None:
     """Test async locks and synchronization."""
 
     shared_resource = {"counter": 0}
     lock = asyncio.Lock()
 
-    async def increment_counter(worker_id: int, increments: int):
+    async def increment_counter(worker_id: int, increments: int) -> None:
         """Increment shared counter with proper locking."""
         for _ in range(increments):
             async with lock:
@@ -235,21 +240,21 @@ async def test_async_lock_and_synchronization():
 
 
 @pytest.mark.asyncio
-async def test_async_event_coordination():
+async def test_async_event_coordination() -> None:
     """Test coordination between async tasks using events."""
 
     results = {"task1": None, "task2": None}
     start_event = asyncio.Event()
     task1_done = asyncio.Event()
 
-    async def task1():
+    async def task1() -> None:
         """First task that signals when complete."""
         await start_event.wait()
         await asyncio.sleep(0.1)
         results["task1"] = "task1_complete"
         task1_done.set()
 
-    async def task2():
+    async def task2() -> None:
         """Second task that waits for first task."""
         await start_event.wait()
         await task1_done.wait()  # Wait for task1 to complete
@@ -275,17 +280,17 @@ if __name__ == "__main__":
     print("🔄 Async Testing Examples")
     print("=" * 50)
 
-    async def demo_async_operation():
+    async def demo_async_operation() -> str:
         """Demonstrate basic async operation."""
         print("⏳ Starting async operation...")
         await asyncio.sleep(0.1)
         return "demo_result"
 
-    async def demo_concurrent_tasks():
+    async def demo_concurrent_tasks() -> None:
         """Demonstrate concurrent task execution."""
         print("🔀 Starting concurrent tasks...")
 
-        async def worker(worker_id: int):
+        async def worker(worker_id: int) -> str:
             await asyncio.sleep(0.1)
             return f"Worker {worker_id} done"
 
@@ -295,7 +300,7 @@ if __name__ == "__main__":
         for result in results:
             print(f"  ✅ {result}")
 
-    async def main():
+    async def main() -> None:
         """Run all demonstrations."""
         await demo_async_operation()
         await demo_concurrent_tasks()

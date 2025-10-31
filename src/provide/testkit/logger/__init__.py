@@ -23,16 +23,14 @@ from provide.testkit.logger.reset import (
 )
 
 __all__ = [
-    # Reset utilities
-    "mock_logger",
-    "mock_logger_factory",
-    "reset_foundation_setup_for_testing",
-    "reset_foundation_state",
-    # Hook utilities
     "DEFAULT_NOISY_LOGGERS",
     "get_log_level_for_noisy_loggers",
     "get_noisy_loggers",
+    "mock_logger",
+    "mock_logger_factory",
     "pytest_runtest_setup",
+    "reset_foundation_setup_for_testing",
+    "reset_foundation_state",
     "suppress_loggers",
 ]
 

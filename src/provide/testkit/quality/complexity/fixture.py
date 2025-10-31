@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from pytest import FixtureRequest
 
 from ..base import BaseQualityFixture
 from .analyzer import RADON_AVAILABLE, ComplexityAnalyzer
@@ -89,7 +90,10 @@ class ComplexityFixture(BaseQualityFixture):
 
 
 @pytest.fixture
-def complexity_analyzer(request, tmp_path) -> Generator[ComplexityFixture, None, None]:
+def complexity_analyzer(
+    request: FixtureRequest,
+    tmp_path: Path,
+) -> Generator[ComplexityFixture, None, None]:
     """Pytest fixture for complexity analysis.
 
     Provides a ComplexityFixture instance for code complexity analysis.
@@ -117,7 +121,7 @@ def complexity_analyzer(request, tmp_path) -> Generator[ComplexityFixture, None,
 
 
 @pytest.fixture
-def complexity_config():
+def complexity_config() -> dict[str, Any]:
     """Default complexity configuration fixture.
 
     Returns standard complexity configuration that can be customized
@@ -145,7 +149,10 @@ def complexity_config():
         {"min_grade": "C", "max_complexity": 25, "min_score": 60.0},  # Lenient
     ]
 )
-def parametrized_complexity(request, tmp_path) -> Generator[ComplexityFixture, None, None]:
+def parametrized_complexity(
+    request: FixtureRequest,
+    tmp_path: Path,
+) -> Generator[ComplexityFixture, None, None]:
     """Parametrized complexity fixture for testing different configurations.
 
     Automatically runs tests with different complexity thresholds
@@ -170,14 +177,14 @@ def parametrized_complexity(request, tmp_path) -> Generator[ComplexityFixture, N
 
 
 # Pytest hooks for automatic complexity integration
-def pytest_configure(config) -> None:
+def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest with complexity markers."""
     config.addinivalue_line("markers", "complexity: mark test to run with complexity analysis")
     config.addinivalue_line("markers", "no_complexity: mark test to skip complexity analysis")
 
 
 @pytest.fixture(autouse=True)
-def auto_complexity_marker(request):
+def auto_complexity_marker(request: FixtureRequest) -> Generator[None, None, None]:
     """Automatically apply complexity analysis to marked tests.
 
     Tests marked with @pytest.mark.complexity will automatically
@@ -198,6 +205,7 @@ def auto_complexity_marker(request):
         else:
             yield
     else:
+        yield
         yield
 
 

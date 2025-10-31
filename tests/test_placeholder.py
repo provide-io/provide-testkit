@@ -6,7 +6,7 @@
 """Placeholder test file for provide-testkit."""
 
 
-def test_placeholder():
+def test_placeholder() -> None:
     assert True
 
 

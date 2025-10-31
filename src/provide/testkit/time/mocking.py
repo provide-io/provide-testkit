@@ -9,7 +9,7 @@ Fixtures for mocking time-related functions like sleep, datetime.now(), etc."""
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 import datetime
 import time
 
@@ -19,7 +19,7 @@ from provide.testkit.mocking import Mock, patch
 
 
 @pytest.fixture
-def mock_sleep():
+def mock_sleep() -> Generator[Mock, None, None]:
     """Mock time.sleep to speed up tests.
 
     Returns:
@@ -37,7 +37,7 @@ def mock_sleep():
 
 
 @pytest.fixture
-def mock_sleep_with_callback():
+def mock_sleep_with_callback() -> Callable[[Callable[[float], None] | None], Mock]:
     """Mock time.sleep with a callback for each sleep call.
 
     Returns:
@@ -52,7 +52,7 @@ def mock_sleep_with_callback():
         ...     assert total_sleep == [1.5]
     """
 
-    def _mock_sleep(callback: Callable[[float], None] | None = None):
+    def _mock_sleep(callback: Callable[[float], None] | None = None) -> Mock:
         """Create a mock sleep with optional callback.
 
         Args:
@@ -62,7 +62,7 @@ def mock_sleep_with_callback():
             Mock sleep object
         """
 
-        def sleep_side_effect(seconds) -> None:
+        def sleep_side_effect(seconds: float) -> None:
             if callback:
                 callback(seconds)
             return None
@@ -74,7 +74,7 @@ def mock_sleep_with_callback():
 
 
 @pytest.fixture
-def mock_datetime():
+def mock_datetime() -> Generator[Mock, None, None]:
     """Mock datetime module for testing.
 
     Returns:
@@ -99,7 +99,7 @@ def mock_datetime():
 
 
 @pytest.fixture
-def time_travel():
+def time_travel() -> Generator[Callable[[datetime.datetime], None], None, None]:
     """Fixture for traveling through time in tests.
 
     Returns:
@@ -113,7 +113,7 @@ def time_travel():
     original_time = time.time
     current_offset = 0.0
 
-    def mock_time():
+    def mock_time() -> float:
         return original_time() + current_offset
 
     def _travel_to(target: datetime.datetime) -> None:

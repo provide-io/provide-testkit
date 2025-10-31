@@ -15,7 +15,7 @@ from provide.testkit.time.classes import MockRateLimiter
 
 
 @pytest.fixture
-def rate_limiter_mock():
+def rate_limiter_mock() -> MockRateLimiter:
     """Mock for testing rate-limited code.
 
     Returns:

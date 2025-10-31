@@ -32,7 +32,7 @@ from provide.testkit.mocking import Mock, patch
 class ApiClient:
     """Example HTTP client for API interactions."""
 
-    def __init__(self, base_url: str, api_key: str | None = None, timeout: float = 30.0):
+    def __init__(self, base_url: str, api_key: str | None = None, timeout: float = 30.0) -> None:
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
         self.timeout = timeout
@@ -77,7 +77,7 @@ class ApiClient:
 class ConfigurableClient:
     """HTTP client that loads configuration from files."""
 
-    def __init__(self, config_path: Path):
+    def __init__(self, config_path: Path) -> None:
         self.config_path = config_path
         self.config = self._load_config()
         self.client = ApiClient(
@@ -123,7 +123,7 @@ class ConfigurableClient:
 # Test Patterns
 
 
-def test_mock_http_responses():
+def test_mock_http_responses() -> None:
     """Pattern 1: Mocking HTTP responses with requests_mock or unittest.mock."""
 
     # Mock the entire requests.Session.get method
@@ -148,7 +148,7 @@ def test_mock_http_responses():
         assert user["email"] == "john@example.com"
 
 
-def test_mock_http_post_request():
+def test_mock_http_post_request() -> None:
     """Pattern 2: Mocking POST requests with request validation."""
 
     with patch.object(requests.Session, "post") as mock_post:
@@ -177,7 +177,7 @@ def test_mock_http_post_request():
         assert result["name"] == "Jane Smith"
 
 
-def test_error_handling_patterns():
+def test_error_handling_patterns() -> None:
     """Pattern 3: Testing error handling and HTTP status codes."""
 
     # Test 404 Not Found
@@ -211,7 +211,7 @@ def test_error_handling_patterns():
             client.get_user(123)
 
 
-def test_health_check_scenarios():
+def test_health_check_scenarios() -> None:
     """Pattern 4: Testing different health check scenarios."""
 
     # Test healthy service
@@ -240,7 +240,7 @@ def test_health_check_scenarios():
         assert client.health_check() is False
 
 
-def test_file_upload_mocking(temp_directory):
+def test_file_upload_mocking(temp_directory) -> None:
     """Pattern 5: Mocking file upload operations."""
 
     # Create a test file
@@ -279,7 +279,7 @@ def test_file_upload_mocking(temp_directory):
         assert result["filename"] == "test_upload.txt"
 
 
-def test_configuration_based_client(temp_directory):
+def test_configuration_based_client(temp_directory) -> None:
     """Pattern 6: Testing clients that use configuration files."""
 
     # Create configuration file
@@ -332,7 +332,7 @@ def test_configuration_based_client(temp_directory):
         assert users[1]["name"] == "User 2"
 
 
-def test_missing_config_file(temp_directory):
+def test_missing_config_file(temp_directory) -> None:
     """Pattern 7: Testing error handling for missing configuration."""
 
     missing_config = temp_directory / "nonexistent_config.json"
@@ -341,7 +341,7 @@ def test_missing_config_file(temp_directory):
         ConfigurableClient(missing_config)
 
 
-def test_headers_and_authentication():
+def test_headers_and_authentication() -> None:
     """Pattern 8: Testing request headers and authentication."""
 
     with patch.object(requests.Session, "get") as mock_get:
@@ -366,7 +366,7 @@ def test_headers_and_authentication():
         assert result["authenticated"] is True
 
 
-def test_multiple_sequential_requests():
+def test_multiple_sequential_requests() -> None:
     """Pattern 9: Testing sequences of HTTP requests."""
 
     with patch.object(requests.Session, "get") as mock_get:
@@ -403,7 +403,7 @@ def test_multiple_sequential_requests():
         assert users[2]["name"] == "Charlie"
 
 
-def test_timeout_configuration():
+def test_timeout_configuration() -> None:
     """Pattern 10: Testing timeout configuration and behavior."""
 
     # Test default timeout

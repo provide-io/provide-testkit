@@ -45,10 +45,7 @@ def _is_testing_context() -> bool:
         return True
 
     # Check if pytest is already imported (rare but possible)
-    if "pytest" in sys.modules:
-        return True
-
-    return False
+    return "pytest" in sys.modules
 
 
 def _get_logger() -> any:

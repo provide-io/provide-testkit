@@ -29,6 +29,8 @@ Usage:
     # CLI usage
     provide-testkit quality analyze src/"""
 
+from typing import Any
+
 from .base import BaseQualityFixture, QualityResult, QualityTool
 from .report import ReportGenerator
 from .runner import QualityRunner
@@ -43,7 +45,7 @@ __all__ = [
 ]
 
 
-def __getattr__(name: str):
+def __getattr__(name: str) -> Any:
     """Lazy import quality tools to avoid import overhead."""
     if name == "CoverageFixture":
         from .coverage import CoverageFixture

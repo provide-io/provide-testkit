@@ -23,10 +23,10 @@ from provide.testkit.quality.runner import QualityRunner
 class MockCoverageTool:
     """Mock coverage tool for demonstration."""
 
-    def __init__(self, config: dict[str, any] | None = None):
+    def __init__(self, config: dict[str, object] | None = None) -> None:
         self.config = config or {}
 
-    def analyze(self, path: Path, **kwargs) -> QualityResult:
+    def analyze(self, path: Path, *, artifact_dir: Path | None = None) -> QualityResult:
         """Mock coverage analysis."""
         start_time = time.time()
 
@@ -40,7 +40,6 @@ class MockCoverageTool:
         passed = score >= self.config.get("min_coverage", 75.0)
 
         # Create mock artifacts
-        artifact_dir = kwargs.get("artifact_dir", Path())
         if artifact_dir:
             artifact_dir.mkdir(parents=True, exist_ok=True)
 
@@ -77,10 +76,10 @@ class MockCoverageTool:
 class MockSecurityTool:
     """Mock security tool for demonstration."""
 
-    def __init__(self, config: dict[str, any] | None = None):
+    def __init__(self, config: dict[str, object] | None = None) -> None:
         self.config = config or {}
 
-    def analyze(self, path: Path, **kwargs) -> QualityResult:
+    def analyze(self, path: Path, *, artifact_dir: Path | None = None) -> QualityResult:
         """Mock security analysis."""
         start_time = time.time()
 
@@ -105,7 +104,6 @@ class MockSecurityTool:
         passed = score >= self.config.get("min_score", 85.0)
 
         # Create mock artifacts
-        artifact_dir = kwargs.get("artifact_dir", Path())
         if artifact_dir:
             artifact_dir.mkdir(parents=True, exist_ok=True)
 
@@ -134,10 +132,10 @@ class MockSecurityTool:
 class MockComplexityTool:
     """Mock complexity tool for demonstration."""
 
-    def __init__(self, config: dict[str, any] | None = None):
+    def __init__(self, config: dict[str, object] | None = None) -> None:
         self.config = config or {}
 
-    def analyze(self, path: Path, **kwargs) -> QualityResult:
+    def analyze(self, path: Path, *, artifact_dir: Path | None = None) -> QualityResult:
         """Mock complexity analysis."""
         start_time = time.time()
 
@@ -171,7 +169,6 @@ class MockComplexityTool:
         )
 
         # Create mock artifacts
-        artifact_dir = kwargs.get("artifact_dir", Path())
         if artifact_dir:
             artifact_dir.mkdir(parents=True, exist_ok=True)
 
@@ -222,7 +219,7 @@ def setup_mock_runner() -> QualityRunner:
     return runner
 
 
-def demonstrate_quality_runner():
+def demonstrate_quality_runner() -> dict[str, QualityResult]:
     """Demonstrate the QualityRunner functionality."""
     print("=" * 50)
 
@@ -241,13 +238,14 @@ def demonstrate_quality_runner():
     # Display results
     print("📊 Results:")
     for tool_name, result in results.items():
-        print(f"  {tool_name}: {status} (Score: {result.score:.1f}%)")
+        status_text = "PASSED" if result.passed else "FAILED"
+        print(f"  {tool_name}: {status_text} (Score: {result.score:.1f}%)")
 
     print()
     return results
 
 
-def demonstrate_quality_gates():
+def demonstrate_quality_gates() -> None:
     """Demonstrate quality gates functionality."""
     print("🚪 Quality Gates Demonstration")
     print("=" * 50)
@@ -276,7 +274,7 @@ def demonstrate_quality_gates():
     return gate_results.results
 
 
-def demonstrate_report_generation(results: dict[str, QualityResult]):
+def demonstrate_report_generation(results: dict[str, QualityResult]) -> None:
     """Demonstrate report generation in multiple formats."""
     print("📝 Report Generation Demonstration")
     print("=" * 50)
@@ -311,7 +309,7 @@ def demonstrate_report_generation(results: dict[str, QualityResult]):
     print()
 
 
-def demonstrate_artifact_management(results: dict[str, QualityResult]):
+def demonstrate_artifact_management(results: dict[str, QualityResult]) -> None:
     """Demonstrate artifact management."""
     print("📚 Artifact Management Demonstration")
     print("=" * 50)
@@ -321,8 +319,8 @@ def demonstrate_artifact_management(results: dict[str, QualityResult]):
 
     # Create organized directories
     for tool_name in results:
-        session_dir = artifact_manager.create_session_dir(tool_name)
-        timestamped_dir = artifact_manager.create_timestamped_dir(tool_name)
+        artifact_manager.create_session_dir(tool_name)
+        artifact_manager.create_timestamped_dir(tool_name)
         print(f"  Created directories for {tool_name}")
 
     # Generate summary report
@@ -340,7 +338,7 @@ def demonstrate_artifact_management(results: dict[str, QualityResult]):
     print()
 
 
-def create_comprehensive_demo():
+def create_comprehensive_demo() -> None:
     """Create a comprehensive demonstration output."""
     reports_dir = Path("quality-reports")
     reports_dir.mkdir(exist_ok=True)
@@ -403,7 +401,7 @@ Generated on: {time.strftime("%Y-%m-%d %H:%M:%S")}
     print(f"📋 Comprehensive demo documentation: {reports_dir / 'README.md'}")
 
 
-def main():
+def main() -> None:
     """Main demonstration function."""
     print("🚀 Provide-Testkit Quality Framework Demo")
     print("=" * 60)
@@ -413,7 +411,7 @@ def main():
     results = demonstrate_quality_runner()
 
     # 2. Demonstrate Quality Gates
-    gate_results = demonstrate_quality_gates()
+    demonstrate_quality_gates()
 
     # 3. Demonstrate Report Generation
     demonstrate_report_generation(results)
