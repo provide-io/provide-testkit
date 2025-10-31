@@ -8,7 +8,9 @@
 Fixtures for creating specialized files like binary files, read-only files,
 symbolic links, and executable files."""
 
-from collections.abc import Generator
+from __future__ import annotations
+
+from collections.abc import Callable, Generator
 from pathlib import Path
 import stat
 import sys
@@ -67,16 +69,16 @@ def readonly_file() -> Generator[Path, None, None]:
 
 
 @pytest.fixture
-def temp_symlink():
+def temp_symlink() -> Generator[Callable[..., Path], None, None]:
     """
     Create temporary symbolic links for testing.
 
     Returns:
         Function that creates symbolic links.
     """
-    created_links = []
+    created_links: list[Path] = []
 
-    def _make_symlink(target: Path | str, link_name: Path | str = None) -> Path:
+    def _make_symlink(target: Path | str, link_name: Path | str | None = None) -> Path:
         """
         Create a temporary symbolic link.
 
@@ -119,16 +121,16 @@ def temp_symlink():
 
 
 @pytest.fixture
-def temp_executable_file():
+def temp_executable_file() -> Generator[Callable[..., Path], None, None]:
     """
     Create temporary executable files for testing.
 
     Returns:
         Function that creates executable files.
     """
-    created_files = []
+    created_files: list[Path] = []
 
-    def _make_executable(content: str = None, suffix: str = None) -> Path:
+    def _make_executable(content: str | None = None, suffix: str | None = None) -> Path:
         """
         Create a temporary executable file.
 

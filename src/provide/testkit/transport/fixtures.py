@@ -49,7 +49,7 @@ def mock_server(free_port) -> Generator[dict[str, Any], None, None]:
     class MockHandler(BaseHTTPRequestHandler):
         """Handler for mock HTTP server."""
 
-        def do_GET(self):
+        def do_GET(self) -> None:
             """Handle GET requests."""
             requests_received.append({"method": "GET", "path": self.path, "headers": dict(self.headers)})
 
@@ -60,7 +60,7 @@ def mock_server(free_port) -> Generator[dict[str, Any], None, None]:
             self.end_headers()
             self.wfile.write(response["body"])
 
-        def do_POST(self):
+        def do_POST(self) -> None:
             """Handle POST requests."""
             content_length = int(self.headers.get("Content-Length", 0))
             body = self.rfile.read(content_length) if content_length else b""
@@ -81,7 +81,7 @@ def mock_server(free_port) -> Generator[dict[str, Any], None, None]:
             self.end_headers()
             self.wfile.write(response["body"])
 
-        def log_message(self, format, *args):
+        def log_message(self, format, *args) -> None:
             """Suppress log messages."""
             pass
 
@@ -200,7 +200,7 @@ def tcp_client_server(free_port) -> Generator[dict[str, Any], None, None]:
     # Run server accept in thread
     connection = None
 
-    def accept_connection():
+    def accept_connection() -> None:
         nonlocal connection
         connection, _ = server_socket.accept()
 

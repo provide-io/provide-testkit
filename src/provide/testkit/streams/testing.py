@@ -75,7 +75,7 @@ def enable_file_logging_for_testing(log_file_path: str) -> object:
 
         # Create a helper object that the test can use to trigger file logging setup
         class FileLoggingHelper:
-            def setup_after_reset(self):
+            def setup_after_reset(self) -> None:
                 from provide.foundation.streams.file import configure_file_logging
 
                 configure_file_logging(log_file_path)

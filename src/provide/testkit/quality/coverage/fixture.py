@@ -20,7 +20,7 @@ from .tracker import COVERAGE_AVAILABLE, CoverageTracker
 class CoverageFixture(BaseQualityFixture):
     """Pytest fixture for coverage tracking integration."""
 
-    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None):
+    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None) -> None:
         """Initialize coverage fixture.
 
         Args:
@@ -210,7 +210,7 @@ def parametrized_coverage(request, tmp_path) -> Generator[CoverageFixture, None,
 
 
 # Pytest hooks for automatic coverage integration
-def pytest_configure(config):
+def pytest_configure(config) -> None:
     """Configure pytest with coverage markers."""
     config.addinivalue_line("markers", "coverage: mark test to run with coverage tracking")
     config.addinivalue_line("markers", "no_coverage: mark test to skip coverage tracking")

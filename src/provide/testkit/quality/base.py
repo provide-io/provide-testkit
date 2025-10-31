@@ -37,7 +37,8 @@ class QualityResult:
     def summary(self) -> str:
         """Human-readable summary of the result."""
         score_text = f" ({self.score}%)" if self.score is not None else ""
-        return f"{self.tool}: {status}{score_text}"
+        status_text = "PASSED" if self.passed else "FAILED"
+        return f"{self.tool}: {status_text}{score_text}"
 
 
 @runtime_checkable
@@ -76,7 +77,7 @@ class BaseQualityFixture(ABC):
     configuration management, artifact handling, and result tracking.
     """
 
-    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None):
+    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None) -> None:
         """Initialize the fixture.
 
         Args:
@@ -137,7 +138,7 @@ class BaseQualityFixture(ABC):
 class QualityError(Exception):
     """Base exception for quality analysis errors."""
 
-    def __init__(self, message: str, tool: str | None = None, details: dict[str, Any] | None = None):
+    def __init__(self, message: str, tool: str | None = None, details: dict[str, Any] | None = None) -> None:
         """Initialize quality error.
 
         Args:

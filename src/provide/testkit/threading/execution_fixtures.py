@@ -27,7 +27,7 @@ def concurrent_executor():
     """
 
     class ConcurrentExecutor:
-        def __init__(self):
+        def __init__(self) -> None:
             self.results = []
             self.exceptions = []
 
@@ -102,10 +102,10 @@ def thread_synchronizer():
     """
 
     class ThreadSynchronizer:
-        def __init__(self):
+        def __init__(self) -> None:
             self.checkpoints = {}
 
-        def checkpoint(self, name: str, thread_id: int | None = None):
+        def checkpoint(self, name: str, thread_id: int | None = None) -> None:
             """
             Record that a thread reached a checkpoint.
 
@@ -151,7 +151,7 @@ def thread_synchronizer():
                 return []
             return [tid for tid, _ in sorted(self.checkpoints[checkpoint], key=lambda x: x[1])]
 
-        def clear(self):
+        def clear(self) -> None:
             """Clear all checkpoints."""
             self.checkpoints.clear()
 
@@ -168,11 +168,11 @@ def deadlock_detector():
     """
 
     class DeadlockDetector:
-        def __init__(self):
+        def __init__(self) -> None:
             self.locks_held = {}  # thread_id -> set of locks
             self.lock = threading.Lock()
 
-        def acquire(self, lock_name: str, thread_id: int | None = None):
+        def acquire(self, lock_name: str, thread_id: int | None = None) -> None:
             """Record lock acquisition."""
             thread_id = thread_id or threading.get_ident()
             with self.lock:
@@ -180,7 +180,7 @@ def deadlock_detector():
                     self.locks_held[thread_id] = set()
                 self.locks_held[thread_id].add(lock_name)
 
-        def release(self, lock_name: str, thread_id: int | None = None):
+        def release(self, lock_name: str, thread_id: int | None = None) -> None:
             """Record lock release."""
             thread_id = thread_id or threading.get_ident()
             with self.lock:
@@ -218,7 +218,7 @@ def thread_exception_handler():
     """
 
     class ThreadExceptionHandler:
-        def __init__(self):
+        def __init__(self) -> None:
             self.exceptions = []
             self.lock = threading.Lock()
 
@@ -254,7 +254,7 @@ def thread_exception_handler():
             with self.lock:
                 return self.exceptions.copy()
 
-        def assert_no_exceptions(self):
+        def assert_no_exceptions(self) -> None:
             """Assert no exceptions were raised."""
             with self.lock:
                 if self.exceptions:

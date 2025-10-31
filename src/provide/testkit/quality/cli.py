@@ -3,13 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
-
-#
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-#
-
 """CLI commands for quality analysis."""
 
 from __future__ import annotations
@@ -22,6 +15,16 @@ from typing import Any
 import click
 
 from .runner import QualityRunner
+
+
+def _status_text(passed: bool) -> str:
+    """Return a human-readable status label."""
+    return "PASSED" if passed else "FAILED"
+
+
+def _status_icon(passed: bool) -> str:
+    """Return an emoji indicating pass/fail status."""
+    return "✅" if passed else "❌"
 
 
 @click.group(name="quality")
@@ -215,7 +218,8 @@ def _print_detailed_results(results: Any) -> None:
     click.echo("\nDetailed Results:")
     for tool, result in results.results.items():
         score_text = f" (Score: {result.score:.1f}%)" if result.score is not None else ""
-        click.echo(f"  {tool}: {status}{score_text}")
+        status_text = _status_text(result.passed)
+        click.echo(f"  {tool}: {status_text}{score_text}")
 
 
 @quality_cli.command("coverage")
@@ -244,7 +248,8 @@ def coverage_command(
 
         coverage_pct = result.details.get("coverage_percentage", 0)
 
-        click.echo(f"Coverage Analysis: {status}")
+        status_text = _status_text(result.passed)
+        click.echo(f"Coverage Analysis: {status_text}")
         click.echo(f"Coverage: {coverage_pct:.1f}% (required: {min_coverage}%)")
 
         if verbose and result.details.get("missing_files"):
@@ -281,7 +286,8 @@ def security_command(path: Path, min_score: float, artifact_dir: Path, verbose: 
 
         score = result.score or 0
 
-        click.echo(f"Security Analysis: {status}")
+        status_text = _status_text(result.passed)
+        click.echo(f"Security Analysis: {status_text}")
         click.echo(f"Score: {score:.1f}% (required: {min_score}%)")
 
         if verbose and result.details.get("issues"):
@@ -332,7 +338,8 @@ def complexity_command(
         grade = result.details.get("overall_grade", "N/A")
         avg_complexity = result.details.get("average_complexity", 0)
 
-        click.echo(f"Complexity Analysis: {status}")
+        status_text = _status_text(result.passed)
+        click.echo(f"Complexity Analysis: {status_text}")
         click.echo(f"Grade: {grade} (Average complexity: {avg_complexity:.1f})")
 
         if verbose and result.details.get("most_complex_functions"):
@@ -356,7 +363,8 @@ def _print_terminal_results(results: dict[str, Any], verbose: bool) -> None:
     for tool, result in results.items():
         score_text = f" ({result.score:.1f}%)" if result.score is not None else ""
 
-        click.echo(f"{tool.title()}: {status}{score_text}")
+        status_text = _status_text(result.passed)
+        click.echo(f"{tool.title()}: {status_text}{score_text}")
 
         if verbose:
             if hasattr(result, "execution_time") and result.execution_time:
@@ -390,7 +398,8 @@ def _print_summary(results: dict[str, Any], verbose: bool) -> None:
 
     if verbose:
         for tool, result in results.items():
-            click.echo(f"  {status_icon} {tool}")
+            icon = _status_icon(result.passed)
+            click.echo(f"  {icon} {tool}")
 
 
 if __name__ == "__main__":

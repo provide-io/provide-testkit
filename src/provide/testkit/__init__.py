@@ -22,18 +22,15 @@ from __future__ import annotations
 # Projects should import provide.testkit in their tests/conftest.py to ensure
 # this blocker is installed before pytest initializes.
 # ============================================================================
-import os
-import sys
 from typing import Any
 
 # Ensure .pth file is installed (one-time setup, idempotent)
+from provide.testkit._install_blocker import install_setproctitle_blocker
 from provide.testkit._install_pth import install_pth_file
 
 install_pth_file()  # Silently installs/symlinks if not present
 
 # Install setproctitle blocker if running under pytest
-from provide.testkit._install_blocker import install_setproctitle_blocker
-
 install_setproctitle_blocker()
 
 # Mapping of attribute names to their modules for lazy loading.

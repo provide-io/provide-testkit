@@ -60,7 +60,7 @@ def get_log_level_for_noisy_loggers() -> int:
 
 
 @pytest.hookimpl(tryfirst=True)
-def pytest_runtest_setup():
+def pytest_runtest_setup() -> None:
     """
     Hook that runs before each test setup.
 

@@ -18,7 +18,7 @@ from provide.testkit.logger import reset_foundation_setup_for_testing
 class TestEnvironment:
     """Context manager for test environment setup with proper cleanup."""
 
-    def __init__(self, env_vars: dict[str, str] | None = None):
+    def __init__(self, env_vars: dict[str, str] | None = None) -> None:
         """
         Initialize test environment manager.
 

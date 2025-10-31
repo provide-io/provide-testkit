@@ -15,7 +15,7 @@ from provide.foundation.process import run
 class HarnessRunner:
     """Test harness runner with artifact management."""
 
-    def __init__(self, artifact_root: Path):
+    def __init__(self, artifact_root: Path) -> None:
         """Initialize with artifact root directory."""
         self.artifact_root = artifact_root
 

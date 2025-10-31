@@ -8,6 +8,9 @@
 Standardized mocking patterns and fixtures for the provide-io ecosystem.
 Reduces boilerplate and ensures consistent mocking across all tests."""
 
+from __future__ import annotations
+
+from collections.abc import Callable, Generator
 from typing import Any
 from unittest.mock import (
     ANY,
@@ -27,8 +30,41 @@ from unittest.mock import (
 import pytest
 
 
+class AutoPatch:
+    """Helper for applying and cleaning up multiple patches."""
+
+    def __init__(self) -> None:
+        self.patches: list[Any] = []
+
+    def object(self, target: Any, attribute: str, **kwargs: Any) -> Mock:
+        """Patch an object's attribute."""
+        patcher = patch.object(target, attribute, **kwargs)
+        mock = patcher.start()
+        self.patches.append(patcher)
+        return mock
+
+    def dict(self, target: dict[Any, Any], values: dict[Any, Any], **kwargs: Any) -> None:
+        """Patch a dictionary."""
+        patcher = patch.dict(target, values, **kwargs)
+        patcher.start()
+        self.patches.append(patcher)
+
+    def env(self, **env_vars: str) -> None:
+        """Patch environment variables."""
+        import os
+
+        patcher = patch.dict(os.environ, env_vars)
+        patcher.start()
+        self.patches.append(patcher)
+
+    def cleanup(self) -> None:
+        """Stop all patches."""
+        for patcher in self.patches:
+            patcher.stop()
+
+
 @pytest.fixture
-def mock_factory():
+def mock_factory() -> Callable[..., Mock]:
     """
     Factory for creating configured mock objects.
 
@@ -36,7 +72,7 @@ def mock_factory():
         Function that creates mock objects with common configurations.
     """
 
-    def _create_mock(name: str | None = None, **kwargs) -> Mock:
+    def _create_mock(name: str | None = None, **kwargs: Any) -> Mock:
         """
         Create a mock with standard configuration.
 
@@ -59,7 +95,7 @@ def mock_factory():
 
 
 @pytest.fixture
-def magic_mock_factory():
+def magic_mock_factory() -> Callable[..., MagicMock]:
     """
     Factory for creating MagicMock objects.
 
@@ -67,7 +103,7 @@ def magic_mock_factory():
         Function that creates MagicMock objects with common configurations.
     """
 
-    def _create_magic_mock(name: str | None = None, **kwargs) -> MagicMock:
+    def _create_magic_mock(name: str | None = None, **kwargs: Any) -> MagicMock:
         """
         Create a MagicMock with standard configuration.
 
@@ -84,7 +120,7 @@ def magic_mock_factory():
 
 
 @pytest.fixture
-def async_mock_factory():
+def async_mock_factory() -> Callable[..., AsyncMock]:
     """
     Factory for creating AsyncMock objects.
 
@@ -93,7 +129,10 @@ def async_mock_factory():
     """
 
     def _create_async_mock(
-        name: str | None = None, return_value: object = None, side_effect: object = None, **kwargs
+        name: str | None = None,
+        return_value: Any | None = None,
+        side_effect: Any | None = None,
+        **kwargs: Any,
     ) -> AsyncMock:
         """
         Create an AsyncMock with standard configuration.
@@ -118,7 +157,7 @@ def async_mock_factory():
 
 
 @pytest.fixture
-def property_mock_factory():
+def property_mock_factory() -> Callable[..., PropertyMock]:
     """
     Factory for creating PropertyMock objects.
 
@@ -126,7 +165,11 @@ def property_mock_factory():
         Function that creates PropertyMock objects.
     """
 
-    def _create_property_mock(return_value=None, side_effect=None, **kwargs) -> PropertyMock:
+    def _create_property_mock(
+        return_value: Any | None = None,
+        side_effect: Any | None = None,
+        **kwargs: Any,
+    ) -> PropertyMock:
         """
         Create a PropertyMock.
 
@@ -144,16 +187,16 @@ def property_mock_factory():
 
 
 @pytest.fixture
-def patch_fixture():
+def patch_fixture() -> Generator[Callable[..., Mock], None, None]:
     """
     Fixture for patching objects with automatic cleanup.
 
     Returns:
         Function that patches objects and returns the mock.
     """
-    patches = []
+    patches: list[Any] = []
 
-    def _patch(target: str, **kwargs) -> Mock:
+    def _patch(target: str, **kwargs: Any) -> Mock:
         """
         Patch a target with automatic cleanup.
 
@@ -177,16 +220,16 @@ def patch_fixture():
 
 
 @pytest.fixture
-def patch_multiple_fixture():
+def patch_multiple_fixture() -> Generator[Callable[..., dict[str, Mock]], None, None]:
     """
     Fixture for patching multiple objects at once.
 
     Returns:
         Function that patches multiple targets.
     """
-    patches = []
+    patches: list[Any] = []
 
-    def _patch_multiple(target_module: str, **kwargs) -> dict[str, Mock]:
+    def _patch_multiple(target_module: str, **kwargs: Any) -> dict[str, Mock]:
         """
         Patch multiple attributes in a module.
 
@@ -212,51 +255,20 @@ def patch_multiple_fixture():
 
 
 @pytest.fixture
-def auto_patch():
+def auto_patch() -> Generator[AutoPatch, None, None]:
     """
     Context manager for automatic patching with cleanup.
 
     Returns:
-        Patch context manager class.
+        Patch context manager instance.
     """
-
-    class AutoPatch:
-        def __init__(self) -> None:
-            self.patches = []
-
-        def object(self, target: Any, attribute: str, **kwargs) -> Mock:
-            """Patch an object's attribute."""
-            patcher = patch.object(target, attribute, **kwargs)
-            mock = patcher.start()
-            self.patches.append(patcher)
-            return mock
-
-        def dict(self, target: dict, values: dict, **kwargs) -> None:
-            """Patch a dictionary."""
-            patcher = patch.dict(target, values, **kwargs)
-            patcher.start()
-            self.patches.append(patcher)
-
-        def env(self, **env_vars) -> None:
-            """Patch environment variables."""
-            import os
-
-            patcher = patch.dict(os.environ, env_vars)
-            patcher.start()
-            self.patches.append(patcher)
-
-        def cleanup(self) -> None:
-            """Stop all patches."""
-            for patcher in self.patches:
-                patcher.stop()
-
     patcher = AutoPatch()
     yield patcher
     patcher.cleanup()
 
 
 @pytest.fixture
-def mock_open_fixture():
+def mock_open_fixture() -> Callable[[str | None], Mock]:
     """
     Fixture for mocking file operations.
 
@@ -281,7 +293,7 @@ def mock_open_fixture():
 
 
 @pytest.fixture
-def spy_fixture():
+def spy_fixture() -> Callable[[Any, str], Mock]:
     """
     Create a spy (mock that calls through to the original).
 
@@ -309,7 +321,7 @@ def spy_fixture():
 
 
 @pytest.fixture
-def assert_mock_calls():
+def assert_mock_calls() -> Callable[[Mock, list[Any], bool], None]:
     """
     Helper for asserting mock calls with better error messages.
 
@@ -317,7 +329,7 @@ def assert_mock_calls():
         Function for asserting mock calls.
     """
 
-    def _assert_calls(mock: Mock, expected_calls: list, any_order: bool = False) -> None:
+    def _assert_calls(mock: Mock, expected_calls: list[Any], any_order: bool = False) -> None:
         """
         Assert that a mock was called with expected calls.
 

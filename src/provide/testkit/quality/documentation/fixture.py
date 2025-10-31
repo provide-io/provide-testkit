@@ -28,7 +28,7 @@ class DocumentationFixture(BaseQualityFixture):
     setup and teardown. Integrates with the quality framework fixtures.
     """
 
-    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None):
+    def __init__(self, config: dict[str, Any] | None = None, artifact_dir: Path | None = None) -> None:
         """Initialize documentation fixture.
 
         Args:

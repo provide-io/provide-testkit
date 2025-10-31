@@ -22,13 +22,23 @@ class ReportGenerator:
     Supports multiple output formats including terminal, JSON, HTML, and Markdown.
     """
 
-    def __init__(self, config: dict[str, Any] | None = None):
+    def __init__(self, config: dict[str, Any] | None = None) -> None:
         """Initialize report generator.
 
         Args:
             config: Configuration for report generation
         """
         self.config = config or {}
+
+    @staticmethod
+    def _status_icon(passed: bool) -> str:
+        """Return a checkmark or cross icon based on result status."""
+        return "✅" if passed else "❌"
+
+    @staticmethod
+    def _status_text(passed: bool) -> str:
+        """Return a human-readable status string."""
+        return "PASSED" if passed else "FAILED"
 
     def generate(self, results: dict[str, QualityResult], format: str = "terminal") -> str:
         """Generate a report from quality results.
@@ -93,6 +103,7 @@ class ReportGenerator:
         score_text = f" ({result.score:.1f}%)" if result.score is not None else ""
         time_text = f" [{result.execution_time:.2f}s]" if result.execution_time is not None else ""
 
+        status_icon = self._status_icon(result.passed)
         return f"{status_icon} {result.tool.title()}{score_text}{time_text}"
 
     def _generate_json_report(self, results: dict[str, QualityResult]) -> str:
@@ -199,6 +210,7 @@ class ReportGenerator:
         for tool_name, result in results.items():
             score = f"{result.score:.1f}%" if result.score is not None else "N/A"
             time = f"{result.execution_time:.2f}s" if result.execution_time is not None else "N/A"
+            status = self._status_text(result.passed)
             lines.append(f"| {result.tool.title()} | {status} | {score} | {time} |")
 
         # Failed tool details
