@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import os
 import sys
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -44,12 +45,11 @@ class TestIsTestingContext:
 
     def test_returns_false_for_regular_python_script(self) -> None:
         """Should return False for regular Python script invocation."""
-        with patch.object(sys, "argv", ["python", "myscript.py"]):
-            with patch.dict(os.environ, {}, clear=True):
-                # Need to also handle that pytest is imported in test context
-                # This test is more theoretical since we can't fully clear pytest
-                # from sys.modules in this test environment
-                pass  # Context detection works in real scenarios
+        with patch.object(sys, "argv", ["python", "myscript.py"]), patch.dict(os.environ, {}, clear=True):
+            # Need to also handle that pytest is imported in test context
+            # This test is more theoretical since we can't fully clear pytest
+            # from sys.modules in this test environment
+            pass  # Context detection works in real scenarios
 
     def test_case_insensitive_detection(self) -> None:
         """Should detect pytest regardless of case in argv."""
@@ -124,12 +124,14 @@ class TestInstallBlocker:
             sys.meta_path = [h for h in sys.meta_path if not isinstance(h, SetproctitleImportBlocker)]
 
             # Ensure we're NOT detected as testing context
-            with patch.object(sys, "argv", ["python", "myscript.py"]):
-                with patch.dict(os.environ, {}, clear=True):
-                    with patch("sys.modules", {"pytest": None}):
-                        # This would need more complex mocking to truly test
-                        # since pytest is already imported
-                        pass
+            with (
+                patch.object(sys, "argv", ["python", "myscript.py"]),
+                patch.dict(os.environ, {}, clear=True),
+                patch("sys.modules", {"pytest": None}),
+            ):
+                # This would need more complex mocking to truly test
+                # since pytest is already imported
+                pass
 
         finally:
             # Restore original meta_path
@@ -162,7 +164,7 @@ class TestInstallBlocker:
 
         real_import = builtins.__import__
 
-        def mock_import(name, *args, **kwargs):
+        def mock_import(name: str, *args: Any, **kwargs: Any) -> Any:
             if name == "provide.testkit.pytest_plugin":
                 raise ImportError("Mocked import failure")
             return real_import(name, *args, **kwargs)

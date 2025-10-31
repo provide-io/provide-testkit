@@ -15,7 +15,7 @@ from provide.testkit.time.classes import BenchmarkTimer, Timer
 
 
 @pytest.fixture
-def timer():
+def timer() -> Timer:
     """Timer fixture for measuring execution time.
 
     Returns:
@@ -32,7 +32,7 @@ def timer():
 
 
 @pytest.fixture
-def benchmark_timer():
+def benchmark_timer() -> BenchmarkTimer:
     """Timer specifically for benchmarking code.
 
     Returns:

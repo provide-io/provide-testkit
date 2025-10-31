@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import importlib.machinery
 import importlib.util
+from pathlib import Path
 import sys
 from typing import Any
 
@@ -47,7 +48,6 @@ class SetproctitleImportBlocker:
         if fullname == "setproctitle":
             # DEBUG: Track setproctitle import attempts
             import os
-            from pathlib import Path
             import tempfile
             import traceback
 
@@ -63,8 +63,8 @@ class SetproctitleImportBlocker:
             # Check if there's a stub setproctitle.py in site-packages
             # If found, create a ModuleSpec to load it directly
             for sp in sys.path:
-                stub_path = os.path.join(sp, "setproctitle.py")
-                if os.path.exists(stub_path):
+                stub_path = Path(sp) / "setproctitle.py"
+                if stub_path.exists():
                     # Found stub - create a ModuleSpec to force loading this file
                     # This prevents Python from finding the real setproctitle package
                     with _debug_file.open("a") as f:

@@ -193,7 +193,7 @@ class PerformanceProfiler:
 
         # Get top functions by cumulative time
         top_functions = []
-        for func_info, (cc, nc, tt, ct, callers) in stats.stats.items():
+        for func_info, (_, nc, tt, ct, _) in stats.stats.items():
             filename, line, func_name = func_info
             top_functions.append(
                 {
@@ -342,82 +342,86 @@ class PerformanceProfiler:
 
     def _generate_text_report(self, result: QualityResult) -> str:
         """Generate text profiling report."""
-        lines = [
+        lines: list[str] = [
             f"Performance Profiling Report - {result.tool}",
             "=" * 50,
             f"Overall Score: {result.score:.1f}%",
         ]
 
         details = result.details
-        scores = details.get("scores", {})
-
-        if scores:
-            lines.extend(
-                [
-                    "",
-                    "Component Scores:",
-                    f"  Memory Score: {scores.get('memory_score', 'N/A')}%",
-                    f"  CPU Score: {scores.get('cpu_score', 'N/A')}%",
-                ]
-            )
-
-        # Memory analysis
-        memory_data = details.get("memory", {})
-        if memory_data:
-            lines.extend(
-                [
-                    "",
-                    f"Memory Analysis ({memory_data.get('tool', 'unknown')}):",
-                    f"  Peak Memory: {memory_data.get('peak_memory_mb', 0):.2f} MB",
-                ]
-            )
-
-            if "average_memory_mb" in memory_data:
-                lines.append(f"  Average Memory: {memory_data['average_memory_mb']:.2f} MB")
-
-        # CPU analysis
-        cpu_data = details.get("cpu", {})
-        if cpu_data:
-            lines.extend(
-                [
-                    "",
-                    f"CPU Analysis ({cpu_data.get('tool', 'unknown')}):",
-                    f"  Execution Time: {cpu_data.get('execution_time', 0):.4f}s",
-                    f"  Total Function Calls: {cpu_data.get('total_function_calls', 0):,}",
-                ]
-            )
-
-            top_functions = cpu_data.get("top_functions", [])
-            if top_functions:
-                lines.extend(
-                    [
-                        "",
-                        "Top CPU Consumers:",
-                    ]
-                )
-                for i, func in enumerate(top_functions[:5], 1):
-                    lines.append(f"  {i}. {func['function']} ({func['cumulative_time']:.4f}s)")
-
-        # Thresholds
-        thresholds = details.get("thresholds", {})
-        if thresholds:
-            lines.extend(
-                [
-                    "",
-                    "Thresholds:",
-                    f"  Minimum Score: {thresholds.get('min_score', 'N/A')}%",
-                ]
-            )
-
-            if thresholds.get("max_memory_mb"):
-                lines.append(f"  Maximum Memory: {thresholds['max_memory_mb']} MB")
-            if thresholds.get("max_execution_time"):
-                lines.append(f"  Maximum Execution Time: {thresholds['max_execution_time']}s")
+        self._append_score_section(lines, details.get("scores", {}))
+        self._append_memory_section(lines, details.get("memory", {}))
+        self._append_cpu_section(lines, details.get("cpu", {}))
+        self._append_threshold_section(lines, details.get("thresholds", {}))
 
         if result.execution_time:
             lines.append(f"\nProfiling Time: {result.execution_time:.2f}s")
 
         return "\n".join(lines)
+
+    def _append_score_section(self, lines: list[str], scores: dict[str, Any]) -> None:
+        if not scores:
+            return
+
+        lines.extend(
+            [
+                "",
+                "Component Scores:",
+                f"  Memory Score: {scores.get('memory_score', 'N/A')}%",
+                f"  CPU Score: {scores.get('cpu_score', 'N/A')}%",
+            ]
+        )
+
+    def _append_memory_section(self, lines: list[str], memory_data: dict[str, Any]) -> None:
+        if not memory_data:
+            return
+
+        lines.extend(
+            [
+                "",
+                f"Memory Analysis ({memory_data.get('tool', 'unknown')}):",
+                f"  Peak Memory: {memory_data.get('peak_memory_mb', 0):.2f} MB",
+            ]
+        )
+
+        if "average_memory_mb" in memory_data:
+            lines.append(f"  Average Memory: {memory_data['average_memory_mb']:.2f} MB")
+
+    def _append_cpu_section(self, lines: list[str], cpu_data: dict[str, Any]) -> None:
+        if not cpu_data:
+            return
+
+        lines.extend(
+            [
+                "",
+                f"CPU Analysis ({cpu_data.get('tool', 'unknown')}):",
+                f"  Execution Time: {cpu_data.get('execution_time', 0):.4f}s",
+                f"  Total Function Calls: {cpu_data.get('total_function_calls', 0):,}",
+            ]
+        )
+
+        top_functions = cpu_data.get("top_functions", [])
+        if top_functions:
+            lines.extend(["", "Top CPU Consumers:"])
+            for index, func in enumerate(top_functions[:5], 1):
+                lines.append(f"  {index}. {func['function']} ({func['cumulative_time']:.4f}s)")
+
+    def _append_threshold_section(self, lines: list[str], thresholds: dict[str, Any]) -> None:
+        if not thresholds:
+            return
+
+        lines.extend(
+            [
+                "",
+                "Thresholds:",
+                f"  Minimum Score: {thresholds.get('min_score', 'N/A')}%",
+            ]
+        )
+
+        if thresholds.get("max_memory_mb"):
+            lines.append(f"  Maximum Memory: {thresholds['max_memory_mb']} MB")
+        if thresholds.get("max_execution_time"):
+            lines.append(f"  Maximum Execution Time: {thresholds['max_execution_time']}s")
 
     def report(self, result: QualityResult, format: str = "terminal") -> str:
         """Generate report from QualityResult (implements QualityTool protocol).

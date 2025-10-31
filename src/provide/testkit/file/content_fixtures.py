@@ -224,9 +224,10 @@ def temp_csv_file() -> Generator[Callable[..., Path], None, None]:
         Returns:
             Path to created CSV file
         """
-        with foundation_temp_file(suffix=suffix, text=True, cleanup=False) as path, path.open(
-            "w", newline=""
-        ) as f:
+        with (
+            foundation_temp_file(suffix=suffix, text=True, cleanup=False) as path,
+            path.open("w", newline="") as f,
+        ):
             writer = csv.writer(f)
             writer.writerow(headers)
             writer.writerows(rows)

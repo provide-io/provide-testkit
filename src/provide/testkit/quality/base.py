@@ -126,10 +126,7 @@ class BaseQualityFixture(ABC):
         Returns:
             Path to the artifact directory
         """
-        if subdir:
-            artifact_path = self.artifact_dir / subdir
-        else:
-            artifact_path = self.artifact_dir
+        artifact_path = self.artifact_dir / subdir if subdir else self.artifact_dir
 
         artifact_path.mkdir(parents=True, exist_ok=True)
         return artifact_path

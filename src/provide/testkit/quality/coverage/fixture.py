@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from pytest import FixtureRequest, TempPathFactory
 
 from ..base import BaseQualityFixture
 from .tracker import COVERAGE_AVAILABLE, CoverageTracker
@@ -70,7 +71,10 @@ class CoverageFixture(BaseQualityFixture):
 
 
 @pytest.fixture
-def coverage_tracker(request, tmp_path) -> Generator[CoverageFixture, None, None]:
+def coverage_tracker(
+    request: FixtureRequest,
+    tmp_path: Path,
+) -> Generator[CoverageFixture, None, None]:
     """Pytest fixture for coverage tracking.
 
     Provides a CoverageFixture instance that automatically starts and stops
@@ -100,7 +104,7 @@ def coverage_tracker(request, tmp_path) -> Generator[CoverageFixture, None, None
 
 
 @pytest.fixture
-def auto_coverage(coverage_tracker) -> Generator[CoverageFixture, None, None]:
+def auto_coverage(coverage_tracker: CoverageFixture) -> Generator[CoverageFixture, None, None]:
     """Automatic coverage tracking fixture.
 
     Automatically starts coverage at the beginning of the test and stops
@@ -121,7 +125,9 @@ def auto_coverage(coverage_tracker) -> Generator[CoverageFixture, None, None]:
 
 
 @pytest.fixture(scope="session")
-def session_coverage(tmp_path_factory) -> Generator[CoverageFixture, None, None]:
+def session_coverage(
+    tmp_path_factory: TempPathFactory,
+) -> Generator[CoverageFixture, None, None]:
     """Session-wide coverage tracking.
 
     Tracks coverage across all tests in the session. Useful for getting
@@ -152,7 +158,7 @@ def session_coverage(tmp_path_factory) -> Generator[CoverageFixture, None, None]
 
 
 @pytest.fixture
-def coverage_config():
+def coverage_config() -> dict[str, Any]:
     """Default coverage configuration fixture.
 
     Returns standard coverage configuration that can be customized
@@ -186,7 +192,10 @@ def coverage_config():
         {"fail_under": 95, "branch": True, "show_missing": True},
     ]
 )
-def parametrized_coverage(request, tmp_path) -> Generator[CoverageFixture, None, None]:
+def parametrized_coverage(
+    request: FixtureRequest,
+    tmp_path: Path,
+) -> Generator[CoverageFixture, None, None]:
     """Parametrized coverage fixture for testing different configurations.
 
     Automatically runs tests with different coverage configurations
@@ -210,14 +219,14 @@ def parametrized_coverage(request, tmp_path) -> Generator[CoverageFixture, None,
 
 
 # Pytest hooks for automatic coverage integration
-def pytest_configure(config) -> None:
+def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest with coverage markers."""
     config.addinivalue_line("markers", "coverage: mark test to run with coverage tracking")
     config.addinivalue_line("markers", "no_coverage: mark test to skip coverage tracking")
 
 
 @pytest.fixture(autouse=True)
-def auto_coverage_marker(request):
+def auto_coverage_marker(request: FixtureRequest) -> Generator[None, None, None]:
     """Automatically apply coverage to marked tests.
 
     Tests marked with @pytest.mark.coverage will automatically
@@ -238,6 +247,7 @@ def auto_coverage_marker(request):
         else:
             yield
     else:
+        yield
         yield
 
 

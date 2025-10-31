@@ -16,7 +16,7 @@ from provide.testkit.quality.decorators import performance_gate, quality_check
 
 
 @performance_gate(max_memory_mb=100.0, max_execution_time=1.0)
-def fast_function():
+def fast_function() -> int:
     """A fast function that should pass performance requirements."""
     # Simple computation that's fast and low memory
     result = sum(range(1000))
@@ -24,7 +24,7 @@ def fast_function():
 
 
 @performance_gate(max_memory_mb=1.0, max_execution_time=0.001)  # Very strict
-def potentially_slow_function():
+def potentially_slow_function() -> int:
     """A function that might fail strict performance requirements."""
     # This might be too slow for the 0.001s requirement
     time.sleep(0.01)  # 10ms sleep
@@ -33,7 +33,7 @@ def potentially_slow_function():
 
 
 @quality_check(performance={"max_memory_mb": 50.0, "max_execution_time": 0.5})
-def comprehensive_test_function():
+def comprehensive_test_function() -> int:
     """A function with comprehensive quality requirements."""
     # Do some work
     data = list(range(5000))
@@ -41,7 +41,7 @@ def comprehensive_test_function():
     return result
 
 
-def demonstrate_performance_gates():
+def demonstrate_performance_gates() -> None:
     """Demonstrate performance gate functionality."""
     print("🏃 Performance Gates Demonstration")
     print("=" * 50)
@@ -74,7 +74,7 @@ def demonstrate_performance_gates():
     print()
 
 
-def demonstrate_manual_profiling():
+def demonstrate_manual_profiling() -> None:
     """Demonstrate manual profiling without decorators."""
     print("=" * 50)
 
@@ -82,7 +82,7 @@ def demonstrate_manual_profiling():
 
     profiler = PerformanceProfiler({"max_memory_mb": 100.0, "max_execution_time": 1.0})
 
-    def example_function():
+    def example_function() -> int:
         """Example function to profile."""
         data = list(range(10000))
         result = sum(x**2 for x in data if x % 2 == 0)
@@ -108,7 +108,7 @@ def demonstrate_manual_profiling():
     print()
 
 
-def main():
+def main() -> None:
     """Main demonstration function."""
     print("🚀 Quality Decorators Demonstration")
     print("=" * 60)

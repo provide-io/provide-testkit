@@ -24,10 +24,11 @@ import json
 from pathlib import Path
 
 import click
+from click.testing import CliRunner
 import pytest
 
 
-def test_temp_directory_basic_usage(temp_directory):
+def test_temp_directory_basic_usage(temp_directory: Path) -> None:
     """Basic usage of temp_directory fixture.
 
     This demonstrates the most fundamental testkit fixture - temp_directory.
@@ -82,7 +83,7 @@ def test_temp_directory_basic_usage(temp_directory):
     # This prevents test pollution and keeps your filesystem clean.
 
 
-def test_multiple_files_and_directories(temp_directory):
+def test_multiple_files_and_directories(temp_directory: Path) -> None:
     """Working with multiple files and nested directories."""
     # Arrange: Create nested structure
     src_dir = temp_directory / "src"
@@ -118,7 +119,7 @@ def test_multiple_files_and_directories(temp_directory):
 @click.command()
 @click.option("--name", default="World", help="Name to greet")
 @click.option("--uppercase", is_flag=True, help="Use uppercase")
-def greet(name, uppercase):
+def greet(name: str, uppercase: bool) -> None:
     """Simple greeting command."""
     message = f"Hello, {name}!"
     if uppercase:
@@ -126,7 +127,7 @@ def greet(name, uppercase):
     click.echo(message)
 
 
-def test_cli_basic_usage(isolated_cli_runner):
+def test_cli_basic_usage(isolated_cli_runner: CliRunner) -> None:
     """Basic CLI testing with isolated_cli_runner fixture."""
     # Arrange: The isolated_cli_runner fixture provides a Click CliRunner
     # in an isolated filesystem environment
@@ -139,7 +140,7 @@ def test_cli_basic_usage(isolated_cli_runner):
     assert "Hello, testkit!" in result.output
 
 
-def test_cli_with_flags(isolated_cli_runner):
+def test_cli_with_flags(isolated_cli_runner: CliRunner) -> None:
     """Testing CLI commands with different flags."""
     # Arrange & Act: Test with uppercase flag
     result = isolated_cli_runner.invoke(greet, ["--name", "testkit", "--uppercase"])
@@ -149,7 +150,7 @@ def test_cli_with_flags(isolated_cli_runner):
     assert "HELLO, TESTKIT!" in result.output
 
 
-def test_cli_default_behavior(isolated_cli_runner):
+def test_cli_default_behavior(isolated_cli_runner: CliRunner) -> None:
     """Testing CLI command default behavior."""
     # Arrange & Act: Run command with no arguments
     result = isolated_cli_runner.invoke(greet)
@@ -160,11 +161,12 @@ def test_cli_default_behavior(isolated_cli_runner):
 
 
 @pytest.mark.asyncio
-async def test_async_basic_usage(clean_event_loop):
+@pytest.mark.usefixtures("clean_event_loop")
+async def test_async_basic_usage() -> None:
     """Basic async testing with clean_event_loop fixture."""
 
     # Arrange: Define an async function to test
-    async def fetch_data(delay=0.1):
+    async def fetch_data(delay: float = 0.1) -> dict[str, str]:
         """Simulate async data fetching."""
         await asyncio.sleep(delay)
         return {"status": "success", "data": "test_data"}
@@ -178,11 +180,12 @@ async def test_async_basic_usage(clean_event_loop):
 
 
 @pytest.mark.asyncio
-async def test_multiple_async_operations(clean_event_loop):
+@pytest.mark.usefixtures("clean_event_loop")
+async def test_multiple_async_operations() -> None:
     """Testing multiple concurrent async operations."""
 
     # Arrange: Define async operations
-    async def task(task_id, delay=0.1):
+    async def task(task_id: int, delay: float = 0.1) -> str:
         await asyncio.sleep(delay)
         return f"task_{task_id}_complete"
 
@@ -197,7 +200,7 @@ async def test_multiple_async_operations(clean_event_loop):
     assert "task_2_complete" in results
 
 
-def test_combining_fixtures(temp_directory, isolated_cli_runner):
+def test_combining_fixtures(temp_directory: Path, isolated_cli_runner: CliRunner) -> None:
     """Combining multiple fixtures in a single test.
 
     This shows how you can use multiple fixtures together
@@ -212,7 +215,7 @@ def test_combining_fixtures(temp_directory, isolated_cli_runner):
     @click.command()
     @click.option("--config", type=click.Path(exists=True))
     @click.argument("name")
-    def greet_from_config(config, name):
+    def greet_from_config(config: str, name: str) -> None:
         """Greet using config file."""
         config_data = json.loads(Path(config).read_text())
         greeting = config_data.get("greeting", "Hello")
@@ -229,7 +232,7 @@ def test_combining_fixtures(temp_directory, isolated_cli_runner):
     assert "Debug mode enabled" in result.output
 
 
-def test_error_handling_example(temp_directory):
+def test_error_handling_example(temp_directory: Path) -> None:
     """Example of testing error conditions."""
     # Arrange: Create a file that we'll try to read incorrectly
     bad_json_file = temp_directory / "bad.json"
@@ -240,7 +243,7 @@ def test_error_handling_example(temp_directory):
         json.loads(bad_json_file.read_text())
 
 
-def test_parametrized_example(temp_directory):
+def test_parametrized_example(temp_directory: Path) -> None:
     """Example showing how fixtures work with parameterized tests.
 
     Note: This test demonstrates the concept, but for actual parameterization,

@@ -10,8 +10,11 @@ for better organization and discoverability."""
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from contextlib import suppress
 import datetime
 import time
+from types import TracebackType
 from typing import Any
 
 from provide.testkit.mocking import patch
@@ -100,11 +103,8 @@ class TimeMachine:
     def _stop_all_patches(self) -> None:
         """Stop and clear all active patches robustly."""
         for p in self.patches:
-            try:
+            with suppress(Exception):
                 p.stop()
-            except Exception:
-                # Ignore errors - module might be unloaded/reloaded
-                pass
         self.patches.clear()
 
     def unfreeze(self) -> None:
@@ -149,9 +149,9 @@ class FrozenTime:
         self.frozen_time = frozen_time or datetime.datetime.now()
         self.original_time = time.time
         self.original_datetime = datetime.datetime
-        self.patches = []
+        self.patches: list[Any] = []
 
-    def __enter__(self):
+    def __enter__(self) -> FrozenTime:
         """Enter frozen time context."""
         # Patch time.time()
         time_patch = patch("time.time", return_value=self.frozen_time.timestamp())
@@ -167,7 +167,12 @@ class FrozenTime:
 
         return self
 
-    def __exit__(self, *args):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
         """Exit frozen time context."""
         for p in self.patches:
             p.stop()
@@ -186,11 +191,11 @@ class Timer:
 
     def __init__(self) -> None:
         """Initialize timer."""
-        self.start_time = None
-        self.end_time = None
-        self.durations = []
+        self.start_time: float | None = None
+        self.end_time: float | None = None
+        self.durations: list[float] = []
 
-    def start(self):
+    def start(self) -> Timer:
         """Start the timer."""
         self.start_time = time.perf_counter()
         return self
@@ -204,12 +209,17 @@ class Timer:
         self.durations.append(duration)
         return duration
 
-    def __enter__(self):
+    def __enter__(self) -> Timer:
         """Context manager entry."""
         self.start()
         return self
 
-    def __exit__(self, *args):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
         """Context manager exit."""
         self.stop()
 
@@ -273,9 +283,9 @@ class BenchmarkTimer:
 
     def __init__(self) -> None:
         """Initialize benchmark timer."""
-        self.measurements = []
+        self.measurements: list[float] = []
 
-    def measure(self, func, *args, **kwargs) -> tuple[Any, float]:
+    def measure(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> tuple[Any, float]:
         """Measure execution time of a function.
 
         Args:

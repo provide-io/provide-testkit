@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from pytest import FixtureRequest
 
 from ..base import BaseQualityFixture
 from .scanner import BANDIT_AVAILABLE, SecurityScanner
@@ -87,7 +88,10 @@ class SecurityFixture(BaseQualityFixture):
 
 
 @pytest.fixture
-def security_scanner(request, tmp_path) -> Generator[SecurityFixture, None, None]:
+def security_scanner(
+    request: FixtureRequest,
+    tmp_path: Path,
+) -> Generator[SecurityFixture, None, None]:
     """Pytest fixture for security scanning.
 
     Provides a SecurityFixture instance for security vulnerability scanning.
@@ -115,7 +119,7 @@ def security_scanner(request, tmp_path) -> Generator[SecurityFixture, None, None
 
 
 @pytest.fixture
-def security_config():
+def security_config() -> dict[str, Any]:
     """Default security configuration fixture.
 
     Returns standard security configuration that can be customized
@@ -145,7 +149,10 @@ def security_config():
         {"max_high_severity": 5, "max_medium_severity": 10, "min_score": 60.0},  # Lenient
     ]
 )
-def parametrized_security(request, tmp_path) -> Generator[SecurityFixture, None, None]:
+def parametrized_security(
+    request: FixtureRequest,
+    tmp_path: Path,
+) -> Generator[SecurityFixture, None, None]:
     """Parametrized security fixture for testing different configurations.
 
     Automatically runs tests with different security thresholds
@@ -170,14 +177,14 @@ def parametrized_security(request, tmp_path) -> Generator[SecurityFixture, None,
 
 
 # Pytest hooks for automatic security integration
-def pytest_configure(config) -> None:
+def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest with security markers."""
     config.addinivalue_line("markers", "security: mark test to run with security scanning")
     config.addinivalue_line("markers", "no_security: mark test to skip security scanning")
 
 
 @pytest.fixture(autouse=True)
-def auto_security_marker(request):
+def auto_security_marker(request: FixtureRequest) -> Generator[None, None, None]:
     """Automatically apply security scanning to marked tests.
 
     Tests marked with @pytest.mark.security will automatically

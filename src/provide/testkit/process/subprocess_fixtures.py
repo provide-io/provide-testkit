@@ -8,9 +8,91 @@
 Provides fixtures for mocking and testing subprocess operations,
 stream handling, and process communication."""
 
+from __future__ import annotations
+
+from collections.abc import AsyncGenerator, Callable
+from typing import Any
+
 import pytest
 
 from provide.testkit.mocking import AsyncMock, Mock
+
+
+class AsyncMockServer:
+    """Simple async HTTP-like server mock."""
+
+    def __init__(self) -> None:
+        self.started = False
+        self.host = "localhost"
+        self.port = 8080
+        self.connections: list[dict[str, Any]] = []
+        self.requests: list[bytes] = []
+
+    async def start(self, host: str = "localhost", port: int = 8080) -> None:
+        """Start the mock server."""
+        self.started = True
+        self.host = host
+        self.port = port
+
+    async def stop(self) -> None:
+        """Stop the mock server and close connections."""
+        self.started = False
+        for conn in self.connections:
+            writer = conn.get("writer")
+            if writer is not None:
+                writer.close()
+                await writer.wait_closed()
+
+    async def handle_connection(self, reader: Any, writer: Any) -> None:
+        """Mock connection handler."""
+        connection = {"reader": reader, "writer": writer}
+        self.connections.append(connection)
+
+        data = await reader.read(1024)
+        self.requests.append(data)
+
+        writer.write(b"HTTP/1.1 200 OK\r\n\r\nOK")
+        await writer.drain()
+        writer.close()
+        await writer.wait_closed()
+
+    def get_url(self) -> str:
+        """Return the server URL."""
+        return f"http://{self.host}:{self.port}"
+
+
+class AsyncTestClient:
+    """Lightweight async HTTP client mock."""
+
+    def __init__(self) -> None:
+        self.responses: dict[str, dict[str, Any]] = {}
+        self.requests: list[dict[str, Any]] = []
+
+    def set_response(self, url: str, response: dict[str, Any]) -> None:
+        """Register a mock response for a URL."""
+        self.responses[url] = response
+
+    async def get(self, url: str, **kwargs: Any) -> dict[str, Any]:
+        """Mock GET request."""
+        self.requests.append({"method": "GET", "url": url, "kwargs": kwargs})
+        return self.responses.get(url, {"status": 404, "body": "Not Found"})
+
+    async def post(self, url: str, data: Any | None = None, **kwargs: Any) -> dict[str, Any]:
+        """Mock POST request."""
+        self.requests.append({"method": "POST", "url": url, "data": data, "kwargs": kwargs})
+        return self.responses.get(url, {"status": 200, "body": "OK"})
+
+    async def close(self) -> None:
+        """Close the client."""
+        return None
+
+    async def __aenter__(self) -> AsyncTestClient:
+        return self
+
+    async def __aexit__(
+        self, exc_type: type[BaseException] | None, exc: BaseException | None, tb: Any
+    ) -> None:
+        await self.close()
 
 
 @pytest.fixture
@@ -46,7 +128,7 @@ async def async_stream_reader() -> AsyncMock:
     reader = AsyncMock()
 
     # Simulate reading lines
-    async def readline_side_effect():
+    async def readline_side_effect() -> AsyncGenerator[bytes, None]:
         for line in [b"line1\n", b"line2\n", b""]:
             yield line
 
@@ -58,7 +140,7 @@ async def async_stream_reader() -> AsyncMock:
 
 
 @pytest.fixture
-def async_subprocess():
+def async_subprocess() -> Callable[[int, bytes, bytes, int], AsyncMock]:
     """
     Create mock async subprocess for testing.
 
@@ -67,7 +149,10 @@ def async_subprocess():
     """
 
     def _create_subprocess(
-        returncode: int = 0, stdout: bytes = b"", stderr: bytes = b"", pid: int = 12345
+        returncode: int = 0,
+        stdout: bytes = b"",
+        stderr: bytes = b"",
+        pid: int = 12345,
     ) -> AsyncMock:
         """
         Create a mock async subprocess.
@@ -112,7 +197,7 @@ def async_subprocess():
 
 
 @pytest.fixture
-def async_mock_server():
+def async_mock_server() -> AsyncMockServer:
     """
     Create a mock async server for testing.
 
@@ -120,84 +205,17 @@ def async_mock_server():
         Mock server with async methods.
     """
 
-    class AsyncMockServer:
-        def __init__(self) -> None:
-            self.started = False
-            self.connections = []
-            self.requests = []
-
-        async def start(self, host: str = "localhost", port: int = 8080) -> None:
-            """Start the mock server."""
-            self.started = True
-            self.host = host
-            self.port = port
-
-        async def stop(self) -> None:
-            """Stop the mock server."""
-            self.started = False
-            for conn in self.connections:
-                await conn.close()
-
-        async def handle_connection(self, reader, writer) -> None:
-            """Mock connection handler."""
-            conn = {"reader": reader, "writer": writer}
-            self.connections.append(conn)
-
-            # Mock reading request
-            data = await reader.read(1024)
-            self.requests.append(data)
-
-            # Mock sending response
-            writer.write(b"HTTP/1.1 200 OK\r\n\r\nOK")
-            await writer.drain()
-
-            writer.close()
-            await writer.wait_closed()
-
-        def get_url(self) -> str:
-            """Get server URL."""
-            return f"http://{self.host}:{self.port}"
-
     return AsyncMockServer()
 
 
 @pytest.fixture
-def async_test_client():
+def async_test_client() -> AsyncTestClient:
     """
     Create an async HTTP test client.
 
     Returns:
         Mock async HTTP client for testing.
     """
-
-    class AsyncTestClient:
-        def __init__(self) -> None:
-            self.responses = {}
-            self.requests = []
-
-        def set_response(self, url: str, response: dict) -> None:
-            """Set a mock response for a URL."""
-            self.responses[url] = response
-
-        async def get(self, url: str, **kwargs) -> dict:
-            """Mock GET request."""
-            self.requests.append({"method": "GET", "url": url, "kwargs": kwargs})
-            return self.responses.get(url, {"status": 404, "body": "Not Found"})
-
-        async def post(self, url: str, data=None, **kwargs) -> dict:
-            """Mock POST request."""
-            self.requests.append({"method": "POST", "url": url, "data": data, "kwargs": kwargs})
-            return self.responses.get(url, {"status": 200, "body": "OK"})
-
-        async def close(self) -> None:
-            """Close the client."""
-            pass
-
-        async def __aenter__(self):
-            return self
-
-        async def __aexit__(self, *args):
-            await self.close()
 
     return AsyncTestClient()
 

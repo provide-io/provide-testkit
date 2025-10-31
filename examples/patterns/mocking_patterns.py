@@ -31,24 +31,24 @@ from provide.testkit.mocking import Mock, patch
 class DatabaseConnection:
     """Example database connection class."""
 
-    def __init__(self, host, port):
+    def __init__(self, host, port) -> None:
         self.host = host
         self.port = port
         self.connected = False
 
-    def connect(self):
+    def connect(self) -> str:
         """Simulate database connection."""
         # In real code, this would connect to a database
         self.connected = True
         return "Connected successfully"
 
-    def execute(self, query):
+    def execute(self, query) -> str:
         """Simulate query execution."""
         if not self.connected:
             raise RuntimeError("Not connected to database")
         return f"Executed: {query}"
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         """Simulate disconnection."""
         self.connected = False
 
@@ -56,7 +56,7 @@ class DatabaseConnection:
 class UserService:
     """Example service that depends on external resources."""
 
-    def __init__(self, db_connection, config_file):
+    def __init__(self, db_connection, config_file) -> None:
         self.db = db_connection
         self.config_file = Path(config_file)
 
@@ -77,7 +77,7 @@ class UserService:
 # Test Patterns
 
 
-def test_mock_object_pattern():
+def test_mock_object_pattern() -> None:
     """Pattern 1: Using Mock objects to replace dependencies.
 
     This demonstrates the most common mocking pattern - replacing external
@@ -131,7 +131,7 @@ def test_mock_object_pattern():
         Path(config_path).unlink()
 
 
-def test_stub_pattern(temp_directory):
+def test_stub_pattern(temp_directory) -> None:
     """Pattern 2: Using stubs for simple return values.
 
     Stubs are simpler than mocks - they just return fixed values without
@@ -151,16 +151,16 @@ def test_stub_pattern(temp_directory):
         need consistent return values.
         """
 
-        def connect(self):
+        def connect(self) -> str:
             # Always succeeds - no complex connection logic needed
             return "Connected successfully"
 
-        def execute(self, query):
+        def execute(self, query) -> str:
             # Always returns the same result regardless of query
             # This is useful when testing business logic that processes results
             return "Stubbed result"
 
-        def disconnect(self):
+        def disconnect(self) -> None:
             # No-op - stubs often have empty implementations
             pass
 
@@ -187,23 +187,23 @@ def test_stub_pattern(temp_directory):
     assert config["timeout"] == 30
 
 
-def test_spy_pattern():
+def test_spy_pattern() -> None:
     """Pattern 3: Using spies to observe behavior."""
 
     # Arrange: Create a spy that records calls
     class DatabaseSpy:
-        def __init__(self):
+        def __init__(self) -> None:
             self.calls = []
 
-        def connect(self):
+        def connect(self) -> str:
             self.calls.append("connect")
             return "Connected successfully"
 
-        def execute(self, query):
+        def execute(self, query) -> str:
             self.calls.append(f"execute:{query}")
             return "Spy result"
 
-        def disconnect(self):
+        def disconnect(self) -> None:
             self.calls.append("disconnect")
 
     import tempfile
@@ -226,20 +226,20 @@ def test_spy_pattern():
         Path(config_path).unlink()
 
 
-def test_fake_pattern(temp_directory):
+def test_fake_pattern(temp_directory) -> None:
     """Pattern 4: Using fakes with working implementations."""
 
     # Arrange: Create a fake with simple in-memory implementation
     class InMemoryDatabase:
-        def __init__(self):
+        def __init__(self) -> None:
             self.data = {1: "Alice", 2: "Bob", 3: "Charlie"}
             self.connected = False
 
-        def connect(self):
+        def connect(self) -> str:
             self.connected = True
             return "Connected successfully"
 
-        def execute(self, query):
+        def execute(self, query) -> str:
             if not self.connected:
                 raise RuntimeError("Not connected")
 
@@ -249,7 +249,7 @@ def test_fake_pattern(temp_directory):
                 return f"User data: {self.data.get(user_id, 'Not found')}"
             return "Unknown query"
 
-        def disconnect(self):
+        def disconnect(self) -> None:
             self.connected = False
 
     # Create config file
@@ -271,7 +271,7 @@ def test_fake_pattern(temp_directory):
 
 
 @patch("__main__.DatabaseConnection")
-def test_patch_decorator_pattern(mock_db_class, temp_directory):
+def test_patch_decorator_pattern(mock_db_class, temp_directory) -> None:
     """Pattern 5: Using @patch decorator for mocking."""
     # Arrange: Configure the patched class
     mock_db_instance = Mock()
@@ -291,7 +291,7 @@ def test_patch_decorator_pattern(mock_db_class, temp_directory):
     assert result == "Patched result"
 
 
-def test_context_manager_mocking(temp_directory):
+def test_context_manager_mocking(temp_directory) -> None:
     """Pattern 6: Mocking with context managers."""
     # Arrange: Create config file
     config_file = temp_directory / "config.json"
@@ -309,7 +309,7 @@ def test_context_manager_mocking(temp_directory):
         mock_execute.assert_called_once_with("SELECT * FROM users WHERE id = 200")
 
 
-def test_partial_mocking(temp_directory):
+def test_partial_mocking(temp_directory) -> None:
     """Pattern 7: Mocking only part of an object."""
     # Arrange: Use real object but mock specific methods
     real_db = DatabaseConnection("real_host", 5432)
@@ -329,13 +329,13 @@ def test_partial_mocking(temp_directory):
         assert result == "Partially mocked result"  # Mocked method
 
 
-def test_mock_side_effects(temp_directory):
+def test_mock_side_effects(temp_directory) -> None:
     """Pattern 8: Using side_effects for complex mock behavior."""
     # Arrange: Create mock with side effects
     mock_db = Mock(spec=DatabaseConnection)
 
     # Configure side effects for different scenarios
-    def execute_side_effect(query):
+    def execute_side_effect(query) -> str:
         if "id = 1" in query:
             return "Admin user"
         elif "id = 2" in query:
@@ -365,7 +365,7 @@ def test_mock_side_effects(temp_directory):
         service.get_user(999)
 
 
-def test_mock_configuration_patterns(temp_directory):
+def test_mock_configuration_patterns(temp_directory) -> None:
     """Pattern 9: Different ways to configure mocks."""
     config_file = temp_directory / "config.json"
     config_file.write_text('{"config_patterns": true}')
@@ -396,7 +396,7 @@ def test_mock_configuration_patterns(temp_directory):
         assert "Config" in result
 
 
-def test_mock_assertion_patterns():
+def test_mock_assertion_patterns() -> None:
     """Pattern 10: Different ways to assert mock calls."""
     # Arrange
     mock_db = Mock(spec=DatabaseConnection)

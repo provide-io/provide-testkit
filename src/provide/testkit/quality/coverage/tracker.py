@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+from contextlib import suppress
 from pathlib import Path
 import time
 from typing import Any
@@ -207,11 +208,8 @@ class CoverageTracker:
 
         data_file = self.artifact_dir / ".coverage"
         if data_file.exists():
-            try:
+            with suppress(Exception):
                 self.coverage.load()
-            except Exception:
-                # If loading fails, continue with fresh data
-                pass
 
     def _create_result(self) -> QualityResult:
         """Create QualityResult from current coverage data."""

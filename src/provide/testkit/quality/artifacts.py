@@ -265,10 +265,7 @@ class ArtifactManager:
 
         if compress:
             # Create compressed archive
-            if not export_path.suffix:
-                archive_path = export_path.with_suffix(".tar.gz")
-            else:
-                archive_path = export_path
+            archive_path = export_path.with_suffix(".tar.gz") if not export_path.suffix else export_path
 
             shutil.make_archive(str(archive_path.with_suffix("")), "gztar", self.base_dir)
             return archive_path

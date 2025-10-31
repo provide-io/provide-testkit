@@ -8,10 +8,14 @@
 This module provides pytest hooks for displaying helpful information
 about testkit usage without generating warnings."""
 
+from __future__ import annotations
+
 import os
 
+from pytest import Config, TerminalReporter
 
-def pytest_report_header(config):
+
+def pytest_report_header(config: Config) -> list[str] | None:
     """Add header information to pytest output.
 
     This displays at the start of test sessions to inform users
@@ -36,7 +40,11 @@ def pytest_report_header(config):
     ]
 
 
-def pytest_terminal_summary(terminalreporter, exitstatus, config):
+def pytest_terminal_summary(
+    terminalreporter: TerminalReporter,
+    exitstatus: int,
+    config: Config,
+) -> None:
     """Add footer information to pytest output.
 
     This displays at the end of test sessions with helpful

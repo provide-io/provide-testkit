@@ -18,7 +18,7 @@ Learning objectives:
 - Build confidence with testing"""
 
 
-def test_my_first_testkit_test(temp_directory):
+def test_my_first_testkit_test(temp_directory) -> None:
     """My very first test using provide-testkit!
 
     This test demonstrates:
@@ -39,7 +39,7 @@ def test_my_first_testkit_test(temp_directory):
     # The temp_directory fixture automatically cleans up when the test ends
 
 
-def test_working_with_multiple_files(temp_directory):
+def test_working_with_multiple_files(temp_directory) -> None:
     """A slightly more complex test with multiple files."""
     # Create several files
     file1 = temp_directory / "file1.txt"
@@ -62,7 +62,7 @@ def test_working_with_multiple_files(temp_directory):
     assert file3.read_text() == "Third file"
 
 
-def test_creating_directories(temp_directory):
+def test_creating_directories(temp_directory) -> None:
     """Test creating subdirectories and files within them."""
     # Create a subdirectory
     sub_dir = temp_directory / "my_subdir"
@@ -79,7 +79,7 @@ def test_creating_directories(temp_directory):
     assert sub_file.read_text() == "I'm in a subdirectory!"
 
 
-def test_what_happens_without_fixture():
+def test_what_happens_without_fixture() -> None:
     """This test shows what happens without the temp_directory fixture.
 
     Notice this test doesn't use temp_directory as a parameter.
@@ -115,7 +115,7 @@ def test_what_happens_without_fixture():
     # - More readable tests
 
 
-def test_common_mistake_example(temp_directory):
+def test_common_mistake_example(temp_directory) -> None:
     """This shows a common mistake and how to avoid it."""
     # ❌ Common mistake: Trying to create files outside temp_directory
     # This would work but defeats the purpose of isolated testing:

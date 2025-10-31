@@ -8,12 +8,174 @@
 Provides fixtures for testing async operations, event loops, and
 async context management across the provide-io ecosystem."""
 
+from __future__ import annotations
+
 import asyncio
-from collections.abc import AsyncGenerator, Callable
+from collections.abc import (
+    AsyncGenerator,
+    AsyncIterable,
+    Awaitable,
+    Callable,
+    Coroutine,
+    Generator,
+    Sequence,
+)
+from types import TracebackType
+from typing import Any, Generic, TypeVar
 
 import pytest
 
 from provide.testkit.mocking import AsyncMock
+
+T = TypeVar("T")
+StageFunc = Callable[[Any], Awaitable[Any] | Any]
+
+
+class _AsyncIterator(Generic[T]):
+    """Simple async iterator over a sequence of values."""
+
+    def __init__(self, values: Sequence[T]) -> None:
+        self._values = list(values)
+        self._index = 0
+
+    def __aiter__(self) -> _AsyncIterator[T]:
+        return self
+
+    async def __anext__(self) -> T:
+        if self._index >= len(self._values):
+            raise StopAsyncIteration
+        value = self._values[self._index]
+        self._index += 1
+        return value
+
+
+class AsyncTaskGroup:
+    """Track asyncio tasks and guarantee cleanup."""
+
+    def __init__(self) -> None:
+        self.tasks: list[asyncio.Task[Any]] = []
+
+    def create_task(self, coro: Coroutine[Any, Any, T]) -> asyncio.Task[T]:
+        """Create and track a task."""
+        task = asyncio.create_task(coro)
+        self.tasks.append(task)
+        return task
+
+    async def wait_all(self, timeout: float | None = None) -> list[Any]:
+        """Wait for all tracked tasks to finish."""
+        if not self.tasks:
+            return []
+
+        done, pending = await asyncio.wait(
+            self.tasks,
+            timeout=timeout,
+            return_when=asyncio.ALL_COMPLETED,
+        )
+
+        for task in pending:
+            task.cancel()
+
+        results: list[Any] = []
+        for task in done:
+            try:
+                results.append(task.result())
+            except Exception as exc:
+                results.append(exc)
+
+        return results
+
+    async def cancel_all(self) -> None:
+        """Cancel all running tasks."""
+        for task in self.tasks:
+            if not task.done():
+                task.cancel()
+
+        if self.tasks:
+            await asyncio.gather(*self.tasks, return_exceptions=True)
+
+    async def __aenter__(self) -> AsyncTaskGroup:
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        await self.cancel_all()
+
+
+class AsyncPipeline:
+    """Pipeline helper for chaining async processing stages."""
+
+    def __init__(self) -> None:
+        self.stages: list[StageFunc] = []
+        self.results: list[Any] = []
+
+    def add_stage(self, func: StageFunc) -> AsyncPipeline:
+        """Register a pipeline stage."""
+        self.stages.append(func)
+        return self
+
+    async def process(self, data: Any) -> Any:
+        """Process a single item through all stages."""
+        result = data
+        for stage in self.stages:
+            if asyncio.iscoroutinefunction(stage):
+                result = await stage(result)  # type: ignore[arg-type]
+            else:
+                result = stage(result)
+            self.results.append(result)
+        return result
+
+    async def process_batch(self, items: Sequence[Any]) -> list[Any]:
+        """Process a batch of items."""
+        tasks = [self.process(item) for item in items]
+        return list(await asyncio.gather(*tasks))
+
+    def clear(self) -> None:
+        """Reset stages and stored results."""
+        self.stages.clear()
+        self.results.clear()
+
+
+class AsyncRateLimiter:
+    """Co-operative async rate limiter."""
+
+    def __init__(self, rate: int = 10, per: float = 1.0) -> None:
+        self.rate = rate
+        self.per = per
+        self.allowance = float(rate)
+        self.last_check = asyncio.get_event_loop().time()
+
+    async def acquire(self) -> None:
+        """Acquire permission to continue, respecting rate limits."""
+        current = asyncio.get_event_loop().time()
+        time_passed = current - self.last_check
+        self.last_check = current
+
+        self.allowance += time_passed * (self.rate / self.per)
+        if self.allowance > self.rate:
+            self.allowance = float(self.rate)
+
+        if self.allowance < 1.0:
+            sleep_time = (1.0 - self.allowance) * (self.per / self.rate)
+            await asyncio.sleep(sleep_time)
+            self.allowance = 0.0
+        else:
+            self.allowance -= 1.0
+
+    async def __aenter__(self) -> AsyncRateLimiter:
+        await self.acquire()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        return None
 
 
 @pytest.fixture
@@ -42,7 +204,7 @@ async def clean_event_loop() -> AsyncGenerator[None, None]:
 
 
 @pytest.fixture
-def async_timeout() -> Callable[[float], asyncio.Task]:
+def async_timeout() -> Callable[[Awaitable[T], float], Awaitable[T]]:
     """
     Provide configurable timeout wrapper for async operations.
 
@@ -50,7 +212,7 @@ def async_timeout() -> Callable[[float], asyncio.Task]:
         A function that wraps async operations with a timeout.
     """
 
-    def _timeout_wrapper(coro, seconds: float = 5.0):
+    def _timeout_wrapper(coro: Awaitable[T], seconds: float = 5.0) -> Awaitable[T]:
         """
         Wrap a coroutine with a timeout.
 
@@ -67,7 +229,7 @@ def async_timeout() -> Callable[[float], asyncio.Task]:
 
 
 @pytest.fixture
-def event_loop_policy():
+def event_loop_policy() -> Generator[asyncio.AbstractEventLoopPolicy, None, None]:
     """
     Set event loop policy for tests to avoid conflicts.
 
@@ -85,7 +247,7 @@ def event_loop_policy():
 
 
 @pytest.fixture
-async def async_context_manager():
+async def async_context_manager() -> Callable[[Any | None, Any | None], AsyncMock]:
     """
     Factory for creating mock async context managers.
 
@@ -93,7 +255,7 @@ async def async_context_manager():
         Function that creates configured async context manager mocks.
     """
 
-    def _create_async_cm(enter_value=None, exit_value=None):
+    def _create_async_cm(enter_value: Any | None = None, exit_value: Any | None = None) -> AsyncMock:
         """
         Create a mock async context manager.
 
@@ -113,7 +275,7 @@ async def async_context_manager():
 
 
 @pytest.fixture
-async def async_iterator():
+async def async_iterator() -> Callable[[Sequence[T]], AsyncIterable[T]]:
     """
     Factory for creating mock async iterators.
 
@@ -121,7 +283,7 @@ async def async_iterator():
         Function that creates async iterator mocks with specified values.
     """
 
-    def _create_async_iter(values):
+    def _create_async_iter(values: Sequence[T]) -> AsyncIterable[T]:
         """
         Create a mock async iterator.
 
@@ -131,29 +293,13 @@ async def async_iterator():
         Returns:
             Async iterator that yields the specified values
         """
-
-        class AsyncIterator:
-            def __init__(self, vals) -> None:
-                self.vals = vals
-                self.index = 0
-
-            def __aiter__(self):
-                return self
-
-            async def __anext__(self):
-                if self.index >= len(self.vals):
-                    raise StopAsyncIteration
-                value = self.vals[self.index]
-                self.index += 1
-                return value
-
-        return AsyncIterator(values)
+        return _AsyncIterator(values)
 
     return _create_async_iter
 
 
 @pytest.fixture
-def async_queue():
+def async_queue() -> asyncio.Queue[Any]:
     """
     Create an async queue for testing producer/consumer patterns.
 
@@ -164,7 +310,7 @@ def async_queue():
 
 
 @pytest.fixture
-async def async_lock():
+async def async_lock() -> asyncio.Lock:
     """
     Create an async lock for testing synchronization.
 
@@ -178,7 +324,7 @@ async def async_lock():
 
 
 @pytest.fixture
-def async_gather_helper():
+def async_gather_helper() -> Callable[..., Awaitable[list[Any]]]:
     """
     Helper for testing asyncio.gather operations.
 
@@ -186,7 +332,7 @@ def async_gather_helper():
         Function to gather async results with error handling.
     """
 
-    async def _gather(*coroutines, return_exceptions: bool = False):
+    async def _gather(*coroutines: Awaitable[Any], return_exceptions: bool = False) -> list[Any]:
         """
         Gather results from multiple coroutines.
 
@@ -203,7 +349,7 @@ def async_gather_helper():
 
 
 @pytest.fixture
-def async_task_group():
+def async_task_group() -> AsyncTaskGroup:
     """
     Manage a group of async tasks with cleanup.
 
@@ -211,56 +357,11 @@ def async_task_group():
         AsyncTaskGroup instance for managing tasks.
     """
 
-    class AsyncTaskGroup:
-        def __init__(self) -> None:
-            self.tasks = []
-
-        def create_task(self, coro):
-            """Create and track a task."""
-            task = asyncio.create_task(coro)
-            self.tasks.append(task)
-            return task
-
-        async def wait_all(self, timeout: float = None):
-            """Wait for all tasks to complete."""
-            if not self.tasks:
-                return []
-
-            done, pending = await asyncio.wait(self.tasks, timeout=timeout, return_when=asyncio.ALL_COMPLETED)
-
-            if pending:
-                for task in pending:
-                    task.cancel()
-
-            results = []
-            for task in done:
-                try:
-                    results.append(task.result())
-                except Exception as e:
-                    results.append(e)
-
-            return results
-
-        async def cancel_all(self) -> None:
-            """Cancel all tasks."""
-            for task in self.tasks:
-                if not task.done():
-                    task.cancel()
-
-            if self.tasks:
-                await asyncio.gather(*self.tasks, return_exceptions=True)
-
-        async def __aenter__(self):
-            return self
-
-        async def __aexit__(self, *args):
-            await self.cancel_all()
-
     return AsyncTaskGroup()
 
 
 @pytest.fixture
-def async_condition_waiter():
+def async_condition_waiter() -> Callable[[Callable[[], bool], float, float], Awaitable[bool]]:
     """
     Helper for waiting on async conditions in tests.
 
@@ -293,7 +394,7 @@ def async_condition_waiter():
 
 
 @pytest.fixture
-def async_pipeline():
+def async_pipeline() -> AsyncPipeline:
     """
     Create an async pipeline for testing data flow.
 
@@ -301,79 +402,17 @@ def async_pipeline():
         AsyncPipeline instance for chaining async operations.
     """
 
-    class AsyncPipeline:
-        def __init__(self) -> None:
-            self.stages = []
-            self.results = []
-
-        def add_stage(self, func: Callable):
-            """Add a processing stage."""
-            self.stages.append(func)
-            return self
-
-        async def process(self, data):
-            """Process data through all stages."""
-            result = data
-            for stage in self.stages:
-                if asyncio.iscoroutinefunction(stage):
-                    result = await stage(result)
-                else:
-                    result = stage(result)
-                self.results.append(result)
-            return result
-
-        async def process_batch(self, items: list):
-            """Process multiple items."""
-            tasks = [self.process(item) for item in items]
-            return await asyncio.gather(*tasks)
-
-        def clear(self) -> None:
-            """Clear stages and results."""
-            self.stages.clear()
-            self.results.clear()
-
     return AsyncPipeline()
 
 
 @pytest.fixture
-def async_rate_limiter():
+def async_rate_limiter() -> AsyncRateLimiter:
     """
     Create an async rate limiter for testing.
 
     Returns:
         AsyncRateLimiter instance for controlling request rates.
     """
-
-    class AsyncRateLimiter:
-        def __init__(self, rate: int = 10, per: float = 1.0) -> None:
-            self.rate = rate
-            self.per = per
-            self.allowance = rate
-            self.last_check = asyncio.get_event_loop().time()
-
-        async def acquire(self) -> None:
-            """Acquire permission to proceed."""
-            current = asyncio.get_event_loop().time()
-            time_passed = current - self.last_check
-            self.last_check = current
-
-            self.allowance += time_passed * (self.rate / self.per)
-            if self.allowance > self.rate:
-                self.allowance = self.rate
-
-            if self.allowance < 1.0:
-                sleep_time = (1.0 - self.allowance) * (self.per / self.rate)
-                await asyncio.sleep(sleep_time)
-                self.allowance = 0.0
-            else:
-                self.allowance -= 1.0
-
-        async def __aenter__(self):
-            await self.acquire()
-            return self
-
-        async def __aexit__(self, *args):
-            pass
 
     return AsyncRateLimiter()
 

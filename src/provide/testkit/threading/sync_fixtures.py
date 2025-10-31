@@ -7,20 +7,24 @@
 
 Fixtures for thread barriers, events, conditions, and other synchronization primitives."""
 
+from __future__ import annotations
+
+from collections.abc import Callable
+from contextlib import suppress
 import threading
 
 import pytest
 
 
 @pytest.fixture
-def thread_barrier():
+def thread_barrier() -> Callable[[int, float | None], threading.Barrier]:
     """
     Create a barrier for thread synchronization.
 
     Returns:
         Function to create barriers for N threads.
     """
-    barriers = []
+    barriers: list[threading.Barrier] = []
 
     def _create_barrier(n_threads: int, timeout: float | None = None) -> threading.Barrier:
         """
@@ -41,21 +45,19 @@ def thread_barrier():
 
     # Cleanup: abort all barriers
     for barrier in barriers:
-        try:
+        with suppress(threading.BrokenBarrierError):
             barrier.abort()
-        except threading.BrokenBarrierError:
-            pass
 
 
 @pytest.fixture
-def thread_event():
+def thread_event() -> Callable[[], threading.Event]:
     """
     Create thread events for signaling.
 
     Returns:
         Function to create thread events.
     """
-    events = []
+    events: list[threading.Event] = []
 
     def _create_event() -> threading.Event:
         """Create a thread event."""
@@ -71,7 +73,7 @@ def thread_event():
 
 
 @pytest.fixture
-def thread_condition():
+def thread_condition() -> Callable[[threading.Lock | None], threading.Condition]:
     """
     Create condition variables for thread coordination.
 

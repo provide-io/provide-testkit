@@ -15,26 +15,31 @@ import site
 import sys
 
 
+def _resolve_site_packages() -> Path:
+    """Return the best-guess site-packages directory."""
+    site_packages: Path | None = None
+    if hasattr(site, "getsitepackages"):
+        site_dirs = site.getsitepackages()
+        if site_dirs:
+            site_packages = Path(site_dirs[0])
+
+    if site_packages is not None:
+        return site_packages
+
+    if sys.platform == "win32":
+        return Path(sys.prefix) / "Lib" / "site-packages"
+
+    python_version = f"python{sys.version_info.major}.{sys.version_info.minor}"
+    return Path(sys.prefix) / "lib" / python_version / "site-packages"
+
+
 def install_pth_file(*, verbose: bool = False) -> int:
     """Install/symlink .pth file to site-packages root.
 
     Returns:
         0 on success, 1 on failure
     """
-    # Find site-packages directory
-    site_packages = None
-    if hasattr(site, "getsitepackages"):
-        site_dirs = site.getsitepackages()
-        if site_dirs:
-            site_packages = Path(site_dirs[0])
-
-    if not site_packages:
-        # Fallback
-        if sys.platform == "win32":
-            site_packages = Path(sys.prefix) / "Lib" / "site-packages"
-        else:
-            python_version = f"python{sys.version_info.major}.{sys.version_info.minor}"
-            site_packages = Path(sys.prefix) / "lib" / python_version / "site-packages"
+    site_packages = _resolve_site_packages()
 
     # Source .pth file (in package)
     pth_source = Path(__file__).parent / "provide_testkit_init.pth"
@@ -81,20 +86,7 @@ def uninstall_pth_file() -> int:
     Returns:
         0 on success, 1 on failure
     """
-    # Find site-packages directory
-    site_packages = None
-    if hasattr(site, "getsitepackages"):
-        site_dirs = site.getsitepackages()
-        if site_dirs:
-            site_packages = Path(site_dirs[0])
-
-    if not site_packages:
-        # Fallback
-        if sys.platform == "win32":
-            site_packages = Path(sys.prefix) / "Lib" / "site-packages"
-        else:
-            python_version = f"python{sys.version_info.major}.{sys.version_info.minor}"
-            site_packages = Path(sys.prefix) / "lib" / python_version / "site-packages"
+    site_packages = _resolve_site_packages()
 
     # .pth file location
     pth_dest = site_packages / "provide_testkit_init.pth"
@@ -105,7 +97,7 @@ def uninstall_pth_file() -> int:
             print(f"✓ Removed {pth_dest}")
             return 0
         else:
-            print(f"ℹ  .pth file not found at {pth_dest}")
+            print(f"i  .pth file not found at {pth_dest}")
             return 0
     except PermissionError:
         print(f"Warning: No permission to remove {pth_dest}", file=sys.stderr)

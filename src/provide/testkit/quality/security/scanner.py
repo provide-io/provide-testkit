@@ -97,10 +97,7 @@ class SecurityScanner:
             b_mgr = bandit_manager.BanditManager(conf, "file")
 
             # Discover files to scan
-            if path.is_file():
-                files_list = [str(path)]
-            else:
-                files_list = self._discover_python_files(path)
+            files_list = [str(path)] if path.is_file() else self._discover_python_files(path)
 
             if not files_list:
                 return QualityResult(
@@ -118,7 +115,7 @@ class SecurityScanner:
             return self._process_bandit_results(b_mgr)
 
         except Exception as e:
-            raise QualityToolError(f"Bandit scan failed: {e!s}", tool="security")
+            raise QualityToolError(f"Bandit scan failed: {e!s}", tool="security") from e
 
     def _apply_bandit_config(self, conf: Any) -> None:
         """Apply custom configuration to bandit."""

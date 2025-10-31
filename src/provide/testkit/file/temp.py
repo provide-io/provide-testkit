@@ -270,7 +270,7 @@ def create_temp_file(
             if content:
                 f.write(content)
     except Exception:
-        os.unlink(temp_path)
+        Path(temp_path).unlink()
         raise
 
     return Path(temp_path)

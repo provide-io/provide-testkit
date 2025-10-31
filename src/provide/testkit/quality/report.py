@@ -79,7 +79,7 @@ class ReportGenerator:
         lines.append("")
 
         # Individual results
-        for tool_name, result in results.items():
+        for result in results.values():
             lines.append(self._format_tool_result(result))
 
         # Details for failed tools
@@ -88,13 +88,13 @@ class ReportGenerator:
             lines.append("")
             lines.append("🔍 Failure Details:")
             lines.append("-" * 30)
-            for tool_name, result in failed_results.items():
-                lines.append(f"\n{tool_name}:")
-                if "error" in result.details:
-                    lines.append(f"  Error: {result.details['error']}")
-                for key, value in result.details.items():
-                    if key != "error":
-                        lines.append(f"  {key}: {value}")
+        for name, result in failed_results.items():
+            lines.append(f"\n{name}:")
+            if "error" in result.details:
+                lines.append(f"  Error: {result.details['error']}")
+            for key, value in result.details.items():
+                if key != "error":
+                    lines.append(f"  {key}: {value}")
 
         return "\n".join(lines)
 
@@ -118,8 +118,8 @@ class ReportGenerator:
             "results": {},
         }
 
-        for tool_name, result in results.items():
-            report_data["results"][tool_name] = {
+        for result in results.values():
+            report_data["results"][result.tool] = {
                 "tool": result.tool,
                 "passed": result.passed,
                 "score": result.score,
@@ -161,7 +161,7 @@ class ReportGenerator:
     </div>
 """
 
-        for tool_name, result in results.items():
+        for result in results.values():
             status_class = "passed" if result.passed else "failed"
             score_text = f" ({result.score:.1f}%)" if result.score is not None else ""
 
@@ -207,7 +207,7 @@ class ReportGenerator:
         lines.append("| Tool | Status | Score | Time |")
         lines.append("|------|--------|-------|------|")
 
-        for tool_name, result in results.items():
+        for result in results.values():
             score = f"{result.score:.1f}%" if result.score is not None else "N/A"
             time = f"{result.execution_time:.2f}s" if result.execution_time is not None else "N/A"
             status = self._status_text(result.passed)
@@ -220,7 +220,7 @@ class ReportGenerator:
             lines.append("## ❌ Failure Details")
             lines.append("")
 
-            for tool_name, result in failed_results.items():
+            for result in failed_results.values():
                 lines.append(f"### {result.tool.title()}")
                 lines.append("")
                 for key, value in result.details.items():
