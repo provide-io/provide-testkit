@@ -2,6 +2,15 @@
 
 Welcome to the Provide TestKit documentation - a comprehensive testing utilities and fixtures library for the Provide Foundry ecosystem.
 
+!!! warning "Alpha Software - Active Development"
+    provide-testkit is in active alpha development. APIs may change, and some features are experimental.
+
+    - **Current version:** v0.0.1026
+    - **Status:** Alpha (Development Status: 3)
+    - **Production use:** Not recommended
+
+    See [Quality Guide](quality_guide.md) for stable testing patterns.
+
 ## Features
 
 Provide TestKit offers:
