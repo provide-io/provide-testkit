@@ -1,3 +1,7 @@
+# Inherit shared configuration from provide-foundry
+INHERIT: ../provide-foundry/base-mkdocs.yml
+
+# Project-Specific Configuration
 site_name: Provide TestKit Documentation
 site_description: Comprehensive testing utilities and fixtures for the Provide Foundry
 site_author: provide.io
@@ -13,14 +17,15 @@ dev_addr: '127.0.0.1:8002'
 # Standalone mode settings
 docs_dir: docs
 
+# Project-specific theme overrides
 theme:
-  name: material
-  language: en
   logo: assets/images/logo.svg
   favicon: assets/images/logo.svg
-
+  font:
+    text: Poppins
+    code: Fira Code
   palette:
-    # Light mode
+    # Light mode - custom colors for provide-testkit
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: black
@@ -28,8 +33,7 @@ theme:
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-
-    # Dark mode
+    # Dark mode - custom colors for provide-testkit
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: indigo
@@ -37,74 +41,6 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-
-  font:
-    text: Poppins
-    code: Fira Code
-
-  features:
-    - navigation.instant
-    - navigation.tabs
-    - navigation.tabs.sticky
-    - navigation.sections
-    - navigation.expand
-    - navigation.indexes
-    - navigation.path
-    - navigation.top
-    - header.autohide
-    - content.code.copy
-    - content.tabs.link
-
-plugins:
-  - search
-  - autorefs
-  - macros:
-      include_dir: docs/.shared-theme/data
-  - mkdocstrings:
-      default_handler: python
-      handlers:
-        python:
-          paths: [src]
-          options:
-            docstring_style: google
-            show_source: true
-            show_root_heading: true
-            show_symbol_type_heading: true
-            show_symbol_type_toc: true
-            show_signature_annotations: true
-            signature_crossrefs: true
-            show_bases: true
-            show_inheritance_diagram: false
-            merge_init_into_class: true
-            separate_signature: true
-            members_order: source
-            inherited_members: true
-
-markdown_extensions:
-  - admonition
-  - attr_list
-  - toc:
-      permalink: true
-  - tables
-  - pymdownx.highlight:
-      use_pygments: true
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.tabbed:
-      alternate_style: true
-
-extra_css:
-  - .shared-theme/stylesheets/provide-theme.css
-  - .shared-theme/stylesheets/termynal.css
-
-extra_javascript:
-  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
-  - .shared-theme/javascripts/mermaid-init.js
-  - .shared-theme/javascripts/termynal.js
-  - .shared-theme/javascripts/custom.js
 
 nav:
   - Home: index.md
