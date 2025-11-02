@@ -249,9 +249,11 @@ class SecurityScanner:
 
     def _generate_text_report(self, result: QualityResult) -> str:
         """Generate text summary report."""
+        status_text = "✅ PASSED" if result.passed else "❌ FAILED"
         lines = [
             f"Security Analysis Report - {result.tool}",
             "=" * 50,
+            f"Status: {status_text}",
             f"Security Score: {result.score}%",
         ]
 

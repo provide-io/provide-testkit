@@ -311,9 +311,11 @@ class ComplexityAnalyzer:
 
     def _generate_text_report(self, result: QualityResult) -> str:
         """Generate text summary report."""
+        status_text = "✅ PASSED" if result.passed else "❌ FAILED"
         lines = [
             f"Complexity Analysis Report - {result.tool}",
             "=" * 50,
+            f"Status: {status_text}",
             f"Overall Grade: {result.details.get('overall_grade', 'N/A')}",
             f"Score: {result.score}%",
         ]

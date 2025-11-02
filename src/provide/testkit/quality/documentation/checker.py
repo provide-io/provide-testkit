@@ -282,9 +282,11 @@ class DocumentationChecker:
 
     def _generate_text_report(self, result: QualityResult) -> str:
         """Generate text summary report."""
+        status_text = "✅ PASSED" if result.passed else "❌ FAILED"
         lines = [
             f"Documentation Coverage Report - {result.tool}",
             "=" * 50,
+            f"Status: {status_text}",
             f"Grade: {result.details.get('grade', 'N/A')}",
             f"Coverage: {result.details.get('total_coverage', 0)}%",
             f"Score: {result.score}%",
@@ -329,11 +331,17 @@ class DocumentationChecker:
 
         # Sort by coverage (lowest first to highlight problem files)
         sorted_files = sorted(file_coverage, key=lambda x: x["coverage"])
-        min_coverage = result.details.get("thresholds", {}).get("min_coverage", 0.0)
+        min_coverage = result.details.get("thresholds", {}).get("min_coverage", 80.0)
 
         for file_info in sorted_files:
             coverage = file_info["coverage"]
-            status_icon = "✅" if coverage >= min_coverage else "❌"
+            # Three-tier status: ✅ (>= min), ⚠️ (70-80%), ❌ (< 70%)
+            if coverage >= min_coverage:
+                status_icon = "✅"
+            elif coverage >= 70.0:
+                status_icon = "⚠️"
+            else:
+                status_icon = "❌"
             lines.append(
                 f"{status_icon} {file_info['file']}: {coverage:.1f}% ({file_info['covered']}/{file_info['covered'] + file_info['missing']})"
             )
