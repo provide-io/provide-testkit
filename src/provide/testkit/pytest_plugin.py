@@ -23,9 +23,12 @@ from __future__ import annotations
 # Install the import hook unconditionally
 # This module is a pytest plugin (registered via pytest11 entry point) that ONLY
 # loads when pytest is running, so we always want to install the blocker.
+from provide.testkit._blocker import SetproctitleImportBlocker
 from provide.testkit._install_blocker import install_setproctitle_blocker
 
 install_setproctitle_blocker(force=True)
+
+__all__ = ["SetproctitleImportBlocker", "pytest_load_initial_conftests"]
 
 
 def pytest_load_initial_conftests() -> None:

@@ -37,7 +37,7 @@ class QualityResult:
     def summary(self) -> str:
         """Human-readable summary of the result."""
         score_text = f" ({self.score}%)" if self.score is not None else ""
-        status_text = "PASSED" if self.passed else "FAILED"
+        status_text = "✅ PASSED" if self.passed else "❌ FAILED"
         return f"{self.tool}: {status_text}{score_text}"
 
 
