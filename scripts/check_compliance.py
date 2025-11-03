@@ -41,6 +41,10 @@ EXCLUDE_DIRS = {
     ".hypothesis",
     ".eggs",
     ".tox",
+    ".uv-cache",
+    ".uv",
+    ".cache",
+    "node_modules",
 }
 
 
