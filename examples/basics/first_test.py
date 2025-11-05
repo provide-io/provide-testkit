@@ -17,7 +17,6 @@ Learning objectives:
 - See automatic cleanup in action
 - Build confidence with testing"""
 
-
 from pathlib import Path
 
 
