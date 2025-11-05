@@ -1,5 +1,5 @@
 # Inherit shared configuration from provide-foundry
-INHERIT: ../provide-foundry/base-mkdocs.yml
+INHERIT: .provide/foundry/base-mkdocs.yml
 
 # Project-Specific Configuration
 site_name: Provide TestKit Documentation
@@ -46,7 +46,7 @@ theme:
 plugins:
   - gen-files:
       scripts:
-        - ../provide-foundry/scripts/gen_ref_pages.py
+        - .provide/foundry/gen_ref_pages.py
   - literate-nav:
       nav_file: SUMMARY.md
 

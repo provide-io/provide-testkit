@@ -54,6 +54,9 @@ dev = [
     "mkdocstrings-python>=1.18.2",
     "provide-testkit[quality,advanced-testing]",
 ]
+docs = [
+    "provide-foundry",
+]
 
 [project.scripts]
 provide-testkit = "provide.testkit.main:main"
