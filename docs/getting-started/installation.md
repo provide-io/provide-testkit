@@ -1,21 +1,31 @@
 # Installation
 
-## Requirements
+## Prerequisites
 
-Before installing Provide TestKit, ensure you have:
+--8<-- ".provide/foundry/docs/_partials/python-requirements.md"
 
-- **Python 3.11 or later**
-- **pytest 7.0 or later**
+**Additional Requirements**:
+- **pytest 7.0 or later** - Required for running tests
 
-## Installation Methods
+## Installing UV
 
-### Using uv (Recommended)
+--8<-- ".provide/foundry/docs/_partials/uv-installation.md"
+
+## Python Version Setup
+
+--8<-- ".provide/foundry/docs/_partials/python-version-setup.md"
+
+## Virtual Environment
+
+--8<-- ".provide/foundry/docs/_partials/virtual-env-setup.md"
+
+## Installing Provide TestKit
+
+### Using UV (Recommended)
 
 ```bash
 uv add provide-testkit
 ```
-
-**Why uv?** Faster dependency resolution and better environment management.
 
 ### Using pip
 
@@ -28,9 +38,15 @@ pip install provide-testkit
 For development or the latest features:
 
 ```bash
+# Clone the repository
 git clone https://github.com/provide-io/provide-testkit.git
 cd provide-testkit
-pip install -e .
+
+# Set up environment and install
+uv sync
+
+# Verify installation
+python -c "import provide.testkit; print('✅ TestKit installed')"
 ```
 
 ## Optional Dependencies
@@ -90,6 +106,27 @@ def test_installation(fixtures.temp_directory):
     """Test that fixtures work."""
     assert fixtures.temp_directory.exists()
 ```
+
+## Troubleshooting
+
+--8<-- ".provide/foundry/docs/_partials/troubleshooting-common.md"
+
+### TestKit-Specific Issues
+
+**Problem**: Fixtures not discovered by pytest
+
+**Solution**: Ensure pytest is configured to find provide.testkit:
+```bash
+# Check if testkit is installed
+python -c "import provide.testkit; print('✅ Found')"
+
+# Run pytest with verbose fixture discovery
+pytest --fixtures | grep provide
+```
+
+**Problem**: setproctitle warnings on macOS
+
+**Solution**: This is normal - testkit blocks setproctitle to prevent macOS terminal freezing with pytest-xdist. The blocker is working correctly.
 
 ## Next Steps
 
