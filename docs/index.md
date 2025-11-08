@@ -9,7 +9,7 @@ Welcome to the Provide TestKit documentation - a comprehensive testing utilities
     - **Status:** Alpha (Development Status: 3)
     - **Production use:** Not recommended
 
-    See [Quality Guide](quality_guide.md) for stable testing patterns.
+    See [Quality Guide](quality_guide/) for stable testing patterns.
 
 ## Features
 
@@ -54,7 +54,7 @@ class TestMyService(ProcessTestCase):
 
 ## API Reference
 
-For complete API documentation, see the [API Reference](api/index.md).
+For complete API documentation, see the [API Reference](api/).
 
 ## Testing Modules
 
