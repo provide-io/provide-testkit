@@ -114,8 +114,8 @@ Provide TestKit provides testing utilities for:
 
 ### Learn More
 
-- **[API Reference](../api/index.md)** - Complete API documentation
-- **[Quality Guide](../quality_guide.md)** - Code quality and security testing
+- **[API Reference](../api/index/)** - Complete API documentation
+- **[Quality Guide](../quality_guide/)** - Code quality and security testing
 - **[GitHub Repository](https://github.com/provide-io/provide-testkit)** - Source code and examples
 
 ### Common Use Cases
