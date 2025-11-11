@@ -9,15 +9,15 @@ from pathlib import Path
 
 import pytest
 
-from provide.testkit.mocking import Mock, patch
-from provide.testkit.quality.base import QualityResult
-from provide.testkit.quality.documentation.fixture import DocumentationFixture
+from provide.testkit.mocking import Mock, patch  # type: ignore[import-untyped]
+from provide.testkit.quality.base import QualityResult  # type: ignore[import-untyped]
+from provide.testkit.quality.documentation.fixture import DocumentationFixture  # type: ignore[import-untyped]
 
 
 class TestDocumentationFixture:
     """Test DocumentationFixture functionality."""
 
-    def test_initialization(self, tmp_path) -> None:
+    def test_initialization(self, tmp_path: Path) -> None:
         """Test fixture initialization."""
         config = {"min_coverage": 90.0}
         fixture = DocumentationFixture(config=config, artifact_dir=tmp_path)
@@ -26,9 +26,9 @@ class TestDocumentationFixture:
         assert fixture.artifact_dir == tmp_path
         assert fixture.analyzer is None
 
-    @patch("provide.testkit.quality.documentation.fixture.INTERROGATE_AVAILABLE", True)
-    @patch("provide.testkit.quality.documentation.fixture.DocumentationChecker")
-    def test_setup_success(self, mock_checker_class) -> None:
+    @patch("provide.testkit.quality.documentation.fixture.INTERROGATE_AVAILABLE", True)  # type: ignore[misc]
+    @patch("provide.testkit.quality.documentation.fixture.DocumentationChecker")  # type: ignore[misc]
+    def test_setup_success(self, mock_checker_class: Mock) -> None:
         """Test successful fixture setup."""
         mock_checker = Mock()
         mock_checker_class.return_value = mock_checker
@@ -39,7 +39,7 @@ class TestDocumentationFixture:
         assert fixture.analyzer == mock_checker
         mock_checker_class.assert_called_once_with({})
 
-    @patch("provide.testkit.quality.documentation.fixture.INTERROGATE_AVAILABLE", False)
+    @patch("provide.testkit.quality.documentation.fixture.INTERROGATE_AVAILABLE", False)  # type: ignore[misc]
     def test_setup_interrogate_unavailable(self) -> None:
         """Test setup when interrogate is unavailable."""
         fixture = DocumentationFixture()
@@ -47,9 +47,9 @@ class TestDocumentationFixture:
         with pytest.raises(pytest.skip.Exception):
             fixture.setup()
 
-    @patch("provide.testkit.quality.documentation.fixture.INTERROGATE_AVAILABLE", True)
-    @patch("provide.testkit.quality.documentation.fixture.DocumentationChecker")
-    def test_analyze_functionality(self, mock_checker_class, tmp_path) -> None:
+    @patch("provide.testkit.quality.documentation.fixture.INTERROGATE_AVAILABLE", True)  # type: ignore[misc]
+    @patch("provide.testkit.quality.documentation.fixture.DocumentationChecker")  # type: ignore[misc]
+    def test_analyze_functionality(self, mock_checker_class: Mock, tmp_path: Path) -> None:
         """Test analysis functionality."""
         mock_checker = Mock()
         mock_result = QualityResult(
@@ -125,9 +125,9 @@ class TestDocumentationFixture:
 
         assert report == "No documentation results available"
 
-    @patch("provide.testkit.quality.documentation.fixture.INTERROGATE_AVAILABLE", True)
-    @patch("provide.testkit.quality.documentation.fixture.DocumentationChecker")
-    def test_generate_report_success(self, mock_checker_class) -> None:
+    @patch("provide.testkit.quality.documentation.fixture.INTERROGATE_AVAILABLE", True)  # type: ignore[misc]
+    @patch("provide.testkit.quality.documentation.fixture.DocumentationChecker")  # type: ignore[misc]
+    def test_generate_report_success(self, mock_checker_class: Mock) -> None:
         """Test successful report generation."""
         mock_checker = Mock()
         mock_checker.report.return_value = "Documentation Coverage Report"

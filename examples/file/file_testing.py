@@ -19,10 +19,11 @@ Learning objectives:
 - Test file permissions and metadata
 - Handle file content assertions"""
 
+from collections.abc import Mapping
 from pathlib import Path
 
 
-def test_basic_file_operations(temp_directory) -> None:
+def test_basic_file_operations(temp_directory: Path) -> None:
     """Test basic file creation and content operations."""
     # Arrange: Create test file
     test_file = temp_directory / "config.json"
@@ -37,7 +38,7 @@ def test_basic_file_operations(temp_directory) -> None:
     assert test_file.read_text() == test_content
 
 
-def test_directory_structure_creation(temp_directory) -> None:
+def test_directory_structure_creation(temp_directory: Path) -> None:
     """Test creating and validating directory structures."""
     # Arrange: Define expected structure
     expected_dirs = ["src", "tests", "docs", "config"]
@@ -58,7 +59,7 @@ def test_directory_structure_creation(temp_directory) -> None:
         assert (temp_directory / file_name).is_file()
 
 
-def test_file_permissions(temp_directory) -> None:
+def test_file_permissions(temp_directory: Path) -> None:
     """Test file permission handling."""
     # Arrange: Create executable script
     script_file = temp_directory / "setup.sh"
@@ -74,7 +75,7 @@ def test_file_permissions(temp_directory) -> None:
     assert stat.st_mode & 0o777 == 0o755
 
 
-def test_nested_directory_operations(temp_directory) -> None:
+def test_nested_directory_operations(temp_directory: Path) -> None:
     """Test operations with nested directory structures."""
     # Arrange: Create nested structure
     nested_path = temp_directory / "project" / "src" / "package"
@@ -97,7 +98,7 @@ def test_nested_directory_operations(temp_directory) -> None:
     assert (temp_directory / "project" / "src").exists()
 
 
-def test_file_content_patterns(temp_directory) -> None:
+def test_file_content_patterns(temp_directory: Path) -> None:
     """Test common file content validation patterns."""
     # Arrange: Create various file types
     json_file = temp_directory / "data.json"
@@ -123,7 +124,7 @@ def test_file_content_patterns(temp_directory) -> None:
     assert "ERROR:" in log_content
 
 
-def test_file_modification_tracking(temp_directory) -> None:
+def test_file_modification_tracking(temp_directory: Path) -> None:
     """Test tracking file modifications over time."""
     # Arrange: Create initial file
     tracked_file = temp_directory / "tracked.txt"
@@ -145,7 +146,7 @@ def test_file_modification_tracking(temp_directory) -> None:
     assert tracked_file.stat().st_mtime > initial_mtime
 
 
-def test_temporary_file_cleanup(temp_directory) -> None:
+def test_temporary_file_cleanup(temp_directory: Path) -> None:
     """Test that temporary files are properly cleaned up."""
     # This test demonstrates that temp_directory fixture
     # automatically cleans up after the test
@@ -163,7 +164,9 @@ def test_temporary_file_cleanup(temp_directory) -> None:
     # Note: Cleanup happens automatically after test completes
 
 
-def test_file_with_predefined_structure(test_files_structure) -> None:
+def test_file_with_predefined_structure(
+    test_files_structure: Mapping[str, Path],
+) -> None:
     """Test using predefined file structures."""
     # The test_files_structure fixture provides commonly needed files
 
@@ -209,7 +212,8 @@ if __name__ == "__main__":
         print("📋 Files created:")
         for item in temp_path.rglob("*"):
             relative_path = item.relative_to(temp_path)
-            print(f"   {file_type} {relative_path}")
+            file_label = "[DIR]" if item.is_dir() else "[FILE]"
+            print(f"   {file_label} {relative_path}")
 
     print("\n🎉 File testing examples completed!")
     print("Run with pytest to see fixtures in action:")

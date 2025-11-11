@@ -92,10 +92,9 @@ def check_file_compliance(filepath: Path) -> tuple[bool, bool]:
         Tuple of (has_spdx, has_footer)
     """
     try:
-        with open(filepath, encoding="utf-8") as f:
-            content = f.read()
-            lines = content.splitlines()
-    except Exception:
+        content = filepath.read_text(encoding="utf-8")
+        lines = content.splitlines()
+    except OSError:
         return False, False
 
     if not lines:
@@ -245,7 +244,8 @@ def print_compliance_report(stats: list[ComplianceStats]) -> None:
         )
 
 
-def main():
+def parse_args() -> argparse.Namespace:
+    """Build argument parser for CLI use."""
     parser = argparse.ArgumentParser(
         description="Check header and footer compliance of Python files",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -253,22 +253,21 @@ def main():
     )
     parser.add_argument("repositories", nargs="*", help="Repository paths to check")
     parser.add_argument("--all", metavar="PARENT_DIR", help="Check all subdirectories in parent directory")
+    return parser.parse_args()
 
-    args = parser.parse_args()
 
-    repos_to_check = []
-
+def collect_repositories(args: argparse.Namespace) -> list[Path]:
+    """Resolve target repositories based on CLI arguments."""
     if args.all:
         parent = Path(args.all).resolve()
         if not parent.exists() or not parent.is_dir():
             print(f"Error: {args.all} is not a valid directory", file=sys.stderr)
             sys.exit(1)
 
-        # Find all subdirectories
-        for item in parent.iterdir():
-            if item.is_dir() and not item.name.startswith("."):
-                repos_to_check.append(item)
-    elif args.repositories:
+        return [item for item in parent.iterdir() if item.is_dir() and not item.name.startswith(".")]
+
+    if args.repositories:
+        repos: list[Path] = []
         for repo in args.repositories:
             repo_path = Path(repo).resolve()
             if not repo_path.exists():
@@ -277,20 +276,22 @@ def main():
             if not repo_path.is_dir():
                 print(f"Warning: {repo} is not a directory, skipping", file=sys.stderr)
                 continue
-            repos_to_check.append(repo_path)
-    else:
-        # Default to current directory
-        repos_to_check.append(Path.cwd())
+            repos.append(repo_path)
+        return repos
+
+    return [Path.cwd()]
+
+
+def main() -> None:
+    args = parse_args()
+    repos_to_check = collect_repositories(args)
 
     if not repos_to_check:
         print("No repositories to check", file=sys.stderr)
         sys.exit(1)
 
     # Check each repository
-    all_stats = []
-    for repo_path in sorted(repos_to_check):
-        stats = check_repository(repo_path)
-        all_stats.append(stats)
+    all_stats = [check_repository(repo_path) for repo_path in sorted(repos_to_check)]
 
     # Print report
     print_compliance_report(all_stats)

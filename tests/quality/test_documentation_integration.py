@@ -6,15 +6,19 @@
 """Integration tests for documentation coverage."""
 
 import json
+from pathlib import Path
 
 import pytest
 
-from provide.testkit.quality.documentation.checker import INTERROGATE_AVAILABLE, DocumentationChecker
+from provide.testkit.quality.documentation.checker import (  # type: ignore[import-untyped]
+    INTERROGATE_AVAILABLE,
+    DocumentationChecker,
+)
 
 
 @pytest.mark.integration
 @pytest.mark.skipif(not INTERROGATE_AVAILABLE, reason="interrogate not available")
-def test_real_documentation_integration(tmp_path) -> None:
+def test_real_documentation_integration(tmp_path: Path) -> None:
     """Integration test with real interrogate (if available)."""
     # Create Python files with varying documentation
     well_documented = tmp_path / "well_documented.py"

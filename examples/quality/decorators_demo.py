@@ -12,10 +12,13 @@ from __future__ import annotations
 
 import time
 
-from provide.testkit.quality.decorators import performance_gate, quality_check
+from provide.testkit.quality.decorators import (  # type: ignore[import-untyped]
+    performance_gate,
+    quality_check,
+)
 
 
-@performance_gate(max_memory_mb=100.0, max_execution_time=1.0)
+@performance_gate(max_memory_mb=100.0, max_execution_time=1.0)  # type: ignore[misc]
 def fast_function() -> int:
     """A fast function that should pass performance requirements."""
     # Simple computation that's fast and low memory
@@ -23,7 +26,7 @@ def fast_function() -> int:
     return result
 
 
-@performance_gate(max_memory_mb=1.0, max_execution_time=0.001)  # Very strict
+@performance_gate(max_memory_mb=1.0, max_execution_time=0.001)  # type: ignore[misc]  # Very strict
 def potentially_slow_function() -> int:
     """A function that might fail strict performance requirements."""
     # This might be too slow for the 0.001s requirement
@@ -32,7 +35,7 @@ def potentially_slow_function() -> int:
     return result
 
 
-@quality_check(performance={"max_memory_mb": 50.0, "max_execution_time": 0.5})
+@quality_check(performance={"max_memory_mb": 50.0, "max_execution_time": 0.5})  # type: ignore[misc]
 def comprehensive_test_function() -> int:
     """A function with comprehensive quality requirements."""
     # Do some work
@@ -50,6 +53,7 @@ def demonstrate_performance_gates() -> None:
     print("Test 1: Fast function with reasonable limits")
     try:
         result = fast_function()
+        print(f"  ✅ PASSED - Result: {result}")
     except AssertionError as e:
         print(f"  ❌ FAILED - {e}")
 
@@ -59,6 +63,7 @@ def demonstrate_performance_gates() -> None:
     print("Test 2: Function with very strict limits")
     try:
         result = potentially_slow_function()
+        print(f"  ✅ PASSED - Result: {result}")
     except AssertionError as e:
         print(f"  ❌ FAILED - {e}")
 
@@ -68,6 +73,7 @@ def demonstrate_performance_gates() -> None:
     print("Test 3: Comprehensive quality check")
     try:
         result = comprehensive_test_function()
+        print(f"  ✅ PASSED - Result: {result}")
     except AssertionError as e:
         print(f"  ❌ FAILED - {e}")
 
@@ -78,7 +84,9 @@ def demonstrate_manual_profiling() -> None:
     """Demonstrate manual profiling without decorators."""
     print("=" * 50)
 
-    from provide.testkit.quality.profiling.profiler import PerformanceProfiler
+    from provide.testkit.quality.profiling.profiler import (  # type: ignore[import-untyped]
+        PerformanceProfiler,
+    )
 
     profiler = PerformanceProfiler({"max_memory_mb": 100.0, "max_execution_time": 1.0})
 
