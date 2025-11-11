@@ -11,6 +11,7 @@ This file contains various patterns that quality tools would analyze:
 - Security patterns
 - Different levels of test coverage"""
 
+from collections.abc import Iterable
 import subprocess
 
 
@@ -34,19 +35,19 @@ def well_documented_function(param1: str, param2: int) -> str:
     return f"{param1}: {param2}"
 
 
-def undocumented_function(x, y):
+def undocumented_function(x: int, y: int) -> int:
     # This function has no docstring - should be flagged by documentation tools
     return x + y
 
 
-def simple_function():
+def simple_function() -> str:
     """Simple function with low complexity."""
     return "Hello, World!"
 
 
-def complex_function(data):
+def complex_function(data: Iterable[object]) -> list[str | int]:
     """Function with higher complexity for testing."""
-    result = []
+    result: list[str | int] = []
     for item in data:
         if item is None:
             continue
@@ -70,7 +71,7 @@ def complex_function(data):
     return result
 
 
-def potentially_insecure_function(user_input):
+def potentially_insecure_function(user_input: str) -> str:
     """Function that might trigger security warnings."""
     # This should trigger a security warning about shell injection
     command = f"echo {user_input}"
@@ -79,7 +80,7 @@ def potentially_insecure_function(user_input):
     return result.stdout
 
 
-def function_with_assert():
+def function_with_assert() -> int:
     """Function with assert statement."""
     value = 42
     assert value > 0  # This might trigger B101 in bandit
@@ -93,7 +94,7 @@ class WellDocumentedClass:
     with detailed descriptions of its purpose and usage.
     """
 
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         """Initialize the class.
 
         Args:
@@ -111,10 +112,10 @@ class WellDocumentedClass:
 
 
 class UndocumentedClass:
-    def __init__(self, value):
+    def __init__(self, value: int) -> None:
         self.value = value
 
-    def undocumented_method(self):
+    def undocumented_method(self) -> int:
         return self.value * 2
 
 

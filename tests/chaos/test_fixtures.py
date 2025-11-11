@@ -7,7 +7,12 @@
 
 from __future__ import annotations
 
-from provide.testkit.chaos.fixtures import ChaosFailureInjector, ChaosTimeSource
+import pytest
+
+from provide.testkit.chaos.fixtures import (  # type: ignore[import-untyped]
+    ChaosFailureInjector,
+    ChaosTimeSource,
+)
 
 
 class TestChaosTimeSource:
@@ -78,11 +83,9 @@ class TestChaosFailureInjector:
         injector.check()
 
         # Third call should fail
-        try:
+        with pytest.raises(ValueError) as excinfo:
             injector.check()
-            assert False, "Should have raised ValueError"
-        except ValueError as e:
-            assert "Chaos-injected failure at call 2" in str(e)
+        assert "Chaos-injected failure at call 2" in str(excinfo.value)
 
     def test_multiple_failures(self) -> None:
         """Test multiple failure injections."""
@@ -93,19 +96,15 @@ class TestChaosFailureInjector:
         injector.check()
 
         # Call 1: ValueError
-        try:
+        with pytest.raises(ValueError):
             injector.check()
-        except ValueError:
-            pass
 
         # Call 2: success
         injector.check()
 
         # Call 3: IOError
-        try:
+        with pytest.raises(OSError):
             injector.check()
-        except OSError:
-            pass
 
     def test_reset_counter(self) -> None:
         """Test resetting call counter."""
@@ -113,17 +112,13 @@ class TestChaosFailureInjector:
         injector.set_patterns([(0, ValueError)])
 
         # First call fails
-        try:
+        with pytest.raises(ValueError):
             injector.check()
-        except ValueError:
-            pass
 
         # After reset, first call should fail again
         injector.reset()
-        try:
+        with pytest.raises(ValueError):
             injector.check()
-        except ValueError:
-            pass
 
 
 __all__ = [

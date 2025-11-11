@@ -7,11 +7,13 @@
 
 from __future__ import annotations
 
+from contextlib import suppress
 from pathlib import Path
+from typing import Any
 
 from hypothesis import given
 
-from provide.testkit.chaos.io_strategies import (
+from provide.testkit.chaos.io_strategies import (  # type: ignore[import-untyped]
     buffer_overflow_patterns,
     disk_full_scenarios,
     file_corruption_patterns,
@@ -48,7 +50,7 @@ class TestPermissionPatterns:
     """Test permission pattern strategy."""
 
     @given(perms=permission_patterns())
-    def test_permission_structure(self, perms: dict) -> None:
+    def test_permission_structure(self, perms: dict[str, Any]) -> None:
         """Test permission patterns have correct structure."""
         assert isinstance(perms, dict)
         assert "mode" in perms
@@ -61,7 +63,7 @@ class TestPermissionPatterns:
         assert perms["mode"] in (0o000, 0o400, 0o600, 0o644, 0o755, 0o777)
 
     @given(perms=permission_patterns())
-    def test_permission_flags_match_mode(self, perms: dict) -> None:
+    def test_permission_flags_match_mode(self, perms: dict[str, Any]) -> None:
         """Test permission flags correctly represent mode."""
         mode = perms["mode"]
 
@@ -79,7 +81,7 @@ class TestDiskFullScenarios:
     """Test disk full scenario strategy."""
 
     @given(scenario=disk_full_scenarios())
-    def test_disk_scenario_structure(self, scenario: dict) -> None:
+    def test_disk_scenario_structure(self, scenario: dict[str, Any]) -> None:
         """Test disk full scenarios have required fields."""
         assert isinstance(scenario, dict)
         assert "total_space" in scenario
@@ -89,7 +91,7 @@ class TestDiskFullScenarios:
         assert "operation_size" in scenario
 
     @given(scenario=disk_full_scenarios())
-    def test_disk_space_math(self, scenario: dict) -> None:
+    def test_disk_space_math(self, scenario: dict[str, Any]) -> None:
         """Test disk space calculations are consistent."""
         # Available = Total - Used
         expected_available = scenario["total_space"] - scenario["used_space"]
@@ -106,7 +108,7 @@ class TestNetworkErrorPatterns:
     """Test network error pattern strategy."""
 
     @given(errors=network_error_patterns())
-    def test_error_pattern_structure(self, errors: list) -> None:
+    def test_error_pattern_structure(self, errors: list[dict[str, Any]]) -> None:
         """Test network error patterns have correct structure."""
         assert isinstance(errors, list)
         assert 1 <= len(errors) <= 20
@@ -129,7 +131,7 @@ class TestNetworkErrorPatterns:
             assert 0 <= error["at_byte"] <= 10000
 
     @given(errors=network_error_patterns())
-    def test_error_type_specific_fields(self, errors: list) -> None:
+    def test_error_type_specific_fields(self, errors: list[dict[str, Any]]) -> None:
         """Test error type-specific fields are present."""
         for error in errors:
             if error["type"] == "timeout":
@@ -148,7 +150,7 @@ class TestBufferOverflowPatterns:
     """Test buffer overflow pattern strategy."""
 
     @given(config=buffer_overflow_patterns())
-    def test_buffer_structure(self, config: dict) -> None:
+    def test_buffer_structure(self, config: dict[str, Any]) -> None:
         """Test buffer overflow configs have required fields."""
         assert isinstance(config, dict)
         assert "buffer_size" in config
@@ -158,7 +160,7 @@ class TestBufferOverflowPatterns:
         assert "chunk_size" in config
 
     @given(config=buffer_overflow_patterns())
-    def test_overflow_calculation(self, config: dict) -> None:
+    def test_overflow_calculation(self, config: dict[str, Any]) -> None:
         """Test overflow detection is correct."""
         # will_overflow should match data_size > buffer_size
         assert config["will_overflow"] == (config["data_size"] > config["buffer_size"])
@@ -168,7 +170,7 @@ class TestBufferOverflowPatterns:
         assert config["overflow_bytes"] == expected_overflow
 
     @given(config=buffer_overflow_patterns(max_buffer_size=1024))
-    def test_chunk_size_valid(self, config: dict) -> None:
+    def test_chunk_size_valid(self, config: dict[str, Any]) -> None:
         """Test chunk size is reasonable."""
         assert 1 <= config["chunk_size"] <= min(config["buffer_size"], 8192)
 
@@ -177,7 +179,7 @@ class TestFileCorruptionPatterns:
     """Test file corruption pattern strategy."""
 
     @given(corruption=file_corruption_patterns())
-    def test_corruption_structure(self, corruption: dict) -> None:
+    def test_corruption_structure(self, corruption: dict[str, Any]) -> None:
         """Test corruption patterns have correct structure."""
         assert isinstance(corruption, dict)
         assert "type" in corruption
@@ -192,7 +194,7 @@ class TestFileCorruptionPatterns:
         assert corruption["type"] in valid_types
 
     @given(corruption=file_corruption_patterns())
-    def test_corruption_type_specific_fields(self, corruption: dict) -> None:
+    def test_corruption_type_specific_fields(self, corruption: dict[str, Any]) -> None:
         """Test corruption type-specific fields are present."""
         if corruption["type"] == "truncated":
             assert "truncate_at_percent" in corruption
@@ -211,7 +213,7 @@ class TestLockFileScenarios:
     """Test lock file scenario strategy."""
 
     @given(scenario=lock_file_scenarios())
-    def test_lock_scenario_structure(self, scenario: dict) -> None:
+    def test_lock_scenario_structure(self, scenario: dict[str, Any]) -> None:
         """Test lock scenarios have required fields."""
         assert isinstance(scenario, dict)
         assert "num_processes" in scenario
@@ -224,7 +226,7 @@ class TestLockFileScenarios:
         assert "lock_content_type" in scenario
 
     @given(scenario=lock_file_scenarios())
-    def test_lock_scenario_ranges(self, scenario: dict) -> None:
+    def test_lock_scenario_ranges(self, scenario: dict[str, Any]) -> None:
         """Test lock scenario values are in valid ranges."""
         assert 2 <= scenario["num_processes"] <= 20
         assert 0.01 <= scenario["lock_duration"] <= 5.0
@@ -258,13 +260,9 @@ class TestPathTraversalPatterns:
         is_potentially_malicious = any(indicator in path.lower() for indicator in malicious_indicators)
 
         if not is_potentially_malicious:
-            # Should be a safe relative path
-            # Validate it can be converted to a Path without errors
-            try:
+            # Should be a safe relative path; best-effort Path conversion
+            with suppress(Exception):
                 Path(path)
-            except Exception:
-                # Some malicious paths might also fail Path() validation
-                pass
 
 
 # 🧪✅🔚

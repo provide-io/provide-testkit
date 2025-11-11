@@ -6,12 +6,16 @@
 """Tests for DocumentationChecker functionality."""
 
 import json
+from pathlib import Path
 
 import pytest
 
-from provide.testkit.mocking import Mock, patch
-from provide.testkit.quality.base import QualityResult
-from provide.testkit.quality.documentation.checker import INTERROGATE_AVAILABLE, DocumentationChecker
+from provide.testkit.mocking import Mock, patch  # type: ignore[import-untyped]
+from provide.testkit.quality.base import QualityResult  # type: ignore[import-untyped]
+from provide.testkit.quality.documentation.checker import (  # type: ignore[import-untyped]
+    INTERROGATE_AVAILABLE,
+    DocumentationChecker,
+)
 
 
 @pytest.mark.skipif(not INTERROGATE_AVAILABLE, reason="interrogate not available")
@@ -30,9 +34,14 @@ class TestDocumentationChecker:
         checker = DocumentationChecker(config)
         assert checker.config == config
 
-    @patch("provide.testkit.quality.documentation.checker.coverage.InterrogateCoverage")
-    @patch("provide.testkit.quality.documentation.checker.InterrogateConfig")
-    def test_analyze_success(self, mock_config_class, mock_coverage_class, tmp_path) -> None:
+    @patch("provide.testkit.quality.documentation.checker.coverage.InterrogateCoverage")  # type: ignore[misc]
+    @patch("provide.testkit.quality.documentation.checker.InterrogateConfig")  # type: ignore[misc]
+    def test_analyze_success(
+        self,
+        mock_config_class: Mock,
+        mock_coverage_class: Mock,
+        tmp_path: Path,
+    ) -> None:
         """Test successful documentation analysis."""
         # Mock interrogate components
         mock_results = Mock()
@@ -67,9 +76,14 @@ class TestDocumentationChecker:
         assert result.details["grade"] == "B+"
         assert result.execution_time is not None
 
-    @patch("provide.testkit.quality.documentation.checker.coverage.InterrogateCoverage")
-    @patch("provide.testkit.quality.documentation.checker.InterrogateConfig")
-    def test_analyze_low_coverage(self, mock_config_class, mock_coverage_class, tmp_path) -> None:
+    @patch("provide.testkit.quality.documentation.checker.coverage.InterrogateCoverage")  # type: ignore[misc]
+    @patch("provide.testkit.quality.documentation.checker.InterrogateConfig")  # type: ignore[misc]
+    def test_analyze_low_coverage(
+        self,
+        mock_config_class: Mock,
+        mock_coverage_class: Mock,
+        tmp_path: Path,
+    ) -> None:
         """Test analysis with low documentation coverage."""
         # Mock low coverage results
         mock_results = Mock()
@@ -177,9 +191,14 @@ class TestDocumentationChecker:
             result = checker._process_interrogate_results(mock_results, Mock())
             assert result.passed == expected_pass
 
-    @patch("provide.testkit.quality.documentation.checker.coverage.InterrogateCoverage")
-    @patch("provide.testkit.quality.documentation.checker.InterrogateConfig")
-    def test_analyze_with_file_details(self, mock_config_class, mock_coverage_class, tmp_path) -> None:
+    @patch("provide.testkit.quality.documentation.checker.coverage.InterrogateCoverage")  # type: ignore[misc]
+    @patch("provide.testkit.quality.documentation.checker.InterrogateConfig")  # type: ignore[misc]
+    def test_analyze_with_file_details(
+        self,
+        mock_config_class: Mock,
+        mock_coverage_class: Mock,
+        tmp_path: Path,
+    ) -> None:
         """Test analysis with detailed file coverage."""
         # Mock detailed coverage results
         mock_file_info = Mock()

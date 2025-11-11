@@ -10,32 +10,41 @@ from pathlib import Path
 
 import pytest
 
-from provide.testkit.mocking import Mock, patch
-from provide.testkit.quality.base import QualityResult
-from provide.testkit.quality.complexity.analyzer import RADON_AVAILABLE, ComplexityAnalyzer
-from provide.testkit.quality.complexity.fixture import ComplexityFixture
+from provide.testkit.mocking import Mock, patch  # type: ignore[import-untyped]
+from provide.testkit.quality.base import QualityResult  # type: ignore[import-untyped]
+from provide.testkit.quality.complexity.analyzer import (  # type: ignore[import-untyped]
+    RADON_AVAILABLE,
+    ComplexityAnalyzer,
+)
+from provide.testkit.quality.complexity.fixture import ComplexityFixture  # type: ignore[import-untyped]
 
 
 @pytest.mark.skipif(not RADON_AVAILABLE, reason="radon not available")
 class TestComplexityAnalyzer:
     """Test ComplexityAnalyzer functionality."""
 
-    def test_initialization_default_config(self):
+    def test_initialization_default_config(self) -> None:
         """Test analyzer initialization with default config."""
         analyzer = ComplexityAnalyzer()
         assert analyzer.config == {}
         assert analyzer.artifact_dir is None
 
-    def test_initialization_custom_config(self):
+    def test_initialization_custom_config(self) -> None:
         """Test analyzer initialization with custom config."""
         config = {"min_grade": "A", "max_complexity": 10, "min_score": 95.0}
         analyzer = ComplexityAnalyzer(config)
         assert analyzer.config == config
 
-    @patch("provide.testkit.quality.complexity.analyzer.cc_visit")
-    @patch("provide.testkit.quality.complexity.analyzer.cc_rank")
-    @patch("provide.testkit.quality.complexity.analyzer.analyze")
-    def test_analyze_success(self, mock_analyze, mock_cc_rank, mock_cc_visit, tmp_path):
+    @patch("provide.testkit.quality.complexity.analyzer.cc_visit")  # type: ignore[misc]
+    @patch("provide.testkit.quality.complexity.analyzer.cc_rank")  # type: ignore[misc]
+    @patch("provide.testkit.quality.complexity.analyzer.analyze")  # type: ignore[misc]
+    def test_analyze_success(
+        self,
+        mock_analyze: Mock,
+        mock_cc_rank: Mock,
+        mock_cc_visit: Mock,
+        tmp_path: Path,
+    ) -> None:
         """Test successful complexity analysis."""
         # Mock radon components
         mock_function = Mock()
@@ -70,9 +79,14 @@ class TestComplexityAnalyzer:
         assert result.details["average_complexity"] == 3.0
         assert result.execution_time is not None
 
-    @patch("provide.testkit.quality.complexity.analyzer.cc_visit")
-    @patch("provide.testkit.quality.complexity.analyzer.cc_rank")
-    def test_analyze_high_complexity(self, mock_cc_rank, mock_cc_visit, tmp_path):
+    @patch("provide.testkit.quality.complexity.analyzer.cc_visit")  # type: ignore[misc]
+    @patch("provide.testkit.quality.complexity.analyzer.cc_rank")  # type: ignore[misc]
+    def test_analyze_high_complexity(
+        self,
+        mock_cc_rank: Mock,
+        mock_cc_visit: Mock,
+        tmp_path: Path,
+    ) -> None:
         """Test analysis with high complexity functions."""
         # Mock high complexity function
         mock_function = Mock()
@@ -95,7 +109,7 @@ class TestComplexityAnalyzer:
         assert result.details["overall_grade"] == "D"
         assert result.details["max_complexity"] == 25
 
-    def test_discover_python_files(self, tmp_path):
+    def test_discover_python_files(self, tmp_path: Path) -> None:
         """Test Python file discovery."""
         analyzer = ComplexityAnalyzer()
 
@@ -113,7 +127,7 @@ class TestComplexityAnalyzer:
         assert any("utils.py" in str(f) for f in files)
         assert not any("test_main.py" in str(f) for f in files)
 
-    def test_discover_python_files_custom_excludes(self, tmp_path):
+    def test_discover_python_files_custom_excludes(self, tmp_path: Path) -> None:
         """Test Python file discovery with custom excludes."""
         config = {"exclude": ["*/private/*"]}
         analyzer = ComplexityAnalyzer(config)
@@ -129,7 +143,7 @@ class TestComplexityAnalyzer:
         assert any("main.py" in str(f) for f in files)
         assert not any("secret.py" in str(f) for f in files)
 
-    def test_grade_calculation(self):
+    def test_grade_calculation(self) -> None:
         """Test complexity grade calculation."""
         analyzer = ComplexityAnalyzer()
 
@@ -152,7 +166,7 @@ class TestComplexityAnalyzer:
             assert result.details["overall_grade"] == expected_grade
             assert result.score == expected_score
 
-    def test_generate_text_report(self):
+    def test_generate_text_report(self) -> None:
         """Test text report generation."""
         analyzer = ComplexityAnalyzer()
 
@@ -182,7 +196,7 @@ class TestComplexityAnalyzer:
         assert "Average Complexity: 7.5" in report
         assert "A: 15 functions" in report
 
-    def test_report_protocol_implementation(self):
+    def test_report_protocol_implementation(self) -> None:
         """Test QualityTool protocol implementation."""
         analyzer = ComplexityAnalyzer()
 
@@ -209,7 +223,7 @@ class TestComplexityAnalyzer:
 class TestComplexityFixture:
     """Test ComplexityFixture functionality."""
 
-    def test_initialization(self, tmp_path):
+    def test_initialization(self, tmp_path: Path) -> None:
         """Test fixture initialization."""
         config = {"min_grade": "A"}
         fixture = ComplexityFixture(config=config, artifact_dir=tmp_path)
@@ -218,9 +232,9 @@ class TestComplexityFixture:
         assert fixture.artifact_dir == tmp_path
         assert fixture.analyzer is None
 
-    @patch("provide.testkit.quality.complexity.fixture.RADON_AVAILABLE", True)
-    @patch("provide.testkit.quality.complexity.fixture.ComplexityAnalyzer")
-    def test_setup_success(self, mock_analyzer_class):
+    @patch("provide.testkit.quality.complexity.fixture.RADON_AVAILABLE", True)  # type: ignore[misc]
+    @patch("provide.testkit.quality.complexity.fixture.ComplexityAnalyzer")  # type: ignore[misc]
+    def test_setup_success(self, mock_analyzer_class: Mock) -> None:
         """Test successful fixture setup."""
         mock_analyzer = Mock()
         mock_analyzer_class.return_value = mock_analyzer
@@ -231,17 +245,17 @@ class TestComplexityFixture:
         assert fixture.analyzer == mock_analyzer
         mock_analyzer_class.assert_called_once_with({})
 
-    @patch("provide.testkit.quality.complexity.fixture.RADON_AVAILABLE", False)
-    def test_setup_radon_unavailable(self):
+    @patch("provide.testkit.quality.complexity.fixture.RADON_AVAILABLE", False)  # type: ignore[misc]
+    def test_setup_radon_unavailable(self) -> None:
         """Test setup when radon is unavailable."""
         fixture = ComplexityFixture()
 
         with pytest.raises(pytest.skip.Exception):
             fixture.setup()
 
-    @patch("provide.testkit.quality.complexity.fixture.RADON_AVAILABLE", True)
-    @patch("provide.testkit.quality.complexity.fixture.ComplexityAnalyzer")
-    def test_analyze_functionality(self, mock_analyzer_class, tmp_path):
+    @patch("provide.testkit.quality.complexity.fixture.RADON_AVAILABLE", True)  # type: ignore[misc]
+    @patch("provide.testkit.quality.complexity.fixture.ComplexityAnalyzer")  # type: ignore[misc]
+    def test_analyze_functionality(self, mock_analyzer_class: Mock, tmp_path: Path) -> None:
         """Test analysis functionality."""
         mock_analyzer = Mock()
         mock_result = QualityResult(
@@ -265,7 +279,7 @@ class TestComplexityFixture:
         assert result["max_complexity"] == 12
         mock_analyzer.analyze.assert_called_once()
 
-    def test_analyze_no_analyzer(self):
+    def test_analyze_no_analyzer(self) -> None:
         """Test analysis when no analyzer is available."""
         fixture = ComplexityFixture()
         fixture._setup_complete = True  # Skip setup but analyzer is None
@@ -274,16 +288,16 @@ class TestComplexityFixture:
         assert "error" in result
         assert result["error"] == "Analyzer not available"
 
-    def test_generate_report_no_analyzer(self):
+    def test_generate_report_no_analyzer(self) -> None:
         """Test report generation when no analyzer exists."""
         fixture = ComplexityFixture()
         report = fixture.generate_report()
 
         assert report == "No complexity analyzer available"
 
-    @patch("provide.testkit.quality.complexity.fixture.RADON_AVAILABLE", True)
-    @patch("provide.testkit.quality.complexity.fixture.ComplexityAnalyzer")
-    def test_generate_report_success(self, mock_analyzer_class):
+    @patch("provide.testkit.quality.complexity.fixture.RADON_AVAILABLE", True)  # type: ignore[misc]
+    @patch("provide.testkit.quality.complexity.fixture.ComplexityAnalyzer")  # type: ignore[misc]
+    def test_generate_report_success(self, mock_analyzer_class: Mock) -> None:
         """Test successful report generation."""
         mock_analyzer = Mock()
         mock_analyzer.report.return_value = "Complexity Report"
@@ -308,7 +322,7 @@ class TestComplexityFixture:
 
 @pytest.mark.integration
 @pytest.mark.skipif(not RADON_AVAILABLE, reason="radon not available")
-def test_real_complexity_integration(tmp_path):
+def test_real_complexity_integration(tmp_path: Path) -> None:
     """Integration test with real radon (if available)."""
     # Create Python files with varying complexity
     simple_file = tmp_path / "simple.py"

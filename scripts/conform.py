@@ -82,12 +82,7 @@ def find_module_docstring_and_body_start(content: str) -> tuple[str | None, int]
 
         # If the first node is the docstring, the actual code starts after it.
         if isinstance(first_node, ast.Expr) and isinstance(first_node.value, ast.Str):
-            if len(tree.body) > 1:
-                # The "body" starts at the next node
-                start_lineno = tree.body[1].lineno
-            else:
-                # The file ONLY contains a docstring
-                start_lineno = len(content.splitlines()) + 1  # End of file
+            start_lineno = tree.body[1].lineno if len(tree.body) > 1 else len(content.splitlines()) + 1
 
         return docstring, start_lineno
     except SyntaxError:
@@ -96,28 +91,27 @@ def find_module_docstring_and_body_start(content: str) -> tuple[str | None, int]
         return None, 1
 
 
-def conform_file(filepath: str, footer: str) -> None:
+def conform_file(filepath: Path, footer: str) -> None:
     """
     Applies the header and footer protocol to a single Python file.
 
     Args:
         filepath: Path to the Python file
     """
+    file_path = Path(filepath)
     try:
-        with open(filepath, encoding="utf-8") as f:
-            lines = f.readlines()
-            content = "".join(lines)
+        content = file_path.read_text(encoding="utf-8")
+        lines = content.splitlines(keepends=True)
     except (OSError, UnicodeDecodeError) as e:
-        print(f"Error reading file {filepath}: {e}", file=sys.stderr)
+        print(f"Error reading file {file_path}: {e}", file=sys.stderr)
         return
 
     if not lines:
         # Handle empty files
         final_content = (
-            "\n".join([HEADER_LIBRARY] + SPDX_BLOCK) + "\n\n" + PLACEHOLDER_DOCSTRING + "\n\n" + footer + "\n"
+            "\n".join([HEADER_LIBRARY, *SPDX_BLOCK]) + "\n\n" + PLACEHOLDER_DOCSTRING + "\n\n" + footer + "\n"
         )
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(final_content)
+        file_path.write_text(final_content, encoding="utf-8")
         return
 
     # 1. Determine Header Type
@@ -127,11 +121,7 @@ def conform_file(filepath: str, footer: str) -> None:
     # 2. Preserve Docstring and find code body
     docstring, body_start_lineno = find_module_docstring_and_body_start(content)
 
-    if docstring is None:
-        docstring_str = PLACEHOLDER_DOCSTRING
-    else:
-        # Preserve original docstring formatting
-        docstring_str = f'"""{docstring}"""'
+    docstring_str = PLACEHOLDER_DOCSTRING if docstring is None else f'"""{docstring}"""'
 
     # 3. Extract the code body
     # The body is everything from the determined start line to the end,
@@ -179,7 +169,7 @@ def conform_file(filepath: str, footer: str) -> None:
     body_content = "\n".join(cleaned_body_lines).rstrip()
 
     # 4. Construct the new file content
-    final_header = "\n".join([header_first_line] + SPDX_BLOCK)
+    final_header = "\n".join([header_first_line, *SPDX_BLOCK])
 
     # Ensure there's content to separate from the footer
     if body_content:
@@ -189,10 +179,9 @@ def conform_file(filepath: str, footer: str) -> None:
 
     # 5. Write the conformed content back to the file
     try:
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(final_content)
+        file_path.write_text(final_content, encoding="utf-8")
     except OSError as e:
-        print(f"Error writing to file {filepath}: {e}", file=sys.stderr)
+        print(f"Error writing to file {file_path}: {e}", file=sys.stderr)
 
 
 def find_python_files(directory: Path) -> list[Path]:
@@ -218,7 +207,7 @@ def find_python_files(directory: Path) -> list[Path]:
     return sorted(python_files)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Enforce header and footer conformance on Python files",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -264,7 +253,7 @@ def main():
 
     # Process each file
     for filepath in python_files:
-        conform_file(str(filepath), args.footer)
+        conform_file(filepath, args.footer)
 
 
 if __name__ == "__main__":

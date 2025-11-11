@@ -87,20 +87,19 @@ def test_what_happens_without_fixture() -> None:
     Notice this test doesn't use temp_directory as a parameter.
     We have to handle file paths manually and be careful about cleanup.
     """
-    import os
     import tempfile
 
     # Without the fixture, we need to create our own temporary directory
-    temp_dir = tempfile.mkdtemp()
+    temp_dir = Path(tempfile.mkdtemp())
 
     try:
         # Now we can work with files (but we need to handle paths manually)
-        file_path = os.path.join(temp_dir, "manual_file.txt")
-        with open(file_path, "w") as f:
+        file_path = temp_dir / "manual_file.txt"
+        with file_path.open("w") as f:
             f.write("Manual file handling")
 
         # Verify the file
-        with open(file_path) as f:
+        with file_path.open() as f:
             content = f.read()
         assert content == "Manual file handling"
 

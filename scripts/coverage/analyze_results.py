@@ -25,7 +25,7 @@ Features:
     - Generates summary statistics
     - Highlights high/low performers"""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 import re
 import sys
@@ -39,16 +39,12 @@ class TestResult:
     failed: int = 0
     skipped: int = 0
     warnings: int = 0
-    errors: list[str] = None
+    errors: list[str] = field(default_factory=list)
     coverage_line: float | None = None
     coverage_branch: float | None = None
     total_coverage: float | None = None
     execution_time: str | None = None
     status: str = "UNKNOWN"
-
-    def __post_init__(self):
-        if self.errors is None:
-            self.errors = []
 
     @property
     def total_tests(self) -> int:
@@ -131,53 +127,65 @@ def parse_log_file(log_path: Path) -> TestResult:
 
 def generate_report(results: list[TestResult]) -> str:
     """Generate a comprehensive text report."""
-    report = []
-    report.append("=" * 100)
-    report.append("PYTEST COVERAGE REPORT - ALL PACKAGES")
-    report.append("=" * 100)
-    report.append("")
+    report: list[str] = [
+        "=" * 100,
+        "PYTEST COVERAGE REPORT - ALL PACKAGES",
+        "=" * 100,
+        "",
+        "SUMMARY TABLE",
+        "-" * 100,
+        f"{'Package':<25} {'Status':<12} {'Tests':<15} {'Pass Rate':<12} {'Coverage':<12} {'Time':<12}",
+        "-" * 100,
+    ]
 
-    # Summary table
-    report.append("SUMMARY TABLE")
-    report.append("-" * 100)
-    header = f"{'Package':<25} {'Status':<12} {'Tests':<15} {'Pass Rate':<12} {'Coverage':<12} {'Time':<12}"
-    report.append(header)
-    report.append("-" * 100)
+    sorted_results = sorted(results, key=lambda res: res.package)
+    totals = {"passed": 0, "failed": 0, "skipped": 0}
 
-    for r in sorted(results, key=lambda x: x.package):
-        status_emoji = {"PASSED": "✓", "FAILED": "✗", "NO_TESTS": "○", "UNKNOWN": "?"}.get(r.status, "?")
+    for result in sorted_results:
+        status_emoji = {"PASSED": "✓", "FAILED": "✗", "NO_TESTS": "○", "UNKNOWN": "?"}.get(result.status, "?")
+        tests_str = f"{result.passed}P/{result.failed}F/{result.skipped}S" if result.total_tests > 0 else "N/A"
+        pass_rate_str = f"{result.pass_rate:.1f}%" if result.total_tests > 0 else "N/A"
 
-        tests_str = f"{r.passed}P/{r.failed}F/{r.skipped}S" if r.total_tests > 0 else "N/A"
-        pass_rate_str = f"{r.pass_rate:.1f}%" if r.total_tests > 0 else "N/A"
+        coverage_str = "N/A"
+        if result.total_coverage is not None:
+            coverage_str = f"{result.total_coverage:.2f}%"
+        elif result.coverage_line is not None:
+            branch = f"/{result.coverage_branch:.1f}%" if result.coverage_branch is not None else ""
+            coverage_str = f"{result.coverage_line:.1f}%{branch}"
 
-        cov_str = "N/A"
-        if r.total_coverage:
-            cov_str = f"{r.total_coverage:.2f}%"
-        elif r.coverage_line:
-            if r.coverage_branch:
-                cov_str = f"{r.coverage_line:.1f}%/{r.coverage_branch:.1f}%"
-            else:
-                cov_str = f"{r.coverage_line:.1f}%"
+        time_str = result.execution_time or "N/A"
+        report.append(
+            f"{result.package:<25} {status_emoji} {result.status:<10} {tests_str:<15} "
+            f"{pass_rate_str:<12} {coverage_str:<12} {time_str:<12}"
+        )
 
-        time_str = r.execution_time or "N/A"
+        totals["passed"] += result.passed
+        totals["failed"] += result.failed
+        totals["skipped"] += result.skipped
 
-        line = f"{r.package:<25} {status_emoji} {r.status:<10} {tests_str:<15} {pass_rate_str:<12} {cov_str:<12} {time_str:<12}"
-        report.append(line)
+    report.extend(["-" * 100, ""])
 
-    report.append("-" * 100)
-    report.append("")
+    packages_with_tests = [res for res in results if res.total_tests > 0]
+    append_overall_statistics(report, results, packages_with_tests, totals)
+    append_detailed_results(report, sorted_results)
+    append_observations(report, results, packages_with_tests)
 
-    # Overall statistics
-    total_passed = sum(r.passed for r in results)
-    total_failed = sum(r.failed for r in results)
-    total_skipped = sum(r.skipped for r in results)
-    total_tests = total_passed + total_failed + total_skipped
+    return "\n".join(report)
 
-    packages_with_tests = [r for r in results if r.total_tests > 0]
+
+def append_overall_statistics(
+    report: list[str],
+    results: list[TestResult],
+    packages_with_tests: list[TestResult],
+    totals: dict[str, int],
+) -> None:
+    """Append aggregate data covering totals and coverage."""
+    total_tests = totals["passed"] + totals["failed"] + totals["skipped"]
     avg_coverage = (
-        sum(r.total_coverage or r.coverage_line or 0 for r in packages_with_tests) / len(packages_with_tests)
+        sum(res.total_coverage or res.coverage_line or 0 for res in packages_with_tests)
+        / len(packages_with_tests)
         if packages_with_tests
-        else 0
+        else 0.0
     )
 
     report.append("OVERALL STATISTICS")
@@ -185,91 +193,99 @@ def generate_report(results: list[TestResult]) -> str:
     report.append(f"Total Packages: {len(results)}")
     report.append(f"Packages with Tests: {len(packages_with_tests)}")
     report.append(f"Total Tests: {total_tests}")
-    report.append(f"  - Passed: {total_passed}")
-    report.append(f"  - Failed: {total_failed}")
-    report.append(f"  - Skipped: {total_skipped}")
+    report.append(f"  - Passed: {totals['passed']}")
+    report.append(f"  - Failed: {totals['failed']}")
+    report.append(f"  - Skipped: {totals['skipped']}")
     report.append(
-        f"Overall Pass Rate: {(total_passed / total_tests * 100):.2f}%" if total_tests > 0 else "N/A"
+        f"Overall Pass Rate: {(totals['passed'] / total_tests * 100):.2f}%"
+        if total_tests > 0
+        else "Overall Pass Rate: N/A"
     )
     report.append(f"Average Coverage: {avg_coverage:.2f}%")
     report.append("")
 
-    # Detailed results
+
+def append_detailed_results(report: list[str], results: list[TestResult]) -> None:
+    """Append per-package breakdown."""
     report.append("=" * 100)
     report.append("DETAILED RESULTS")
     report.append("=" * 100)
     report.append("")
 
-    for r in sorted(results, key=lambda x: x.package):
-        report.append(f"\n### {r.package.upper()} ###")
-        report.append(f"Status: {r.status}")
-        report.append(f"Tests: {r.passed} passed, {r.failed} failed, {r.skipped} skipped")
+    for result in results:
+        report.append(f"\n### {result.package.upper()} ###")
+        report.append(f"Status: {result.status}")
+        report.append(f"Tests: {result.passed} passed, {result.failed} failed, {result.skipped} skipped")
 
-        if r.coverage_line:
-            cov_str = f"Coverage: Line {r.coverage_line:.1f}%"
-            if r.coverage_branch:
-                cov_str += f", Branch {r.coverage_branch:.1f}%"
-            report.append(cov_str)
-        if r.total_coverage:
-            report.append(f"Total Coverage: {r.total_coverage:.2f}%")
+        if result.coverage_line is not None:
+            coverage = f"Coverage: Line {result.coverage_line:.1f}%"
+            if result.coverage_branch is not None:
+                coverage += f", Branch {result.coverage_branch:.1f}%"
+            report.append(coverage)
+        if result.total_coverage is not None:
+            report.append(f"Total Coverage: {result.total_coverage:.2f}%")
 
-        if r.execution_time:
-            report.append(f"Execution Time: {r.execution_time}")
+        if result.execution_time:
+            report.append(f"Execution Time: {result.execution_time}")
 
-        if r.errors:
+        if result.errors:
             report.append("Errors/Failed Tests:")
-            for error in r.errors[:10]:
+            for error in result.errors[:10]:
                 report.append(f"  - {error}")
 
         report.append("")
 
-    # Observations
+
+def append_observations(
+    report: list[str],
+    results: list[TestResult],
+    packages_with_tests: list[TestResult],
+) -> None:
+    """Append observation section summarizing notable signals."""
     report.append("=" * 100)
     report.append("OBSERVATIONS")
     report.append("=" * 100)
     report.append("")
 
-    # Packages without tests
-    no_tests = [r for r in results if r.status == "NO_TESTS"]
+    no_tests = [res for res in results if res.status == "NO_TESTS"]
     if no_tests:
         report.append(f"⚠️  Packages without tests ({len(no_tests)}):")
-        for r in no_tests:
-            report.append(f"  - {r.package}")
+        for entry in no_tests:
+            report.append(f"  - {entry.package}")
         report.append("")
 
-    # Failed packages
-    failed = [r for r in results if r.status == "FAILED"]
+    failed = [res for res in results if res.status == "FAILED"]
     if failed:
         report.append(f"❌ Packages with failures ({len(failed)}):")
-        for r in failed:
-            report.append(f"  - {r.package}: {r.failed} failed tests")
+        for entry in failed:
+            report.append(f"  - {entry.package}: {entry.failed} failed tests")
         report.append("")
 
-    # Low coverage packages (< 70%)
-    low_cov = [r for r in packages_with_tests if (r.total_coverage or r.coverage_line or 100) < 70]
-    if low_cov:
-        report.append(f"⚠️  Packages with low coverage (<70%) ({len(low_cov)}):")
-        for r in low_cov:
-            cov = r.total_coverage or r.coverage_line or 0
-            report.append(f"  - {r.package}: {cov:.1f}%")
-        report.append("")
-
-    # High performers
-    high_perf = [
-        r
-        for r in packages_with_tests
-        if r.status == "PASSED" and (r.total_coverage or r.coverage_line or 0) >= 80
+    low_coverage = [
+        res for res in packages_with_tests if (res.total_coverage or res.coverage_line or 100) < 70
     ]
-    if high_perf:
-        for r in sorted(high_perf, key=lambda x: -(x.total_coverage or x.coverage_line or 0)):
-            cov = r.total_coverage or r.coverage_line or 0
-            report.append(f"  - {r.package}: {cov:.1f}% coverage, {r.total_tests} tests")
+    if low_coverage:
+        report.append(f"⚠️  Packages with low coverage (<70%) ({len(low_coverage)}):")
+        for entry in low_coverage:
+            cov_value = entry.total_coverage or entry.coverage_line or 0
+            report.append(f"  - {entry.package}: {cov_value:.1f}%")
         report.append("")
 
-    return "\n".join(report)
+    high_performers = [
+        res
+        for res in packages_with_tests
+        if res.status == "PASSED" and (res.total_coverage or res.coverage_line or 0) >= 80
+    ]
+    if high_performers:
+        for entry in sorted(
+            high_performers, key=lambda item: -(item.total_coverage or item.coverage_line or 0)
+        ):
+            cov_value = entry.total_coverage or entry.coverage_line or 0
+            report.append(f"  - {entry.package}: {cov_value:.1f}% coverage, {entry.total_tests} tests")
+        report.append("")
 
 
-def main():
+def main() -> None:
     # Allow log directory to be specified via command line
     default_log_dir = Path(tempfile.gettempdir()) / "pytest-logs"
     log_dir_arg = sys.argv[1] if len(sys.argv) > 1 else str(default_log_dir)

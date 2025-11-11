@@ -7,22 +7,23 @@
 
 import json
 from pathlib import Path
+from typing import Any
 
-from provide.testkit.mocking import Mock, patch
-from provide.testkit.quality.base import QualityResult
-from provide.testkit.quality.runner import QualityRunner
+from provide.testkit.mocking import Mock, patch  # type: ignore[import-untyped]
+from provide.testkit.quality.base import QualityResult  # type: ignore[import-untyped]
+from provide.testkit.quality.runner import QualityRunner  # type: ignore[import-untyped]
 
 
 class MockQualityTool:
     """Mock quality tool for testing."""
 
-    def __init__(self, name: str, should_pass: bool = True, score: float | None = None):
+    def __init__(self, name: str, should_pass: bool = True, score: float | None = None) -> None:
         self.name = name
         self.should_pass = should_pass
         self.score = score
-        self.analyze_calls = []
+        self.analyze_calls: list[tuple[Path, dict[str, Any]]] = []
 
-    def analyze(self, path: Path, **kwargs) -> QualityResult:
+    def analyze(self, path: Path, **kwargs: Any) -> QualityResult:
         self.analyze_calls.append((path, kwargs))
         return QualityResult(tool=self.name, passed=self.should_pass, score=self.score, details={"mock": True})
 
@@ -33,7 +34,7 @@ class MockQualityTool:
 class TestQualityRunner:
     """Test QualityRunner orchestration."""
 
-    def test_initialization_default_tools(self, tmp_path):
+    def test_initialization_default_tools(self, tmp_path: Path) -> None:
         """Test runner initialization with default tools."""
         with patch.object(QualityRunner, "_initialize_tools"):
             runner = QualityRunner(artifact_root=tmp_path)
@@ -42,7 +43,7 @@ class TestQualityRunner:
         assert runner.tools == ["coverage", "security", "complexity"]
         assert runner.config == {}
 
-    def test_initialization_custom_tools(self, tmp_path):
+    def test_initialization_custom_tools(self, tmp_path: Path) -> None:
         """Test runner initialization with custom tools."""
         tools = ["security", "complexity"]
         config = {"security": {"level": "high"}}
@@ -53,7 +54,7 @@ class TestQualityRunner:
         assert runner.tools == tools
         assert runner.config == config
 
-    def test_run_all_success(self, tmp_path):
+    def test_run_all_success(self, tmp_path: Path) -> None:
         """Test running all tools successfully."""
         runner = QualityRunner(artifact_root=tmp_path, tools=[])
 
@@ -91,7 +92,7 @@ class TestQualityRunner:
         summary_file = tmp_path / "tool1" / "summary.txt"
         assert summary_file.exists()
 
-    def test_run_all_with_tool_failure(self, tmp_path):
+    def test_run_all_with_tool_failure(self, tmp_path: Path) -> None:
         """Test running tools when one fails."""
         runner = QualityRunner(artifact_root=tmp_path, tools=[])
 
@@ -114,7 +115,7 @@ class TestQualityRunner:
         assert "error" in results["bad"].details
         assert results["bad"].details["error"] == "Tool crashed"
 
-    def test_run_with_gates_all_pass(self, tmp_path):
+    def test_run_with_gates_all_pass(self, tmp_path: Path) -> None:
         """Test running with quality gates that all pass."""
         runner = QualityRunner(artifact_root=tmp_path, tools=[])
 
@@ -136,7 +137,7 @@ class TestQualityRunner:
         assert passed is True
         assert len(results) == 2
 
-    def test_run_with_gates_score_failure(self, tmp_path):
+    def test_run_with_gates_score_failure(self, tmp_path: Path) -> None:
         """Test running with quality gates where score fails."""
         runner = QualityRunner(artifact_root=tmp_path, tools=[])
 
@@ -154,7 +155,7 @@ class TestQualityRunner:
         assert passed is False
         assert results["coverage"].score == 85.0
 
-    def test_run_with_gates_complex_requirements(self, tmp_path):
+    def test_run_with_gates_complex_requirements(self, tmp_path: Path) -> None:
         """Test running with complex gate requirements."""
         runner = QualityRunner(artifact_root=tmp_path, tools=[])
 
@@ -171,8 +172,9 @@ class TestQualityRunner:
         passed, results = runner.run_with_gates(target, gates)
 
         assert passed is True
+        assert set(results) == {"coverage", "security"}
 
-    def test_check_grade_requirement(self, tmp_path):
+    def test_check_grade_requirement(self, tmp_path: Path) -> None:
         """Test grade-based requirement checking."""
         runner = QualityRunner(artifact_root=tmp_path, tools=[])
 
@@ -193,7 +195,7 @@ class TestQualityRunner:
         result_no_grade = QualityResult(tool="test", passed=True)
         assert runner._check_grade_requirement(result_no_grade, "A") is False
 
-    def test_save_tool_artifacts(self, tmp_path):
+    def test_save_tool_artifacts(self, tmp_path: Path) -> None:
         """Test artifact saving functionality."""
         runner = QualityRunner(artifact_root=tmp_path, tools=[])
 
@@ -219,7 +221,7 @@ class TestQualityRunner:
         assert summary_file in result.artifacts
         assert details_file in result.artifacts
 
-    def test_generate_summary_report(self, tmp_path):
+    def test_generate_summary_report(self, tmp_path: Path) -> None:
         """Test summary report generation."""
         runner = QualityRunner(artifact_root=tmp_path, tools=[])
 
@@ -237,7 +239,7 @@ class TestQualityRunner:
         assert "Failed: 1" in report
         assert "security: ❌ FAILED" in report
 
-    def test_get_available_tools(self, tmp_path):
+    def test_get_available_tools(self, tmp_path: Path) -> None:
         """Test getting available tools."""
         runner = QualityRunner(artifact_root=tmp_path, tools=[])
 
