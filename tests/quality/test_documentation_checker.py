@@ -3,30 +3,28 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""Tests for documentation coverage functionality."""
+"""Tests for DocumentationChecker functionality."""
 
 import json
-from pathlib import Path
 
 import pytest
 
 from provide.testkit.mocking import Mock, patch
 from provide.testkit.quality.base import QualityResult
 from provide.testkit.quality.documentation.checker import INTERROGATE_AVAILABLE, DocumentationChecker
-from provide.testkit.quality.documentation.fixture import DocumentationFixture
 
 
 @pytest.mark.skipif(not INTERROGATE_AVAILABLE, reason="interrogate not available")
 class TestDocumentationChecker:
     """Test DocumentationChecker functionality."""
 
-    def test_initialization_default_config(self):
+    def test_initialization_default_config(self) -> None:
         """Test checker initialization with default config."""
         checker = DocumentationChecker()
         assert checker.config == {}
         assert checker.artifact_dir is None
 
-    def test_initialization_custom_config(self):
+    def test_initialization_custom_config(self) -> None:
         """Test checker initialization with custom config."""
         config = {"min_coverage": 95.0, "min_grade": "A", "min_score": 95.0, "ignore_init_method": False}
         checker = DocumentationChecker(config)
@@ -34,7 +32,7 @@ class TestDocumentationChecker:
 
     @patch("provide.testkit.quality.documentation.checker.coverage.InterrogateCoverage")
     @patch("provide.testkit.quality.documentation.checker.InterrogateConfig")
-    def test_analyze_success(self, mock_config_class, mock_coverage_class, tmp_path):
+    def test_analyze_success(self, mock_config_class, mock_coverage_class, tmp_path) -> None:
         """Test successful documentation analysis."""
         # Mock interrogate components
         mock_results = Mock()
@@ -71,7 +69,7 @@ class TestDocumentationChecker:
 
     @patch("provide.testkit.quality.documentation.checker.coverage.InterrogateCoverage")
     @patch("provide.testkit.quality.documentation.checker.InterrogateConfig")
-    def test_analyze_low_coverage(self, mock_config_class, mock_coverage_class, tmp_path):
+    def test_analyze_low_coverage(self, mock_config_class, mock_coverage_class, tmp_path) -> None:
         """Test analysis with low documentation coverage."""
         # Mock low coverage results
         mock_results = Mock()
@@ -96,7 +94,7 @@ class TestDocumentationChecker:
         assert result.details["grade"] == "F"
         assert result.details["total_coverage"] == 45.0
 
-    def test_build_interrogate_config_default(self):
+    def test_build_interrogate_config_default(self) -> None:
         """Test interrogate config building with defaults."""
         checker = DocumentationChecker()
         config = checker._build_interrogate_config()
@@ -108,7 +106,7 @@ class TestDocumentationChecker:
         assert config["verbose"] == 0
         assert "ignore_regex" in config
 
-    def test_build_interrogate_config_custom(self):
+    def test_build_interrogate_config_custom(self) -> None:
         """Test interrogate config building with custom settings."""
         custom_config = {
             "min_coverage": 95.0,
@@ -127,7 +125,7 @@ class TestDocumentationChecker:
         assert config["verbose"] == 2
         assert config["ignore_regex"] == "custom_pattern"
 
-    def test_grade_calculation(self):
+    def test_grade_calculation(self) -> None:
         """Test documentation coverage grade calculation."""
         checker = DocumentationChecker()
 
@@ -156,7 +154,7 @@ class TestDocumentationChecker:
             assert result.details["grade"] == expected_grade
             assert result.score == expected_score
 
-    def test_passing_criteria(self):
+    def test_passing_criteria(self) -> None:
         """Test documentation passing criteria."""
         config = {"min_coverage": 80.0, "min_grade": "B", "min_score": 85.0}
         checker = DocumentationChecker(config)
@@ -181,7 +179,7 @@ class TestDocumentationChecker:
 
     @patch("provide.testkit.quality.documentation.checker.coverage.InterrogateCoverage")
     @patch("provide.testkit.quality.documentation.checker.InterrogateConfig")
-    def test_analyze_with_file_details(self, mock_config_class, mock_coverage_class, tmp_path):
+    def test_analyze_with_file_details(self, mock_config_class, mock_coverage_class, tmp_path) -> None:
         """Test analysis with detailed file coverage."""
         # Mock detailed coverage results
         mock_file_info = Mock()
@@ -216,7 +214,7 @@ class TestDocumentationChecker:
         assert file_coverage["covered"] == 3
         assert file_coverage["missing"] == 1
 
-    def test_generate_text_report(self):
+    def test_generate_text_report(self) -> None:
         """Test text report generation."""
         checker = DocumentationChecker()
 
@@ -247,7 +245,7 @@ class TestDocumentationChecker:
         assert "Minimum Coverage: 80.0%" in report
         assert "Execution Time: 1.25s" in report
 
-    def test_generate_detail_report(self):
+    def test_generate_detail_report(self) -> None:
         """Test detailed file coverage report generation."""
         checker = DocumentationChecker()
 
@@ -272,7 +270,7 @@ class TestDocumentationChecker:
         assert any("❌ low_coverage.py: 45.0%" in line for line in lines)
         assert any("⚠️ medium_coverage.py: 75.0%" in line for line in lines)
 
-    def test_report_protocol_implementation(self):
+    def test_report_protocol_implementation(self) -> None:
         """Test QualityTool protocol implementation."""
         checker = DocumentationChecker()
 
@@ -300,217 +298,6 @@ class TestDocumentationChecker:
         # Test other format
         other_report = checker.report(result, "other")
         assert str(result.details) == other_report
-
-
-class TestDocumentationFixture:
-    """Test DocumentationFixture functionality."""
-
-    def test_initialization(self, tmp_path):
-        """Test fixture initialization."""
-        config = {"min_coverage": 90.0}
-        fixture = DocumentationFixture(config=config, artifact_dir=tmp_path)
-
-        assert fixture.config == config
-        assert fixture.artifact_dir == tmp_path
-        assert fixture.analyzer is None
-
-    @patch("provide.testkit.quality.documentation.fixture.INTERROGATE_AVAILABLE", True)
-    @patch("provide.testkit.quality.documentation.fixture.DocumentationChecker")
-    def test_setup_success(self, mock_checker_class):
-        """Test successful fixture setup."""
-        mock_checker = Mock()
-        mock_checker_class.return_value = mock_checker
-
-        fixture = DocumentationFixture()
-        fixture.setup()
-
-        assert fixture.analyzer == mock_checker
-        mock_checker_class.assert_called_once_with({})
-
-    @patch("provide.testkit.quality.documentation.fixture.INTERROGATE_AVAILABLE", False)
-    def test_setup_interrogate_unavailable(self):
-        """Test setup when interrogate is unavailable."""
-        fixture = DocumentationFixture()
-
-        with pytest.raises(pytest.skip.Exception):
-            fixture.setup()
-
-    @patch("provide.testkit.quality.documentation.fixture.INTERROGATE_AVAILABLE", True)
-    @patch("provide.testkit.quality.documentation.fixture.DocumentationChecker")
-    def test_analyze_functionality(self, mock_checker_class, tmp_path):
-        """Test analysis functionality."""
-        mock_checker = Mock()
-        mock_result = QualityResult(
-            tool="documentation",
-            passed=True,
-            score=90.0,
-            details={
-                "grade": "A-",
-                "total_coverage": 92.0,
-                "covered_count": 23,
-                "missing_count": 2,
-                "total_count": 25,
-                "file_coverage": [{"file": "test.py", "coverage": 92.0, "covered": 23, "missing": 2}],
-                "thresholds": {"min_coverage": 80.0},
-            },
-            execution_time=0.75,
-        )
-        mock_checker.analyze.return_value = mock_result
-        mock_checker_class.return_value = mock_checker
-
-        fixture = DocumentationFixture(artifact_dir=tmp_path)
-        fixture.setup()
-
-        result = fixture.analyze(Path("./test"))
-
-        assert result["passed"] is True
-        assert result["score"] == 90.0
-        assert result["grade"] == "A-"
-        assert result["total_coverage"] == 92.0
-        assert result["covered_count"] == 23
-        assert result["missing_count"] == 2
-        assert result["total_count"] == 25
-        assert len(result["file_coverage"]) == 1
-        assert result["execution_time"] == 0.75
-        mock_checker.analyze.assert_called_once()
-
-    def test_analyze_no_analyzer(self):
-        """Test analysis when no analyzer is available."""
-        fixture = DocumentationFixture()
-        fixture._setup_complete = True  # Skip setup but analyzer is None
-        result = fixture.analyze(Path("./test"))
-
-        assert "error" in result
-        assert result["error"] == "Analyzer not available"
-
-    def test_check_with_thresholds(self):
-        """Test check method with custom thresholds."""
-        fixture = DocumentationFixture()
-
-        with patch.object(fixture, "setup") as mock_setup, patch.object(fixture, "analyze") as mock_analyze:
-            mock_analyze.return_value = {"passed": True, "score": 95.0}
-
-            result = fixture.check(Path("./test"), min_coverage=95.0, min_grade="A", min_score=95.0)
-
-            mock_setup.assert_called_once()
-            assert fixture.config["min_coverage"] == 95.0
-            assert fixture.config["min_grade"] == "A"
-            assert fixture.config["min_score"] == 95.0
-            assert result["passed"] is True
-
-    def test_generate_report_no_analyzer(self):
-        """Test report generation when no analyzer exists."""
-        fixture = DocumentationFixture()
-        report = fixture.generate_report()
-
-        assert report == "No documentation analyzer available"
-
-    def test_generate_report_no_results(self):
-        """Test report generation when no results exist."""
-        fixture = DocumentationFixture()
-        fixture.analyzer = Mock()
-        report = fixture.generate_report()
-
-        assert report == "No documentation results available"
-
-    @patch("provide.testkit.quality.documentation.fixture.INTERROGATE_AVAILABLE", True)
-    @patch("provide.testkit.quality.documentation.fixture.DocumentationChecker")
-    def test_generate_report_success(self, mock_checker_class):
-        """Test successful report generation."""
-        mock_checker = Mock()
-        mock_checker.report.return_value = "Documentation Coverage Report"
-        mock_checker_class.return_value = mock_checker
-
-        fixture = DocumentationFixture()
-        fixture.setup()
-
-        # Add a mock result
-        mock_result = QualityResult(tool="documentation", passed=True)
-        fixture.add_result(mock_result)
-
-        report = fixture.generate_report("terminal")
-
-        assert report == "Documentation Coverage Report"
-        mock_checker.report.assert_called_once_with(mock_result, "terminal")
-
-
-@pytest.mark.integration
-@pytest.mark.skipif(not INTERROGATE_AVAILABLE, reason="interrogate not available")
-def test_real_documentation_integration(tmp_path):
-    """Integration test with real interrogate (if available)."""
-    # Create Python files with varying documentation
-    well_documented = tmp_path / "well_documented.py"
-    well_documented.write_text('''"""Well documented module."""
-
-def documented_function(param: str) -> str:
-    """A well documented function.
-
-    Args:
-        param: Input parameter
-
-    Returns:
-        Processed string
-    """
-    return param.upper()
-
-class DocumentedClass:
-    """A well documented class."""
-
-    def documented_method(self) -> None:
-        """A documented method."""
-        pass
-''')
-
-    poorly_documented = tmp_path / "poorly_documented.py"
-    poorly_documented.write_text("""def undocumented_function(x, y):
-    return x + y
-
-class UndocumentedClass:
-    def undocumented_method(self):
-        pass
-
-    def another_undocumented(self):
-        return "test"
-""")
-
-    # Create documentation checker
-    config = {
-        "min_coverage": 70.0,
-        "min_grade": "C",
-        "min_score": 70.0,
-        "ignore_init_method": True,
-        "ignore_magic": True,
-    }
-
-    checker = DocumentationChecker(config)
-    checker.artifact_dir = tmp_path / "artifacts"
-
-    # Run documentation analysis
-    result = checker.analyze(tmp_path)
-
-    # Should find varying documentation levels
-    assert result.tool == "documentation"
-
-    # Check if we have valid results (might not have total_count due to mocking/integration issues)
-    if "total_count" in result.details:
-        assert result.details["total_count"] > 0
-    elif "covered_count" in result.details and "missing_count" in result.details:
-        # Calculate total from components if available
-        total = result.details["covered_count"] + result.details["missing_count"]
-        assert total > 0
-    else:
-        # Skip assertion if interrogate didn't provide expected data structure
-        pytest.skip("Interrogate integration test incomplete - expected data structure not available")
-    assert 0 <= result.details["total_coverage"] <= 100
-    assert result.details["grade"] in ["A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D", "F"]
-
-    # Generate reports
-    terminal_report = checker.report(result, "terminal")
-    assert "Documentation Coverage Report" in terminal_report
-
-    json_report = checker.report(result, "json")
-    data = json.loads(json_report)
-    assert data["tool"] == "documentation"
 
 
 # 🧪✅🔚
