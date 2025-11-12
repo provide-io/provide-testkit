@@ -8,28 +8,64 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Environment Setup
 
+## Task Runner
+
+This project uses `wrknv` for task automation. Commands are defined in `wrknv.toml`.
+
+### Quick Reference
+```bash
+we tasks          # List all available tasks
+we test           # Run tests
+we lint           # Check code quality
+we format         # Format code
+we typecheck      # Type checking
+we build          # Build package
+```
+
+All tasks can be run with `we <task>`. Nested tasks use spaces (e.g., `we test coverage`).
+
+### Task Discovery
+
+Run `we tasks` to see the complete task tree for this project. Common task hierarchies:
+
+```bash
+we test                # Run all tests
+we test parallel       # Run tests in parallel
+we test coverage       # Run tests with coverage
+```
+
 ## Common Development Commands
 
 ```bash
-# Install dependencies
-uv sync
+# Environment setup
+uv sync                            # Install dependencies
 
-# Run tests
-uv run pytest                      # Run all tests
+# Primary workflow (using we)
+we test                            # Run all tests
+we test coverage                   # Run with coverage report
+we test parallel                   # Run tests in parallel
+we lint                            # Check code quality
+we lint fix                        # Auto-fix linting issues
+we format                          # Format code
+we format check                    # Check formatting without changes
+we typecheck                       # Run type checker
+we build                           # Build distribution
+
+# Alternative (direct uv commands)
+uv run pytest                      # Direct test execution
 uv run pytest -n auto              # Run tests in parallel
 uv run pytest -n auto -vvv         # Verbose parallel test run
 uv run pytest tests/test_specific.py   # Run specific test file
 uv run pytest -k "test_name"       # Run tests matching pattern
+uv run ruff check .                # Direct linting
+uv run ruff format .               # Direct formatting
+uv run mypy src/                   # Direct type checking
 
-# Code quality checks
-uv run ruff check .                # Run linter
-uv run ruff format .               # Format code
-uv run mypy src/                   # Type checking
-
-# Build and distribution
-uv build                           # Build package
+# Publishing
 uv publish                         # Publish to PyPI
 ```
+
+For complete task documentation, see [wrknv.toml](wrknv.toml) or run `we tasks`.
 
 ## Architecture & Code Structure
 
