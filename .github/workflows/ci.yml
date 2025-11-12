@@ -40,19 +40,18 @@ jobs:
           uv venv workenv
           source workenv/bin/activate
           uv pip install -e ".[dev]"
+          uv pip install "wrknv @ git+https://github.com/provide-io/wrknv.git@main"
 
       - name: 🧹 Code Quality
         run: |
           source workenv/bin/activate
-          ruff check src/ tests/ --output-format=github || true
-          ruff format --check src/ tests/ || true
-          mypy src/ --show-error-codes --pretty || true
+          we run quality
         continue-on-error: true
 
       - name: 🧪 Run Tests
         run: |
           source workenv/bin/activate
-          pytest --cov=src --cov-report=xml
+          we run test.coverage.xml
 
       - name: 📊 Upload Coverage
         if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
