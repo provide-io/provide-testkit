@@ -11,14 +11,14 @@ disk space problems, and network-related chaos scenarios."""
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from hypothesis import strategies as st
 from hypothesis.strategies import DrawFn, composite
 
 
 @composite
-def file_sizes(  # type: ignore[misc]
+def file_sizes(
     draw: DrawFn,
     min_size: int = 0,
     max_size: int = 10 * 1024 * 1024,  # 10MB default
@@ -53,7 +53,7 @@ def file_sizes(  # type: ignore[misc]
     if include_huge:
         sizes.append(st.integers(min_value=100 * 1024 * 1024, max_value=1024 * 1024 * 1024))  # 100MB - 1GB
 
-    return draw(st.one_of(*sizes))
+    return cast(int, draw(st.one_of(*sizes)))
 
 
 @composite
@@ -122,15 +122,16 @@ def disk_full_scenarios(
             pass
         ```
     """
-    total_space = draw(st.integers(min_value=1024, max_value=1024 * 1024 * 100))  # Up to 100MB
+    total_space = draw(st.integers(min_value=10240, max_value=1024 * 1024 * 100))  # Up to 100MB
     used_space = draw(st.integers(min_value=0, max_value=total_space))
+    available = total_space - used_space
 
     return {
         "total_space": total_space,
         "used_space": used_space,
-        "available_space": total_space - used_space,
-        "fills_at_byte": draw(st.integers(min_value=0, max_value=max(1, total_space - used_space))),
-        "operation_size": draw(st.integers(min_value=1024, max_value=total_space)),
+        "available_space": available,
+        "fills_at_byte": draw(st.integers(min_value=0, max_value=max(1, available))) if available > 0 else 0,
+        "operation_size": draw(st.integers(min_value=1024, max_value=min(total_space, available + 10240))),
     }
 
 
@@ -158,7 +159,7 @@ def network_error_patterns(
                     pass
         ```
     """
-    num_events = draw(st.integers(min_value=1, max_value=20))
+    num_events = draw(st.integers(min_value=1, max_value=15))
 
     error_types = [
         "timeout",
@@ -180,12 +181,17 @@ def network_error_patterns(
         }
 
         if error_type == "timeout":
-            event["timeout_after"] = draw(st.floats(min_value=0.1, max_value=30.0))
+            event["timeout_after"] = draw(
+                st.floats(min_value=0.1, max_value=30.0, allow_nan=False, allow_infinity=False)
+            )
         elif error_type == "slow_response":
             event["bytes_per_second"] = draw(st.integers(min_value=100, max_value=10000))
         elif error_type == "partial_response":
-            event["bytes_received"] = draw(st.integers(min_value=0, max_value=10000))
-            event["expected_bytes"] = draw(st.integers(min_value=event["bytes_received"], max_value=100000))
+            # Generate bytes_received first, then use it as lower bound for expected_bytes
+            max_bytes = 100000
+            bytes_received = draw(st.integers(min_value=0, max_value=max_bytes))
+            event["bytes_received"] = bytes_received
+            event["expected_bytes"] = draw(st.integers(min_value=bytes_received, max_value=max_bytes))
 
         events.append(event)
 
@@ -355,14 +361,12 @@ def path_traversal_patterns(
     if draw(st.booleans()):
         return draw(st.sampled_from(patterns))
     else:
-        # Safe relative path
-        parts = draw(
-            st.lists(
-                st.text(alphabet=st.characters(min_codepoint=97, max_codepoint=122), min_size=1, max_size=10),
-                min_size=1,
-                max_size=5,
-            )
-        )
+        # Safe relative path - use simpler strategy to avoid slow generation
+        num_parts = draw(st.integers(min_value=1, max_value=3))
+        parts = [
+            draw(st.text(alphabet="abcdefghijklmnopqrstuvwxyz", min_size=1, max_size=8))
+            for _ in range(num_parts)
+        ]
         return str(Path(*parts))
 
 

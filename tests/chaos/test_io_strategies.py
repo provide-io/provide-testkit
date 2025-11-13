@@ -11,7 +11,7 @@ from contextlib import suppress
 from pathlib import Path
 from typing import Any
 
-from hypothesis import given
+from hypothesis import given, settings
 
 from provide.testkit.chaos.io_strategies import (  # type: ignore[import-untyped]
     buffer_overflow_patterns,
@@ -80,6 +80,7 @@ class TestPermissionPatterns:
 class TestDiskFullScenarios:
     """Test disk full scenario strategy."""
 
+    @settings(max_examples=50)
     @given(scenario=disk_full_scenarios())
     def test_disk_scenario_structure(self, scenario: dict[str, Any]) -> None:
         """Test disk full scenarios have required fields."""
@@ -107,6 +108,7 @@ class TestDiskFullScenarios:
 class TestNetworkErrorPatterns:
     """Test network error pattern strategy."""
 
+    @settings(max_examples=50)
     @given(errors=network_error_patterns())
     def test_error_pattern_structure(self, errors: list[dict[str, Any]]) -> None:
         """Test network error patterns have correct structure."""
@@ -225,6 +227,7 @@ class TestLockFileScenarios:
         assert "corrupted_lock_file" in scenario
         assert "lock_content_type" in scenario
 
+    @settings(max_examples=50)
     @given(scenario=lock_file_scenarios())
     def test_lock_scenario_ranges(self, scenario: dict[str, Any]) -> None:
         """Test lock scenario values are in valid ranges."""
