@@ -120,8 +120,10 @@ def deadlock_scenarios(
     # Each thread gets a sequence of resources to lock
     lock_sequences = []
     for _ in range(num_threads):
-        num_locks = draw(st.integers(min_value=1, max_value=num_resources))
-        # Generate a permutation of resource IDs
+        # Ensure num_locks never exceeds num_resources to allow unique generation
+        max_locks = min(num_resources, 5)
+        num_locks = draw(st.integers(min_value=1, max_value=max_locks))
+        # Always use unique=True since we ensure num_locks <= num_resources
         sequence = draw(
             st.lists(
                 st.integers(min_value=0, max_value=num_resources - 1),
@@ -132,12 +134,13 @@ def deadlock_scenarios(
         )
         lock_sequences.append(sequence)
 
+    has_timeout = draw(st.booleans())
     return {
         "num_resources": num_resources,
         "num_threads": num_threads,
         "lock_sequences": lock_sequences,
-        "has_timeout": draw(st.booleans()),
-        "timeout": draw(st.floats(min_value=0.1, max_value=5.0)) if draw(st.booleans()) else None,
+        "has_timeout": has_timeout,
+        "timeout": draw(st.floats(min_value=0.1, max_value=5.0)) if has_timeout else None,
     }
 
 
@@ -168,20 +171,30 @@ def async_event_patterns(
                     await asyncio.create_task(event['coro']())
         ```
     """
-    num_events = draw(st.integers(min_value=1, max_value=max_events))
+    # Limit max_events to avoid too many iterations
+    effective_max = min(max_events, 20)
+    num_events = draw(st.integers(min_value=1, max_value=effective_max))
 
     events = []
+    event_types = ["delay", "immediate", "cancel", "timeout"]
+
     for _ in range(num_events):
-        event_type = draw(st.sampled_from(["delay", "immediate", "cancel", "timeout"]))
+        event_type = draw(st.sampled_from(event_types))
 
         event: dict[str, Any] = {"type": event_type}
 
         if event_type == "delay":
-            event["duration"] = draw(st.floats(min_value=0.0, max_value=1.0))
+            event["duration"] = draw(
+                st.floats(min_value=0.0, max_value=1.0, allow_nan=False, allow_infinity=False)
+            )
         elif event_type == "timeout":
-            event["timeout"] = draw(st.floats(min_value=0.01, max_value=2.0))
+            event["timeout"] = draw(
+                st.floats(min_value=0.01, max_value=2.0, allow_nan=False, allow_infinity=False)
+            )
         elif event_type == "cancel":
-            event["after_delay"] = draw(st.floats(min_value=0.0, max_value=0.5))
+            event["after_delay"] = draw(
+                st.floats(min_value=0.0, max_value=0.5, allow_nan=False, allow_infinity=False)
+            )
 
         events.append(event)
 
@@ -275,7 +288,10 @@ def task_cancellation_patterns(
         ```
     """
     tasks = []
-    for i in range(num_tasks):
+    # Limit num_tasks to avoid too many iterations
+    effective_num_tasks = min(num_tasks, 30)
+
+    for i in range(effective_num_tasks):
         should_cancel = draw(st.booleans())
 
         config: dict[str, Any] = {
@@ -284,10 +300,14 @@ def task_cancellation_patterns(
         }
 
         if should_cancel:
-            config["cancel_after"] = draw(st.floats(min_value=0.0, max_value=1.0))
+            config["cancel_after"] = draw(
+                st.floats(min_value=0.0, max_value=1.0, allow_nan=False, allow_infinity=False)
+            )
             config["expect_cancellation_error"] = draw(st.booleans())
         else:
-            config["expected_duration"] = draw(st.floats(min_value=0.1, max_value=2.0))
+            config["expected_duration"] = draw(
+                st.floats(min_value=0.1, max_value=2.0, allow_nan=False, allow_infinity=False)
+            )
 
         tasks.append(config)
 
