@@ -422,3 +422,6 @@ bf*.txt
 
 # Extracted provide.io tooling artifacts
 .provide/
+
+# MkDocs build output
+site/
