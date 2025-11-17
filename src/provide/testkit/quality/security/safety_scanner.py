@@ -84,7 +84,7 @@ class SafetyScanner:
         Returns:
             QualityResult with vulnerability analysis data
         """
-        self.artifact_dir = kwargs.get("artifact_dir", Path(".security"))
+        self.artifact_dir = kwargs.get("artifact_dir", Path(".provide/output/security"))
         start_time = time.time()
 
         try:

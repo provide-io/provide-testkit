@@ -23,7 +23,24 @@ junit.xml
 # Quality reports
 quality-reports/
 .quality-artifacts/
-.security/
+
+# Provide ecosystem directories (gitignored)
+.provide/shared/
+.provide/output/
+.provide/logs/
+.provide/cache/
+
+# Log files
+*.log
+*.log.*
+logs/
+
+# Local/temporary files
+*.local
+*.local.*
+.*.local
+*.bak
+*.tmp
 
 # Profiling
 *.prof
@@ -59,7 +76,8 @@ bf-*
 *bfile*
 
 # Provide tooling
-.provide/
+# Note: .provide/ subdirs (shared/, output/, logs/, cache/) are gitignored above
+# Config dirs (security/, foundry/) are versioned
 
 # Project specific
 .note
