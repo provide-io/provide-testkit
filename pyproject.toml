@@ -194,6 +194,18 @@ utils = [
     "sapp>=0.4",
 ]
 
+# Comprehensive security scanning
+security = [
+    "bandit>=1.8.3",           # Python SAST (static application security testing)
+    "safety>=3.0.0",           # Dependency vulnerability scanner (PyUp database)
+    "pip-audit>=2.7.0",        # PyPI security advisory scanner
+    "semgrep>=1.50.0",         # Pattern-based SAST with custom rules
+    "checkov>=3.0.0",          # IaC security scanner (Terraform, Python misconfigurations)
+    # Note: gitleaks and trufflehog are Go binaries, not pip packages
+    # They should be installed via system package manager or downloaded binaries
+    # Wrappers will check for their availability at runtime
+]
+
 # Convenience groups
 standard = [
     "provide-testkit[quality,transport,crypto,process]",
@@ -204,11 +216,11 @@ grpc-dev = [
 ]
 
 pyvider-dev = [
-    "provide-testkit[standard,advanced-testing,typecheck,grpc,build,profiling]",
+    "provide-testkit[standard,advanced-testing,typecheck,grpc,build,profiling,security]",
 ]
 
 all = [
-    "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils]",
+    "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils,security]",
 ]
 
 dev = [
