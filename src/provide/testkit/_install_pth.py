@@ -14,6 +14,8 @@ from pathlib import Path
 import site
 import sys
 
+from provide.foundation.console.output import perr, pout
+
 
 def _resolve_site_packages() -> Path:
     """Return the best-guess site-packages directory."""
@@ -48,7 +50,7 @@ def install_pth_file(*, verbose: bool = False) -> int:
     pth_dest = site_packages / "provide_testkit_init.pth"
 
     if not pth_source.exists():
-        print(f"Error: Source .pth file not found at {pth_source}", file=sys.stderr)
+        perr(f"Error: Source .pth file not found at {pth_source}")
         return 1
 
     try:
@@ -62,18 +64,18 @@ def install_pth_file(*, verbose: bool = False) -> int:
 
         shutil.copy2(pth_source, pth_dest)
         if verbose:
-            print(f"✓ Installed {pth_dest}")
+            pout(f"✓ Installed {pth_dest}")
         return 0
 
     except PermissionError:
         if verbose:
-            print(f"Warning: No permission to write to {pth_dest}", file=sys.stderr)
-            print("The setproctitle blocker will use fallback mechanisms", file=sys.stderr)
+            perr(f"Warning: No permission to write to {pth_dest}")
+            perr("The setproctitle blocker will use fallback mechanisms")
         return 0  # Don't fail installation
     except Exception as e:
         if verbose:
-            print(f"Warning: Could not install .pth file: {e}", file=sys.stderr)
-            print("The setproctitle blocker will use fallback mechanisms", file=sys.stderr)
+            perr(f"Warning: Could not install .pth file: {e}")
+            perr("The setproctitle blocker will use fallback mechanisms")
         return 0  # Don't fail installation
 
 
@@ -94,16 +96,16 @@ def uninstall_pth_file() -> int:
     try:
         if pth_dest.exists() or pth_dest.is_symlink():
             pth_dest.unlink()
-            print(f"✓ Removed {pth_dest}")
+            pout(f"✓ Removed {pth_dest}")
             return 0
         else:
-            print(f"i  .pth file not found at {pth_dest}")
+            pout(f"i  .pth file not found at {pth_dest}")
             return 0
     except PermissionError:
-        print(f"Warning: No permission to remove {pth_dest}", file=sys.stderr)
+        perr(f"Warning: No permission to remove {pth_dest}")
         return 1
     except Exception as e:
-        print(f"Error removing .pth file: {e}", file=sys.stderr)
+        perr(f"Error removing .pth file: {e}")
         return 1
 
 

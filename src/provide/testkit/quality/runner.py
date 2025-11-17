@@ -12,6 +12,7 @@ from pathlib import Path
 import time
 from typing import Any
 
+from provide.foundation import logger
 from provide.foundation.file import atomic_write_text, ensure_dir
 
 from .base import QualityError, QualityResult, QualityTool
@@ -54,7 +55,7 @@ class QualityRunner:
                 self.tool_instances[tool_name] = self._create_tool(tool_name)
             except (ImportError, Exception) as e:
                 # Tool dependencies not available - skip gracefully
-                print(f"Warning: {tool_name} tool not available: {e}")
+                logger.warning("quality_tool_unavailable", tool_name=tool_name, error=str(e))
                 continue
 
     def _create_tool(self, tool_name: str) -> QualityTool:
