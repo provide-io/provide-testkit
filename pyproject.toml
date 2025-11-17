@@ -190,8 +190,12 @@ utils = [
     "pyyaml>=6.0.2",
     "reuse>=1.1.0",
     "tabulate>=0.9.0",
-    "pynguin>=0.40.0",
     "sapp>=0.4",
+]
+
+# Fuzzing and test generation (WARNING: incompatible with security extra due to networkx conflict)
+fuzzing = [
+    "pynguin>=0.40.0",
 ]
 
 # Comprehensive security scanning
@@ -219,6 +223,8 @@ pyvider-dev = [
     "provide-testkit[standard,advanced-testing,typecheck,grpc,build,profiling,security]",
 ]
 
+# Note: excludes 'fuzzing' extra due to pynguin/checkov networkx version conflict
+# pynguin requires networkx>=3.4, checkov requires networkx<2.7
 all = [
     "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils,security]",
 ]
