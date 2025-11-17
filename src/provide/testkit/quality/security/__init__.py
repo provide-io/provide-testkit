@@ -5,11 +5,20 @@
 
 """Security analysis integration for provide-testkit.
 
-Provides security vulnerability scanning using bandit and other security tools.
-Integrates with the quality framework for comprehensive security analysis.
+Provides comprehensive security scanning using multiple security tools:
+- Bandit: Python SAST (static application security testing)
+- pip-audit: Dependency vulnerability scanning (PyPI advisories)
+- Safety: Dependency vulnerability scanning (PyUp database)
+- GitLeaks: Secret detection (fast, pattern-based)
+- TruffleHog: Deep secret detection (entropy analysis, verification)
+- Checkov: Infrastructure as Code security scanning
+- Semgrep: Pattern-based SAST with custom rules
 
 Features:
-- Vulnerability scanning with bandit
+- Multiple vulnerability scanners for comprehensive coverage
+- Dependency vulnerability scanning
+- Secret/credential detection
+- IaC security analysis
 - Security issue reporting and classification
 - Integration with quality gates
 - Artifact management for CI/CD
@@ -20,16 +29,52 @@ Usage:
         result = security_scanner.scan(path)
         assert result.passed
 
-    # Security with quality gates
-    runner = QualityRunner()
-    results = runner.run_with_gates(path, {"security": True})"""
+    # Dependency vulnerability scanning
+    from provide.testkit.quality.security import PipAuditScanner
+    scanner = PipAuditScanner()
+    result = scanner.analyze(path)
 
+    # Secret detection
+    from provide.testkit.quality.security import GitLeaksScanner
+    scanner = GitLeaksScanner()
+    result = scanner.analyze(path)
+
+    # IaC security
+    from provide.testkit.quality.security import CheckovScanner
+    scanner = CheckovScanner()
+    result = scanner.analyze(path)
+"""
+
+from .checkov_scanner import CHECKOV_AVAILABLE, CheckovScanner
 from .fixture import SecurityFixture
-from .scanner import SecurityScanner
+from .gitleaks_scanner import GITLEAKS_AVAILABLE, GitLeaksScanner
+from .pip_audit_scanner import PIP_AUDIT_AVAILABLE, PipAuditScanner
+from .safety_scanner import SAFETY_AVAILABLE, SafetyScanner
+from .scanner import BANDIT_AVAILABLE, SecurityScanner
+from .semgrep_scanner import SEMGREP_AVAILABLE, SemgrepScanner
+from .trufflehog_scanner import TRUFFLEHOG_AVAILABLE, TruffleHogScanner
 
 __all__ = [
+    "BANDIT_AVAILABLE",
+    "CHECKOV_AVAILABLE",
+    "GITLEAKS_AVAILABLE",
+    "PIP_AUDIT_AVAILABLE",
+    "SAFETY_AVAILABLE",
+    "SEMGREP_AVAILABLE",
+    "TRUFFLEHOG_AVAILABLE",
+    # IaC security
+    "CheckovScanner",
+    # Secret detection
+    "GitLeaksScanner",
+    # Dependency vulnerability scanners
+    "PipAuditScanner",
+    "SafetyScanner",
+    # Core security (Bandit)
     "SecurityFixture",
     "SecurityScanner",
+    # Pattern-based SAST
+    "SemgrepScanner",
+    "TruffleHogScanner",
 ]
 
 # 🧪✅🔚

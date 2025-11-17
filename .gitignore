@@ -23,6 +23,7 @@ junit.xml
 # Quality reports
 quality-reports/
 .quality-artifacts/
+.security/
 
 # Profiling
 *.prof

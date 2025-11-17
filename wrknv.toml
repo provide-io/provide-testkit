@@ -53,6 +53,33 @@ _default = ["lint", "typecheck"]
 all = ["format.check", "lint", "typecheck", "test"]
 
 # ==============================================================================
+# 🔐 Security Scanning
+# ==============================================================================
+
+[tasks.security]
+_default = ["security.sast", "security.deps"]
+all = ["security.sast", "security.deps", "security.secrets", "security.iac"]
+
+[tasks.security.sast]
+_default = "bandit -r src/ -c .provide/security/bandit.toml -f json -o .security/bandit.json || true && bandit -r src/ -c .provide/security/bandit.toml"
+semgrep = "semgrep --config .provide/security/semgrep.yml src/"
+bandit = "bandit -r src/ -c .provide/security/bandit.toml"
+
+[tasks.security.deps]
+_default = "pip-audit"
+safety = "safety check --policy-file .provide/security/safety-policy.yml"
+audit = "pip-audit --strict"
+
+[tasks.security.secrets]
+_default = "gitleaks detect --source . --config .provide/security/gitleaks.toml --no-git --no-banner"
+trufflehog = "trufflehog filesystem . --config .provide/security/trufflehog.yml --json"
+gitleaks = "gitleaks detect --source . --config .provide/security/gitleaks.toml --no-git"
+
+[tasks.security.iac]
+_default = "checkov --directory . --config-file .provide/security/checkov.yml --quiet"
+checkov = "checkov --directory . --config-file .provide/security/checkov.yml"
+
+# ==============================================================================
 # 🏗️ Build & Package
 # ==============================================================================
 
