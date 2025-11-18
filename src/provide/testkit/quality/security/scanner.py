@@ -3,21 +3,66 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""Security vulnerability scanner implementation."""
+"""Security vulnerability scanner implementation.
+
+This module provides a high-level security scanning interface using bandit.
+The scanner can be configured with various verbosity levels to control output
+noise and is designed for integration with CI/CD pipelines.
+
+Usage:
+    Basic usage with default settings:
+        >>> scanner = SecurityScanner()
+        >>> result = scanner.analyze(Path("./src"))
+
+    With custom verbosity (quiet mode for CI):
+        >>> scanner = SecurityScanner(config={'verbosity': 'quiet'})
+        >>> result = scanner.analyze(Path("./src"))
+
+    With custom thresholds:
+        >>> config = {
+        ...     'max_high_severity': 0,
+        ...     'max_medium_severity': 5,
+        ...     'min_score': 80.0,
+        ...     'verbosity': 'normal'
+        ... }
+        >>> scanner = SecurityScanner(config)
+        >>> result = scanner.analyze(Path("./src"))
+
+Verbosity Levels:
+    - 'quiet': Only show errors (best for CI/CD)
+    - 'normal': Show errors and warnings (default)
+    - 'verbose': Show all messages including debug info
+
+Configuration Options:
+    - max_high_severity: Maximum allowed high severity issues (default: 0)
+    - max_medium_severity: Maximum allowed medium severity issues (default: 5)
+    - min_score: Minimum security score to pass (default: 80.0)
+    - verbosity: Output verbosity level (default: 'normal')
+    - exclude: File patterns to exclude from scanning
+
+Score Calculation:
+    The security score starts at 100 and deducts points based on issue severity:
+    - High severity: -10 points per issue
+    - Medium severity: -5 points per issue
+    - Low severity: -1 point per issue
+
+    The score is capped at 0 (cannot go negative).
+"""
 
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 import time
-from typing import Any
+from typing import Any, Literal
 
 from provide.foundation.file import atomic_write_text, ensure_dir
 
 try:
     import bandit  # type: ignore[import-untyped]
-    from bandit.core import (
-        config as bandit_config,  # type: ignore[import-untyped]
+    from bandit.core import (  # type: ignore[import-untyped]
+        config as bandit_config,
         manager as bandit_manager,
     )
 
@@ -30,12 +75,22 @@ except ImportError:
 
 from ..base import QualityResult, QualityToolError
 
+# Define verbosity levels
+VerbosityLevel = Literal["quiet", "normal", "verbose"]
+
 
 class SecurityScanner:
     """Security vulnerability scanner using bandit and other tools.
 
     Provides high-level interface for security analysis with automatic
     artifact management and integration with the quality framework.
+
+    Configuration:
+        max_high_severity: Maximum allowed high severity issues (default: 0)
+        max_medium_severity: Maximum allowed medium severity issues (default: 5)
+        min_score: Minimum security score to pass (default: 80.0)
+        verbosity: Output verbosity ('quiet', 'normal', 'verbose')
+        exclude: List of file patterns to exclude from scanning
     """
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:
@@ -43,24 +98,73 @@ class SecurityScanner:
 
         Args:
             config: Security scanner configuration options
+
+        Raises:
+            QualityToolError: If bandit is not available
         """
         if not BANDIT_AVAILABLE:
             raise QualityToolError("Bandit not available. Install with: pip install bandit", tool="security")
 
         self.config = config or {}
         self.artifact_dir: Path | None = None
+        self.verbosity: VerbosityLevel = self.config.get("verbosity", "normal")
+
+        # Configure logging based on verbosity
+        self._configure_logging()
+
+    def _configure_logging(self) -> None:
+        """Configure bandit and scanner logging based on verbosity level.
+
+        Verbosity levels:
+            - quiet: Only errors (ERROR level)
+            - normal: Errors and warnings (WARNING level)
+            - verbose: All messages (INFO level)
+        """
+        # Map verbosity to logging levels
+        level_map: dict[str, int] = {
+            "quiet": logging.ERROR,
+            "normal": logging.WARNING,
+            "verbose": logging.INFO,
+        }
+
+        log_level = level_map.get(self.verbosity, logging.WARNING)
+
+        # Configure bandit's logger to reduce noise
+        bandit_logger = logging.getLogger("bandit")
+        bandit_logger.setLevel(log_level)
+
+        # Suppress specific noisy loggers from bandit
+        if self.verbosity in ("quiet", "normal"):
+            # These loggers generate the "nosec encountered" and "Test in comment" messages
+            for logger_name in [
+                "bandit.core.manager",
+                "bandit.core.test_set",
+                "bandit.core.issue",
+            ]:
+                logger = logging.getLogger(logger_name)
+                logger.setLevel(logging.ERROR)
 
     def analyze(self, path: Path, **kwargs: Any) -> QualityResult:
         """Run security analysis on the given path.
 
         Args:
             path: Path to analyze
-            **kwargs: Additional options including artifact_dir
+            **kwargs: Additional options:
+                - artifact_dir: Directory for output artifacts
+                - verbosity: Override scanner's verbosity level
 
         Returns:
             QualityResult with security analysis data
         """
         self.artifact_dir = kwargs.get("artifact_dir", Path(".provide/output/security"))
+
+        # Allow verbosity override for this specific analysis
+        old_verbosity = None
+        if "verbosity" in kwargs:
+            old_verbosity = self.verbosity
+            self.verbosity = kwargs["verbosity"]
+            self._configure_logging()
+
         start_time = time.time()
 
         try:
@@ -80,6 +184,11 @@ class SecurityScanner:
                 details={"error": str(e), "error_type": type(e).__name__},
                 execution_time=time.time() - start_time,
             )
+        finally:
+            # Restore original verbosity if it was overridden
+            if old_verbosity is not None:
+                self.verbosity = old_verbosity
+                self._configure_logging()
 
     def _run_bandit_scan(self, path: Path) -> QualityResult:
         """Run bandit security scan."""
@@ -118,9 +227,16 @@ class SecurityScanner:
             raise QualityToolError(f"Bandit scan failed: {e!s}", tool="security") from e
 
     def _apply_bandit_config(self, conf: Any) -> None:
-        """Apply custom configuration to bandit."""
-        # Bandit configuration is set differently than expected
-        # For now, we'll use the defaults and apply filtering later
+        """Apply custom configuration to bandit.
+
+        Extension point for future bandit configuration customization.
+        Currently uses bandit defaults with post-processing filtering.
+
+        Args:
+            conf: Bandit configuration object (currently unused)
+        """
+        # Extension point: Future versions may customize bandit config here
+        # Current implementation relies on defaults + post-scan filtering
         pass
 
     def _discover_python_files(self, path: Path) -> list[str]:
@@ -189,10 +305,11 @@ class SecurityScanner:
         }
 
         # Add issue details for reporting
+        # Normalize all paths to absolute to avoid path handling issues
         if issues:
             details["issues"] = [
                 {
-                    "filename": issue.fname,
+                    "filename": str(Path(issue.fname).resolve()),
                     "line_number": issue.lineno,
                     "test_id": issue.test_id,
                     "test_name": issue.test,
@@ -288,16 +405,37 @@ class SecurityScanner:
 
         return "\n".join(lines)
 
+    def _format_path_for_display(self, filepath: str) -> str:
+        """Format a file path for display, converting to relative if possible.
+
+        Args:
+            filepath: Absolute file path
+
+        Returns:
+            Relative path if possible, otherwise absolute path
+        """
+        try:
+            abs_path = Path(filepath).resolve()
+            cwd = Path.cwd()
+            # Try to get relative path
+            return str(abs_path.relative_to(cwd))
+        except (ValueError, OSError):
+            # If relative_to fails, return the absolute path
+            return filepath
+
     def _generate_issues_report(self, result: QualityResult) -> str:
         """Generate detailed issues report."""
         lines = ["Security Issues Report", "=" * 50, ""]
 
         issues = result.details.get("issues", [])
         for i, issue in enumerate(issues, 1):
+            # Format path for display (convert to relative if possible)
+            display_path = self._format_path_for_display(issue["filename"])
+
             lines.extend(
                 [
                     f"Issue #{i}:",
-                    f"  File: {issue['filename']}:{issue['line_number']}",
+                    f"  File: {display_path}:{issue['line_number']}",
                     f"  Test: {issue['test_name']} ({issue['test_id']})",
                     f"  Severity: {issue['severity']} | Confidence: {issue['confidence']}",
                     f"  Description: {issue['text']}",
