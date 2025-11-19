@@ -204,7 +204,6 @@ security = [
     "safety>=3.0.0",           # Dependency vulnerability scanner (PyUp database)
     "pip-audit>=2.7.0",        # PyPI security advisory scanner
     "semgrep>=1.50.0",         # Pattern-based SAST with custom rules
-    # Note: checkov removed due to networkx<2.7 dependency conflict with pynguin
     # Note: gitleaks and trufflehog are Go binaries, not pip packages
     # They should be installed via system package manager or downloaded binaries
     # Wrappers will check for their availability at runtime

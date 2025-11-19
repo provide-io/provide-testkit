@@ -21,9 +21,6 @@ Features:
 - Integration with quality gates
 - Artifact management for CI/CD
 
-Note: Checkov (IaC security scanner) was removed due to dependency conflicts with pynguin.
-If you need IaC security scanning, install checkov separately and use it via subprocess.
-
 Usage:
     # Basic security scanning (Bandit)
     def test_with_security(security_scanner):
