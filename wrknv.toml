@@ -75,10 +75,6 @@ _default = "gitleaks detect --source . --config .provide/security/gitleaks.toml 
 trufflehog = "trufflehog filesystem . --config .provide/security/trufflehog.yml --json"
 gitleaks = "gitleaks detect --source . --config .provide/security/gitleaks.toml --no-git"
 
-[tasks.security.iac]
-_default = "checkov --directory . --config-file .provide/security/checkov.yml --quiet"
-checkov = "checkov --directory . --config-file .provide/security/checkov.yml"
-
 # ==============================================================================
 # 🏗️ Build & Package
 # ==============================================================================
