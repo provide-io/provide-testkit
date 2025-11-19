@@ -9,27 +9,25 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import subprocess
 import time
 from typing import Any
 
+from provide.foundation.errors.process import ProcessError
 from provide.foundation.file import atomic_write_text, ensure_dir
-
-from ..base import QualityResult, QualityToolError
+from provide.foundation.process import run
+from provide.testkit.quality.base import QualityResult, QualityToolError
 
 
 def _check_pip_audit_available() -> bool:
     """Check if pip-audit is available."""
     try:
-        result = subprocess.run(
+        result = run(
             ["pip-audit", "--version"],
-            capture_output=True,
-            text=True,
             timeout=10,
             check=False,
         )
         return result.returncode == 0
-    except (FileNotFoundError, subprocess.TimeoutExpired):
+    except (ProcessError, TimeoutError):
         return False
 
 
@@ -122,10 +120,8 @@ class PipAuditScanner:
         try:
             cmd = self._build_pip_audit_command(path)
 
-            result = subprocess.run(
+            result = run(
                 cmd,
-                capture_output=True,
-                text=True,
                 timeout=self.config.get("timeout", 300),
                 cwd=path if path.is_dir() else path.parent,
                 check=False,
@@ -139,7 +135,7 @@ class PipAuditScanner:
 
             return self._process_results(audit_data, result.returncode)
 
-        except subprocess.TimeoutExpired as e:
+        except TimeoutError as e:
             raise QualityToolError(f"pip-audit timed out: {e!s}", tool="pip-audit") from e
         except Exception as e:
             raise QualityToolError(f"pip-audit scan failed: {e!s}", tool="pip-audit") from e

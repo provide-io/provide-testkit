@@ -193,7 +193,7 @@ utils = [
     "sapp>=0.4",
 ]
 
-# Fuzzing and test generation (WARNING: incompatible with security extra due to networkx conflict)
+# Fuzzing and test generation
 fuzzing = [
     "pynguin>=0.40.0",
 ]
@@ -204,7 +204,7 @@ security = [
     "safety>=3.0.0",           # Dependency vulnerability scanner (PyUp database)
     "pip-audit>=2.7.0",        # PyPI security advisory scanner
     "semgrep>=1.50.0",         # Pattern-based SAST with custom rules
-    "checkov>=3.0.0",          # IaC security scanner (Terraform, Python misconfigurations)
+    # Note: checkov removed due to networkx<2.7 dependency conflict with pynguin
     # Note: gitleaks and trufflehog are Go binaries, not pip packages
     # They should be installed via system package manager or downloaded binaries
     # Wrappers will check for their availability at runtime
@@ -223,10 +223,8 @@ pyvider-dev = [
     "provide-testkit[standard,advanced-testing,typecheck,grpc,build,profiling,security]",
 ]
 
-# Note: excludes 'fuzzing' extra due to pynguin/checkov networkx version conflict
-# pynguin requires networkx>=3.4, checkov requires networkx<2.7
 all = [
-    "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils,security]",
+    "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils,security,fuzzing]",
 ]
 
 dev = [

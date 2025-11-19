@@ -11,20 +11,21 @@ Provides comprehensive security scanning using multiple security tools:
 - Safety: Dependency vulnerability scanning (PyUp database)
 - GitLeaks: Secret detection (fast, pattern-based)
 - TruffleHog: Deep secret detection (entropy analysis, verification)
-- Checkov: Infrastructure as Code security scanning
 - Semgrep: Pattern-based SAST with custom rules
 
 Features:
 - Multiple vulnerability scanners for comprehensive coverage
 - Dependency vulnerability scanning
 - Secret/credential detection
-- IaC security analysis
 - Security issue reporting and classification
 - Integration with quality gates
 - Artifact management for CI/CD
 
+Note: Checkov (IaC security scanner) was removed due to dependency conflicts with pynguin.
+If you need IaC security scanning, install checkov separately and use it via subprocess.
+
 Usage:
-    # Basic security scanning
+    # Basic security scanning (Bandit)
     def test_with_security(security_scanner):
         result = security_scanner.scan(path)
         assert result.passed
@@ -38,14 +39,8 @@ Usage:
     from provide.testkit.quality.security import GitLeaksScanner
     scanner = GitLeaksScanner()
     result = scanner.analyze(path)
-
-    # IaC security
-    from provide.testkit.quality.security import CheckovScanner
-    scanner = CheckovScanner()
-    result = scanner.analyze(path)
 """
 
-from .checkov_scanner import CHECKOV_AVAILABLE, CheckovScanner
 from .fixture import SecurityFixture
 from .gitleaks_scanner import GITLEAKS_AVAILABLE, GitLeaksScanner
 from .pip_audit_scanner import PIP_AUDIT_AVAILABLE, PipAuditScanner
@@ -56,14 +51,11 @@ from .trufflehog_scanner import TRUFFLEHOG_AVAILABLE, TruffleHogScanner
 
 __all__ = [
     "BANDIT_AVAILABLE",
-    "CHECKOV_AVAILABLE",
     "GITLEAKS_AVAILABLE",
     "PIP_AUDIT_AVAILABLE",
     "SAFETY_AVAILABLE",
     "SEMGREP_AVAILABLE",
     "TRUFFLEHOG_AVAILABLE",
-    # IaC security
-    "CheckovScanner",
     # Secret detection
     "GitLeaksScanner",
     # Dependency vulnerability scanners
