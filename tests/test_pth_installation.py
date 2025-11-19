@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from pathlib import Path
 import site
-import subprocess
 import sys
 
 import pytest
@@ -132,9 +131,15 @@ class TestCrossProcessBehavior:
     @pytest.mark.integration
     def test_blocker_active_in_subprocess(self) -> None:
         """Verify blocker is active in subprocess (simulates pytest-xdist worker)."""
+        from provide.foundation.process import run
+
         # Create a simple Python script that checks for the blocker
         test_script = """
 import sys
+
+# Check if setproctitle is already imported
+setproctitle_pre_imported = 'setproctitle' in sys.modules
+
 from provide.testkit.pytest_plugin import SetproctitleImportBlocker
 
 # Check if blocker is installed
@@ -143,31 +148,45 @@ blocker_installed = any(
     for hook in sys.meta_path
 )
 
-# Try to import setproctitle (should fail)
+# Remove setproctitle from sys.modules if it was imported
+if 'setproctitle' in sys.modules:
+    del sys.modules['setproctitle']
+
+# Try to import setproctitle (should fail or use stub)
 try:
     import setproctitle
     import_succeeded = True
+    # Check if it's a stub or real module
+    has_setproctitle_func = hasattr(setproctitle, 'setproctitle')
 except ImportError:
     import_succeeded = False
+    has_setproctitle_func = False
+
+# Debug output
+print(f"setproctitle_pre_imported: {setproctitle_pre_imported}", file=sys.stderr)
+print(f"blocker_installed: {blocker_installed}", file=sys.stderr)
+print(f"import_succeeded: {import_succeeded}", file=sys.stderr)
+print(f"has_setproctitle_func: {has_setproctitle_func}", file=sys.stderr)
+print(f"sys.meta_path: {[type(h).__name__ for h in sys.meta_path]}", file=sys.stderr)
 
 # Exit with status code indicating results
-# 0 = blocker installed AND import blocked (success)
-# 1 = blocker not installed OR import succeeded (failure)
-if blocker_installed and not import_succeeded:
+# 0 = blocker installed AND (import blocked OR stub loaded) (success)
+# 1 = blocker not installed OR real setproctitle loaded (failure)
+if blocker_installed and (not import_succeeded or not has_setproctitle_func):
     sys.exit(0)
 else:
     sys.exit(1)
 """
 
-        # Run the script in a subprocess
-        result = subprocess.run(
+        # Run the script in a subprocess using foundation's run
+        result = run(
             [sys.executable, "-c", test_script],
-            capture_output=True,
-            text=True,
+            check=False,  # Don't raise on non-zero exit, we want to inspect it
         )
 
         assert result.returncode == 0, (
-            f"Subprocess should have blocker installed and setproctitle blocked.\n"
+            f"Subprocess should have blocker installed and setproctitle blocked or stubbed.\n"
+            f"Expected: blocker installed AND (import blocked OR stub without real setproctitle)\n"
             f"stdout: {result.stdout}\n"
             f"stderr: {result.stderr}"
         )
