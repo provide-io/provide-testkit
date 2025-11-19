@@ -58,6 +58,7 @@ import time
 from typing import Any, Literal
 
 from provide.foundation.file import atomic_write_text, ensure_dir
+from provide.testkit.quality.base import QualityResult, QualityToolError
 
 try:
     import bandit  # type: ignore[import-untyped]
@@ -72,8 +73,6 @@ except ImportError:
     bandit = None
     bandit_config = None
     bandit_manager = None
-
-from ..base import QualityResult, QualityToolError
 
 # Define verbosity levels
 VerbosityLevel = Literal["quiet", "normal", "verbose"]

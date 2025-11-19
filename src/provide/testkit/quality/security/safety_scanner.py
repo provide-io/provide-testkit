@@ -9,27 +9,25 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import subprocess
 import time
 from typing import Any
 
+from provide.foundation.errors.process import ProcessError
 from provide.foundation.file import atomic_write_text, ensure_dir
-
-from ..base import QualityResult, QualityToolError
+from provide.foundation.process import run
+from provide.testkit.quality.base import QualityResult, QualityToolError
 
 
 def _check_safety_available() -> bool:
     """Check if safety is available."""
     try:
-        result = subprocess.run(
+        result = run(
             ["safety", "--version"],
-            capture_output=True,
-            text=True,
             timeout=10,
             check=False,
         )
         return result.returncode == 0
-    except (FileNotFoundError, subprocess.TimeoutExpired):
+    except (ProcessError, TimeoutError):
         return False
 
 
@@ -134,10 +132,8 @@ class SafetyScanner:
         try:
             cmd = self._build_safety_command(path)
 
-            result = subprocess.run(
+            result = run(
                 cmd,
-                capture_output=True,
-                text=True,
                 timeout=self.config.get("timeout", 120),
                 cwd=path if path.is_dir() else path.parent,
                 check=False,
@@ -152,7 +148,7 @@ class SafetyScanner:
 
             return self._process_results(safety_data, result.returncode)
 
-        except subprocess.TimeoutExpired as e:
+        except TimeoutError as e:
             raise QualityToolError(f"Safety scan timed out: {e!s}", tool="safety") from e
         except Exception as e:
             raise QualityToolError(f"Safety scan failed: {e!s}", tool="safety") from e
