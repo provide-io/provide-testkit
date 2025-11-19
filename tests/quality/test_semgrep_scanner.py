@@ -302,3 +302,102 @@ class TestSemgrepScannerMocked:
 
 
 # 🧪✅🔚
+
+    @patch("provide.testkit.quality.security.semgrep_scanner.SEMGREP_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.semgrep_scanner.run")
+    def test_analyze_with_non_json_output(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test handling of non-JSON output."""
+        mock_run.return_value = Mock(
+            returncode=1,
+            stdout="Error: Invalid config",  # Non-JSON
+            stderr="",
+        )
+
+        scanner = SemgrepScanner()
+        result = scanner.analyze(tmp_path)
+        
+        # Should handle gracefully with empty data
+        assert result.details["total_findings"] == 0
+
+    @patch("provide.testkit.quality.security.semgrep_scanner.SEMGREP_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.semgrep_scanner.run")
+    def test_report_unknown_format(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test report with unknown format."""
+        semgrep_output = {"results": [], "errors": []}
+        mock_run.return_value = Mock(
+            returncode=0,
+            stdout=json.dumps(semgrep_output),
+            stderr="",
+        )
+
+        scanner = SemgrepScanner()
+        result = scanner.analyze(tmp_path)
+        report = scanner.report(result, format="csv")
+        
+        # Should fall back to str(details)
+        assert "total_findings" in report
+
+    @patch("provide.testkit.quality.security.semgrep_scanner.SEMGREP_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.semgrep_scanner.run")
+    def test_analyze_with_semgrep_errors(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test handling of semgrep errors in output."""
+        semgrep_output = {
+            "results": [],
+            "errors": [
+                {
+                    "message": "Failed to parse file",
+                    "path": "broken.py",
+                    "type": "ParseError",
+                }
+            ],
+        }
+        mock_run.return_value = Mock(
+            returncode=0,
+            stdout=json.dumps(semgrep_output),
+            stderr="",
+        )
+
+        scanner = SemgrepScanner()
+        result = scanner.analyze(tmp_path)
+        
+        assert result.details["total_findings"] == 0
+        assert len(result.details["errors"]) == 1
+
+    @patch("provide.testkit.quality.security.semgrep_scanner.SEMGREP_AVAILABLE", True)
+    def test_get_default_config_when_not_exists(self) -> None:
+        """Test default config path when file doesn't exist."""
+        scanner = SemgrepScanner()
+        result = scanner._get_default_config_path()
+        assert result is None or result == scanner.DEFAULT_CONFIG_PATH
+
+    @patch("provide.testkit.quality.security.semgrep_scanner.SEMGREP_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.semgrep_scanner.run")
+    def test_build_command_with_default_excludes(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test that default excludes are applied."""
+        mock_run.return_value = Mock(returncode=0, stdout="{}", stderr="")
+        
+        scanner = SemgrepScanner()  # No custom exclude config
+        cmd = scanner._build_semgrep_command(tmp_path)
+        
+        # Should have default excludes
+        assert "--exclude" in cmd
+        assert any("test_" in str(item) or ".venv" in str(item) for item in cmd)
+
+    @patch("provide.testkit.quality.security.semgrep_scanner.SEMGREP_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.semgrep_scanner.run")
+    def test_analyze_with_empty_stdout(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test handling of empty stdout."""
+        mock_run.return_value = Mock(
+            returncode=0,
+            stdout="",  # Empty
+            stderr="",
+        )
+
+        scanner = SemgrepScanner()
+        result = scanner.analyze(tmp_path)
+        
+        assert result.passed is True
+        assert result.details["total_findings"] == 0
+
+
+# 🧪✅🔚

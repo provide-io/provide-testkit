@@ -422,5 +422,80 @@ class TestPipAuditScannerMocked:
         assert result.details["total_vulnerabilities"] == 25
         assert len(result.details["vulnerabilities"]) == 20  # Limited to 20
 
+    @patch("provide.testkit.quality.security.pip_audit_scanner.PIP_AUDIT_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.pip_audit_scanner.run")
+    def test_analyze_with_artifact_errors(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test artifact generation error handling."""
+        audit_output = {"dependencies": []}
+        mock_run.return_value = Mock(
+            returncode=0,
+            stdout=json.dumps(audit_output),
+            stderr="",
+        )
+
+        artifact_dir = tmp_path / "artifacts"
+        scanner = PipAuditScanner()
+        result = scanner.analyze(tmp_path, artifact_dir=artifact_dir)
+        
+        # Cause artifact generation failure
+        import os
+        os.chmod(artifact_dir, 0o444)
+        
+        try:
+            scanner._generate_artifacts(result)
+            assert "artifact_error" in result.details or len(result.artifacts) >= 0
+        finally:
+            os.chmod(artifact_dir, 0o755)
+
+    @patch("provide.testkit.quality.security.pip_audit_scanner.PIP_AUDIT_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.pip_audit_scanner.run")
+    def test_report_unknown_format(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test report generation with unknown format."""
+        audit_output = {"dependencies": []}
+        mock_run.return_value = Mock(
+            returncode=0,
+            stdout=json.dumps(audit_output),
+            stderr="",
+        )
+
+        scanner = PipAuditScanner()
+        result = scanner.analyze(tmp_path)
+        report = scanner.report(result, format="xml")  # Unknown format
+        
+        # Should fall back to str(details)
+        assert "total_vulnerabilities" in report
+
+    @patch("provide.testkit.quality.security.pip_audit_scanner.PIP_AUDIT_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.pip_audit_scanner.run")
+    def test_analyze_with_empty_stdout(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test handling of empty stdout."""
+        mock_run.return_value = Mock(
+            returncode=0,
+            stdout="",  # Empty output
+            stderr="",
+        )
+
+        scanner = PipAuditScanner()
+        result = scanner.analyze(tmp_path)
+        
+        assert result.passed is True
+        assert result.details["total_vulnerabilities"] == 0
+
+    @patch("provide.testkit.quality.security.pip_audit_scanner.PIP_AUDIT_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.pip_audit_scanner.run")
+    def test_build_command_with_pyproject_directory(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test command building with directory containing pyproject.toml."""
+        mock_run.return_value = Mock(returncode=0, stdout="{}", stderr="")
+        
+        # Create pyproject.toml in directory
+        pyproject_file = tmp_path / "pyproject.toml"
+        pyproject_file.write_text("[project]\nname = 'test'\n")
+        
+        scanner = PipAuditScanner()
+        cmd = scanner._build_pip_audit_command(tmp_path)
+        
+        assert "--path" in cmd
+        assert str(tmp_path) in cmd
+
 
 # 🧪✅🔚

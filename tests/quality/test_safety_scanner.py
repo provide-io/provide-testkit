@@ -211,3 +211,76 @@ class TestSafetyScannerMocked:
 
 
 # 🧪✅🔚
+
+    @patch("provide.testkit.quality.security.safety_scanner.SAFETY_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.safety_scanner.run")
+    def test_analyze_with_non_json_output(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test handling of non-JSON error output."""
+        mock_run.return_value = Mock(
+            returncode=1,
+            stdout="Error: Something went wrong",  # Non-JSON
+            stderr="Connection error",
+        )
+
+        scanner = SafetyScanner()
+        result = scanner.analyze(tmp_path)
+        
+        # Should handle gracefully
+        assert result.passed is False or result.details["total_vulnerabilities"] == 0
+
+    @patch("provide.testkit.quality.security.safety_scanner.SAFETY_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.safety_scanner.run")
+    def test_report_unknown_format(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test report with unknown format."""
+        safety_output = {"vulnerabilities": []}
+        mock_run.return_value = Mock(
+            returncode=0,
+            stdout=json.dumps(safety_output),
+            stderr="",
+        )
+
+        scanner = SafetyScanner()
+        result = scanner.analyze(tmp_path)
+        report = scanner.report(result, format="yaml")
+        
+        # Should fall back to str(details)
+        assert "total_vulnerabilities" in report
+
+    @patch("provide.testkit.quality.security.safety_scanner.SAFETY_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.safety_scanner.run")
+    def test_build_command_with_policy_file(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test command building with policy file."""
+        mock_run.return_value = Mock(returncode=0, stdout="{}", stderr="")
+        
+        # Create policy file
+        policy_file = tmp_path / "safety-policy.yml"
+        policy_file.write_text("security: high\n")
+        
+        scanner = SafetyScanner(config={"policy_file": policy_file})
+        cmd = scanner._build_safety_command(tmp_path)
+        
+        assert "--policy-file" in cmd
+        assert str(policy_file) in cmd
+
+    @patch("provide.testkit.quality.security.safety_scanner.SAFETY_AVAILABLE", True)
+    @patch("provide.testkit.quality.security.safety_scanner.run")
+    def test_build_command_with_ignore_vulns(self, mock_run: Mock, tmp_path: Path) -> None:
+        """Test command building with ignored vulnerabilities."""
+        mock_run.return_value = Mock(returncode=0, stdout="{}", stderr="")
+        
+        scanner = SafetyScanner(config={"ignore_vulns": ["12345", "67890"]})
+        cmd = scanner._build_safety_command(tmp_path)
+        
+        assert "--ignore" in cmd
+        assert "12345" in cmd
+        assert "67890" in cmd
+
+    @patch("provide.testkit.quality.security.safety_scanner.SAFETY_AVAILABLE", True)
+    def test_get_default_config_when_not_exists(self) -> None:
+        """Test default config path when file doesn't exist."""
+        scanner = SafetyScanner()
+        result = scanner._get_default_config_path()
+        assert result is None or result == scanner.DEFAULT_CONFIG_PATH
+
+
+# 🧪✅🔚
