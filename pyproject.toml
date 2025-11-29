@@ -313,3 +313,6 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+
+[tool.uv.sources]
+provide-foundry = { path = "../provide-foundry", editable = true }
