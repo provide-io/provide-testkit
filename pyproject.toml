@@ -217,7 +217,8 @@ pyvider-dev = [
 ]
 
 all = [
-    "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils,security,fuzzing]",
+    # Note: docs is excluded because it conflicts with security (semgrep)
+    "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,utils,security,fuzzing]",
 ]
 
 dev = [
