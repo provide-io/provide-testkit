@@ -104,9 +104,9 @@ profiling = [
 
 # Network and HTTP testing (no upper bounds - use latest)
 transport = [
-    "httpx>=0.28.1",  # SHARED with Foundation
-    "pytest-httpx",
-    "h2",
+    "httpx>=0.28.1",
+    "pytest-httpx>=0.35.0",
+    "h2>=4.3.0",
 ]
 
 # Cryptography (no upper bounds - use latest)
