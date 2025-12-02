@@ -193,11 +193,11 @@ fuzzing = [
 
 # Comprehensive security scanning (no upper bounds - use latest)
 security = [
-    "bandit",           # Python SAST (static application security testing)
-    "safety",           # Dependency vulnerability scanner (PyUp database)
-    "pip-audit",        # PyPI security advisory scanner
+    "bandit>=1.8.3",           # Python SAST (static application security testing)
+    "safety>=3.0.0",           # Dependency vulnerability scanner (PyUp database)
+    "pip-audit>=2.7.0",        # PyPI security advisory scanner
     # Note: semgrep removed due to dependency conflicts with mkdocs ecosystem
-    # Install separately: uv tool install semgrep
+    # Install separately: uv pip install semgrep
     # Note: gitleaks and trufflehog are Go binaries, not pip packages
     # They should be installed via system package manager or downloaded binaries
     # Wrappers will check for their availability at runtime
@@ -217,8 +217,7 @@ pyvider-dev = [
 ]
 
 all = [
-    # Note: docs is excluded because it conflicts with security (semgrep)
-    "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,utils,security,fuzzing]",
+    "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils,security,fuzzing]",
 ]
 
 dev = [
