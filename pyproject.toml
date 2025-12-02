@@ -60,13 +60,13 @@ Issues = "https://github.com/provide-io/provide-testkit/issues"
 
 # Comprehensive code quality tools (no upper bounds - use latest)
 quality = [
-    "ruff",
-    "mypy",
-    "bandit",
-    "coverage[toml]",
-    "radon",
-    "interrogate",  # Note: requires 'py' package with known vulnerability (PYSEC-2022-42969, low risk)
-    "mutmut",
+    "ruff>=0.11.8",
+    "mypy>=1.17.1",
+    "bandit>=1.8.3",
+    "coverage[toml]>=7.0.0",
+    "radon>=6.0.0",
+    "interrogate>=1.7.0",  # Note: requires 'py' package with known vulnerability (PYSEC-2022-42969, low risk)
+    "mutmut>=3.3.1",
 ]
 
 # Advanced type checking (no upper bounds - use latest)
