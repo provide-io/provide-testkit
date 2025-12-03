@@ -122,7 +122,7 @@ class AsyncPipeline:
         result = data
         for stage in self.stages:
             if asyncio.iscoroutinefunction(stage):
-                result = await stage(result)  # type: ignore[arg-type]
+                result = await stage(result)
             else:
                 result = stage(result)
             self.results.append(result)

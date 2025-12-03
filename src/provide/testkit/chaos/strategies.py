@@ -100,7 +100,7 @@ def failure_patterns(
 
 
 @composite
-def malformed_inputs(  # type: ignore[misc]
+def malformed_inputs(
     draw: DrawFn,
     include_huge: bool = True,
     include_empty: bool = True,
@@ -156,7 +156,7 @@ def malformed_inputs(  # type: ignore[misc]
 
 
 @composite
-def unicode_chaos(  # type: ignore[misc]
+def unicode_chaos(
     draw: DrawFn,
     include_emoji: bool = True,
     include_rtl: bool = True,
@@ -267,7 +267,7 @@ def resource_limits(
 
 
 @composite
-def edge_values(  # type: ignore[misc]
+def edge_values(
     draw: DrawFn,
     value_type: type = int,
 ) -> Any:
