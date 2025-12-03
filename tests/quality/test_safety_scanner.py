@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from provide.testkit.quality.base import QualityResult, QualityToolError
+from provide.testkit.quality.base import QualityToolError
 from provide.testkit.quality.security.safety_scanner import SAFETY_AVAILABLE, SafetyScanner
 
 
@@ -26,6 +26,7 @@ class TestSafetyAvailability:
         mock_run.return_value = Mock(returncode=0)
 
         from provide.testkit.quality.security import safety_scanner
+
         result = safety_scanner._check_safety_available()
 
         assert result is True
@@ -34,9 +35,11 @@ class TestSafetyAvailability:
     def test_safety_unavailable_when_not_installed(self, mock_run: Mock) -> None:
         """Test detection when safety is not installed."""
         from provide.foundation.errors.process import ProcessError
+
         mock_run.side_effect = ProcessError("safety not found", command="safety --version")
 
         from provide.testkit.quality.security import safety_scanner
+
         result = safety_scanner._check_safety_available()
 
         assert result is False
@@ -47,6 +50,7 @@ class TestSafetyAvailability:
         mock_run.side_effect = TimeoutError("Command timed out")
 
         from provide.testkit.quality.security import safety_scanner
+
         result = safety_scanner._check_safety_available()
 
         assert result is False
@@ -209,8 +213,7 @@ class TestSafetyScannerMocked:
         assert "Safety Vulnerability Report" in report
         assert "Security Score:" in report
 
-
-# 🧪✅🔚
+    # 🧪✅🔚
 
     @patch("provide.testkit.quality.security.safety_scanner.SAFETY_AVAILABLE", True)
     @patch("provide.testkit.quality.security.safety_scanner.run")
@@ -224,7 +227,7 @@ class TestSafetyScannerMocked:
 
         scanner = SafetyScanner()
         result = scanner.analyze(tmp_path)
-        
+
         # Should handle gracefully
         assert result.passed is False or result.details["total_vulnerabilities"] == 0
 
@@ -242,7 +245,7 @@ class TestSafetyScannerMocked:
         scanner = SafetyScanner()
         result = scanner.analyze(tmp_path)
         report = scanner.report(result, format="yaml")
-        
+
         # Should fall back to str(details)
         assert "total_vulnerabilities" in report
 
@@ -251,14 +254,14 @@ class TestSafetyScannerMocked:
     def test_build_command_with_policy_file(self, mock_run: Mock, tmp_path: Path) -> None:
         """Test command building with policy file."""
         mock_run.return_value = Mock(returncode=0, stdout="{}", stderr="")
-        
+
         # Create policy file
         policy_file = tmp_path / "safety-policy.yml"
         policy_file.write_text("security: high\n")
-        
+
         scanner = SafetyScanner(config={"policy_file": policy_file})
         cmd = scanner._build_safety_command(tmp_path)
-        
+
         assert "--policy-file" in cmd
         assert str(policy_file) in cmd
 
@@ -267,10 +270,10 @@ class TestSafetyScannerMocked:
     def test_build_command_with_ignore_vulns(self, mock_run: Mock, tmp_path: Path) -> None:
         """Test command building with ignored vulnerabilities."""
         mock_run.return_value = Mock(returncode=0, stdout="{}", stderr="")
-        
+
         scanner = SafetyScanner(config={"ignore_vulns": ["12345", "67890"]})
         cmd = scanner._build_safety_command(tmp_path)
-        
+
         assert "--ignore" in cmd
         assert "12345" in cmd
         assert "67890" in cmd

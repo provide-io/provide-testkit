@@ -19,27 +19,27 @@ import sys
 # Add src to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from provide.testkit.quality.security import (  # noqa: E402
-    GitLeaksScanner,
-    GITLEAKS_AVAILABLE,
-    PipAuditScanner,
-    PIP_AUDIT_AVAILABLE,
-    SafetyScanner,
-    SAFETY_AVAILABLE,
-    SemgrepScanner,
-    SEMGREP_AVAILABLE,
-    SecurityScanner,
+from provide.testkit.quality.security import (
     BANDIT_AVAILABLE,
-    TruffleHogScanner,
+    GITLEAKS_AVAILABLE,
+    PIP_AUDIT_AVAILABLE,
+    SAFETY_AVAILABLE,
+    SEMGREP_AVAILABLE,
     TRUFFLEHOG_AVAILABLE,
+    GitLeaksScanner,
+    PipAuditScanner,
+    SafetyScanner,
+    SecurityScanner,
+    SemgrepScanner,
+    TruffleHogScanner,
 )
 
 
 def print_header(title: str) -> None:
     """Print a formatted section header."""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"{title:^60}")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
 
 def print_result(scanner_name: str, result: any, available: bool) -> None:
@@ -65,16 +65,20 @@ def print_result(scanner_name: str, result: any, available: bool) -> None:
         print(f"  Issues: {details['total_issues']}")
         breakdown = details.get("severity_breakdown", {})
         if breakdown:
-            print(f"    HIGH: {breakdown.get('HIGH', 0)}, "
-                  f"MEDIUM: {breakdown.get('MEDIUM', 0)}, "
-                  f"LOW: {breakdown.get('LOW', 0)}")
+            print(
+                f"    HIGH: {breakdown.get('HIGH', 0)}, "
+                f"MEDIUM: {breakdown.get('MEDIUM', 0)}, "
+                f"LOW: {breakdown.get('LOW', 0)}"
+            )
     if "total_findings" in details:
         print(f"  Findings: {details['total_findings']}")
         breakdown = details.get("severity_breakdown", {})
         if breakdown:
-            print(f"    ERROR: {breakdown.get('ERROR', 0)}, "
-                  f"WARNING: {breakdown.get('WARNING', 0)}, "
-                  f"INFO: {breakdown.get('INFO', 0)}")
+            print(
+                f"    ERROR: {breakdown.get('ERROR', 0)}, "
+                f"WARNING: {breakdown.get('WARNING', 0)}, "
+                f"INFO: {breakdown.get('INFO', 0)}"
+            )
 
     # Show errors if present
     if "error" in details:
@@ -119,10 +123,12 @@ def main() -> int:
     print_header("2. TruffleHog - Deep Secret Detection")
     if TRUFFLEHOG_AVAILABLE:
         try:
-            scanner = TruffleHogScanner(config={
-                "max_secrets": 0,
-                "no_verification": True,  # Faster, don't verify secrets
-            })
+            scanner = TruffleHogScanner(
+                config={
+                    "max_secrets": 0,
+                    "no_verification": True,  # Faster, don't verify secrets
+                }
+            )
             result = scanner.analyze(testkit_root, artifact_dir=artifact_dir)
             print_result("TruffleHog", result, True)
             scanners_run += 1
@@ -173,12 +179,14 @@ def main() -> int:
     print_header("5. Bandit (SecurityScanner) - Python Code Analysis")
     if BANDIT_AVAILABLE:
         try:
-            scanner = SecurityScanner(config={
-                "max_high_severity": 0,
-                "max_medium_severity": 10,
-                "min_score": 80.0,
-                "verbosity": "quiet",
-            })
+            scanner = SecurityScanner(
+                config={
+                    "max_high_severity": 0,
+                    "max_medium_severity": 10,
+                    "min_score": 80.0,
+                    "verbosity": "quiet",
+                }
+            )
             result = scanner.analyze(src_dir, artifact_dir=artifact_dir)
             print_result("Bandit (SecurityScanner)", result, True)
             scanners_run += 1
@@ -195,10 +203,12 @@ def main() -> int:
     print_header("6. Semgrep - Pattern-Based SAST")
     if SEMGREP_AVAILABLE:
         try:
-            scanner = SemgrepScanner(config={
-                "config": ["auto"],
-                "max_findings": 20,
-            })
+            scanner = SemgrepScanner(
+                config={
+                    "config": ["auto"],
+                    "max_findings": 20,
+                }
+            )
             result = scanner.analyze(src_dir, artifact_dir=artifact_dir)
             print_result("Semgrep", result, True)
             scanners_run += 1
@@ -229,7 +239,7 @@ def main() -> int:
     if not SEMGREP_AVAILABLE:
         print("  Semgrep: pip install semgrep")
 
-    print("\n" + "="*60 + "\n")
+    print("\n" + "=" * 60 + "\n")
 
     return 0 if all_passed else 1
 

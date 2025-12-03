@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from provide.testkit.quality.base import QualityResult, QualityToolError
+from provide.testkit.quality.base import QualityToolError
 from provide.testkit.quality.security.pip_audit_scanner import PIP_AUDIT_AVAILABLE, PipAuditScanner
 
 
@@ -26,6 +26,7 @@ class TestPipAuditAvailability:
         mock_run.return_value = Mock(returncode=0)
 
         from provide.testkit.quality.security import pip_audit_scanner
+
         result = pip_audit_scanner._check_pip_audit_available()
 
         assert result is True
@@ -39,9 +40,11 @@ class TestPipAuditAvailability:
     def test_pip_audit_unavailable_when_not_installed(self, mock_run: Mock) -> None:
         """Test detection when pip-audit is not installed."""
         from provide.foundation.errors.process import ProcessError
+
         mock_run.side_effect = ProcessError("pip-audit not found", command="pip-audit --version")
 
         from provide.testkit.quality.security import pip_audit_scanner
+
         result = pip_audit_scanner._check_pip_audit_available()
 
         assert result is False
@@ -52,6 +55,7 @@ class TestPipAuditAvailability:
         mock_run.side_effect = TimeoutError("Command timed out")
 
         from provide.testkit.quality.security import pip_audit_scanner
+
         result = pip_audit_scanner._check_pip_audit_available()
 
         assert result is False
@@ -436,11 +440,12 @@ class TestPipAuditScannerMocked:
         artifact_dir = tmp_path / "artifacts"
         scanner = PipAuditScanner()
         result = scanner.analyze(tmp_path, artifact_dir=artifact_dir)
-        
+
         # Cause artifact generation failure
         import os
+
         os.chmod(artifact_dir, 0o444)
-        
+
         try:
             scanner._generate_artifacts(result)
             assert "artifact_error" in result.details or len(result.artifacts) >= 0
@@ -461,7 +466,7 @@ class TestPipAuditScannerMocked:
         scanner = PipAuditScanner()
         result = scanner.analyze(tmp_path)
         report = scanner.report(result, format="xml")  # Unknown format
-        
+
         # Should fall back to str(details)
         assert "total_vulnerabilities" in report
 
@@ -477,7 +482,7 @@ class TestPipAuditScannerMocked:
 
         scanner = PipAuditScanner()
         result = scanner.analyze(tmp_path)
-        
+
         assert result.passed is True
         assert result.details["total_vulnerabilities"] == 0
 
@@ -486,14 +491,14 @@ class TestPipAuditScannerMocked:
     def test_build_command_with_pyproject_directory(self, mock_run: Mock, tmp_path: Path) -> None:
         """Test command building with directory containing pyproject.toml."""
         mock_run.return_value = Mock(returncode=0, stdout="{}", stderr="")
-        
+
         # Create pyproject.toml in directory
         pyproject_file = tmp_path / "pyproject.toml"
         pyproject_file.write_text("[project]\nname = 'test'\n")
-        
+
         scanner = PipAuditScanner()
         cmd = scanner._build_pip_audit_command(tmp_path)
-        
+
         assert "--path" in cmd
         assert str(tmp_path) in cmd
 
