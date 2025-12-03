@@ -82,7 +82,7 @@ def clock_skew(
 
 
 @composite
-def timeout_patterns(  # type: ignore[misc]
+def timeout_patterns(
     draw: DrawFn,
     min_timeout: float = 0.01,
     max_timeout: float = 60.0,
