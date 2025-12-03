@@ -26,6 +26,7 @@ class TestGitLeaksAvailability:
         mock_run.return_value = Mock(returncode=0)
 
         from provide.testkit.quality.security import gitleaks_scanner
+
         result = gitleaks_scanner._check_gitleaks_available()
 
         assert result is True
@@ -39,9 +40,11 @@ class TestGitLeaksAvailability:
     def test_gitleaks_unavailable_when_not_installed(self, mock_run: Mock) -> None:
         """Test detection when gitleaks is not installed."""
         from provide.foundation.errors.process import ProcessError
+
         mock_run.side_effect = ProcessError("gitleaks not found", command="gitleaks version")
 
         from provide.testkit.quality.security import gitleaks_scanner
+
         result = gitleaks_scanner._check_gitleaks_available()
 
         assert result is False
@@ -52,6 +55,7 @@ class TestGitLeaksAvailability:
         mock_run.side_effect = TimeoutError("Command timed out")
 
         from provide.testkit.quality.security import gitleaks_scanner
+
         result = gitleaks_scanner._check_gitleaks_available()
 
         assert result is False
@@ -61,8 +65,10 @@ class TestGitLeaksAvailability:
 class TestGitLeaksScanner:
     """Tests for GitLeaks scanner (requires gitleaks to be installed)."""
 
-    def test_scanner_initialization(self) -> None:
+    def test_scanner_initialization(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test scanner can be initialized."""
+        # Run in isolated directory to avoid auto-detecting config files
+        monkeypatch.chdir(tmp_path)
         scanner = GitLeaksScanner()
         assert scanner.config == {}
         assert scanner.artifact_dir is None
@@ -83,6 +89,7 @@ class TestGitLeaksScanner:
 
         # Change to temp directory
         import os
+
         old_cwd = os.getcwd()
         try:
             os.chdir(tmp_path)
@@ -412,7 +419,7 @@ class TestGitLeaksScannerMocked:
     def test_analyze_with_artifact_generation_error(self, mock_run: Mock, tmp_path: Path) -> None:
         """Test that artifact generation errors are handled gracefully."""
         artifact_dir = tmp_path / ".security"
-        
+
         def create_report(*args, **kwargs):
             artifact_dir.mkdir(exist_ok=True)
             report_file = artifact_dir / "gitleaks_raw.json"
@@ -424,11 +431,12 @@ class TestGitLeaksScannerMocked:
         # Make artifact dir read-only to cause write errors
         scanner = GitLeaksScanner()
         result = scanner.analyze(tmp_path, artifact_dir=artifact_dir)
-        
+
         # Change permissions after analysis to cause artifact generation failure
         import os
+
         os.chmod(artifact_dir, 0o444)
-        
+
         try:
             scanner._generate_artifacts(result)
             # Should handle error gracefully
@@ -441,7 +449,7 @@ class TestGitLeaksScannerMocked:
     def test_report_default_format(self, mock_run: Mock, tmp_path: Path) -> None:
         """Test report with default/unknown format."""
         artifact_dir = tmp_path / ".security"
-        
+
         def create_report(*args, **kwargs):
             artifact_dir.mkdir(exist_ok=True)
             report_file = artifact_dir / "gitleaks_raw.json"
@@ -452,7 +460,7 @@ class TestGitLeaksScannerMocked:
 
         scanner = GitLeaksScanner()
         result = scanner.analyze(tmp_path, artifact_dir=artifact_dir)
-        
+
         # Test unknown format falls back to str(details)
         report = scanner.report(result, format="unknown")
         assert "total_secrets" in report
@@ -471,9 +479,10 @@ class TestGitLeaksScannerMocked:
     def test_analyze_with_execution_time(self, mock_run: Mock, tmp_path: Path) -> None:
         """Test that execution time is captured."""
         artifact_dir = tmp_path / ".security"
-        
+
         def create_report(*args, **kwargs):
             import time
+
             time.sleep(0.01)  # Small delay
             artifact_dir.mkdir(exist_ok=True)
             report_file = artifact_dir / "gitleaks_raw.json"
@@ -484,7 +493,7 @@ class TestGitLeaksScannerMocked:
 
         scanner = GitLeaksScanner()
         result = scanner.analyze(tmp_path, artifact_dir=artifact_dir)
-        
+
         # Execution time should be set and positive
         assert result.execution_time > 0
 

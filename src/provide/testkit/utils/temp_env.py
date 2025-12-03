@@ -165,7 +165,7 @@ class EnvContext:
         self._active = True
         return self
 
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+    def __exit__(self, _exc_type: Any, _exc_val: Any, _exc_tb: Any) -> None:
         """Exit the context manager and restore environment."""
         self._active = False
 
