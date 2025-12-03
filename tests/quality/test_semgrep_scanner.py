@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from provide.testkit.quality.base import QualityResult, QualityToolError
+from provide.testkit.quality.base import QualityToolError
 from provide.testkit.quality.security.semgrep_scanner import SEMGREP_AVAILABLE, SemgrepScanner
 
 
@@ -26,6 +26,7 @@ class TestSemgrepAvailability:
         mock_run.return_value = Mock(returncode=0)
 
         from provide.testkit.quality.security import semgrep_scanner
+
         result = semgrep_scanner._check_semgrep_available()
 
         assert result is True
@@ -34,9 +35,11 @@ class TestSemgrepAvailability:
     def test_semgrep_unavailable_when_not_installed(self, mock_run: Mock) -> None:
         """Test detection when semgrep is not installed."""
         from provide.foundation.errors.process import ProcessError
+
         mock_run.side_effect = ProcessError("semgrep not found", command="semgrep --version")
 
         from provide.testkit.quality.security import semgrep_scanner
+
         result = semgrep_scanner._check_semgrep_available()
 
         assert result is False
@@ -47,6 +50,7 @@ class TestSemgrepAvailability:
         mock_run.side_effect = TimeoutError("Command timed out")
 
         from provide.testkit.quality.security import semgrep_scanner
+
         result = semgrep_scanner._check_semgrep_available()
 
         assert result is False
@@ -110,7 +114,7 @@ class TestSemgrepScannerMocked:
                         "message": "Potential SQL injection detected",
                         "severity": "ERROR",
                         "metadata": {},
-                        "lines": "query = f\"SELECT * FROM users WHERE id={user_id}\"",
+                        "lines": 'query = f"SELECT * FROM users WHERE id={user_id}"',
                     },
                 }
             ],
@@ -300,8 +304,7 @@ class TestSemgrepScannerMocked:
         assert "--timeout" in cmd
         assert "30" in cmd
 
-
-# 🧪✅🔚
+    # 🧪✅🔚
 
     @patch("provide.testkit.quality.security.semgrep_scanner.SEMGREP_AVAILABLE", True)
     @patch("provide.testkit.quality.security.semgrep_scanner.run")
@@ -315,7 +318,7 @@ class TestSemgrepScannerMocked:
 
         scanner = SemgrepScanner()
         result = scanner.analyze(tmp_path)
-        
+
         # Should handle gracefully with empty data
         assert result.details["total_findings"] == 0
 
@@ -333,7 +336,7 @@ class TestSemgrepScannerMocked:
         scanner = SemgrepScanner()
         result = scanner.analyze(tmp_path)
         report = scanner.report(result, format="csv")
-        
+
         # Should fall back to str(details)
         assert "total_findings" in report
 
@@ -359,7 +362,7 @@ class TestSemgrepScannerMocked:
 
         scanner = SemgrepScanner()
         result = scanner.analyze(tmp_path)
-        
+
         assert result.details["total_findings"] == 0
         assert len(result.details["errors"]) == 1
 
@@ -375,10 +378,10 @@ class TestSemgrepScannerMocked:
     def test_build_command_with_default_excludes(self, mock_run: Mock, tmp_path: Path) -> None:
         """Test that default excludes are applied."""
         mock_run.return_value = Mock(returncode=0, stdout="{}", stderr="")
-        
+
         scanner = SemgrepScanner()  # No custom exclude config
         cmd = scanner._build_semgrep_command(tmp_path)
-        
+
         # Should have default excludes
         assert "--exclude" in cmd
         assert any("test_" in str(item) or ".venv" in str(item) for item in cmd)
@@ -395,7 +398,7 @@ class TestSemgrepScannerMocked:
 
         scanner = SemgrepScanner()
         result = scanner.analyze(tmp_path)
-        
+
         assert result.passed is True
         assert result.details["total_findings"] == 0
 
