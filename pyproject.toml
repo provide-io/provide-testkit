@@ -75,7 +75,7 @@ quality = [
     "bandit>=1.8.3",
     "coverage[toml]>=7.0.0",
     "radon>=6.0.0",
-    "interrogate>=1.5.0",
+    "interrogate>=1.7.0",  # Note: requires 'py' package with known vulnerability (PYSEC-2022-42969, low risk)
     "mutmut>=3.3.1",
 ]
 
