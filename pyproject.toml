@@ -177,6 +177,7 @@ docs = [
 
     # Code quality
     "linkchecker",
+    "mkdocs-htmlproofer-plugin>=1.4.0",
 
     # Additional dependencies
     "pygments>=2.19.0",
