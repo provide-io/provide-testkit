@@ -89,7 +89,8 @@ class TestPermissionPatterns:
 class TestDiskFullScenarios:
     """Test disk full scenario strategy."""
 
-    @chaos_given(scenario=disk_full_scenarios(), max_examples=50)
+    @chaos_given(scenario=disk_full_scenarios())
+    @settings(max_examples=50)
     def test_disk_scenario_structure(self, scenario: dict[str, Any]) -> None:
         """Test disk full scenarios have required fields."""
         assert isinstance(scenario, dict)
@@ -116,7 +117,8 @@ class TestDiskFullScenarios:
 class TestNetworkErrorPatterns:
     """Test network error pattern strategy."""
 
-    @chaos_given(errors=network_error_patterns(), max_examples=50)
+    @chaos_given(errors=network_error_patterns())
+    @settings(max_examples=50)
     def test_error_pattern_structure(self, errors: list[dict[str, Any]]) -> None:
         """Test network error patterns have correct structure."""
         assert isinstance(errors, list)
@@ -234,7 +236,8 @@ class TestLockFileScenarios:
         assert "corrupted_lock_file" in scenario
         assert "lock_content_type" in scenario
 
-    @chaos_given(scenario=lock_file_scenarios(), max_examples=50)
+    @chaos_given(scenario=lock_file_scenarios())
+    @settings(max_examples=50)
     def test_lock_scenario_ranges(self, scenario: dict[str, Any]) -> None:
         """Test lock scenario values are in valid ranges."""
         assert 2 <= scenario["num_processes"] <= 20
