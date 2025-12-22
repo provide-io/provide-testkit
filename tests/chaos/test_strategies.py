@@ -20,6 +20,7 @@ from provide.testkit.chaos import (
     unicode_chaos,
 )
 
+
 CHAOS_SETTINGS = {"deadline": None, "suppress_health_check": [HealthCheck.too_slow]}
 
 
