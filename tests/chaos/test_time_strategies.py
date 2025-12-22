@@ -19,6 +19,7 @@ from provide.testkit.chaos import (
     timeout_patterns,
 )
 
+
 CHAOS_SETTINGS = {"deadline": None, "suppress_health_check": [HealthCheck.too_slow]}
 
 
