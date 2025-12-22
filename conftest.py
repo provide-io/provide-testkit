@@ -1,10 +1,5 @@
-# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
+from hypothesis import HealthCheck, settings
 import hypothesis
-from hypothesis import HealthCheck
-
-pytest_plugins = ["provide.testkit.process.fixtures"]
 
 
 hypothesis.settings.register_profile(
