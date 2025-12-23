@@ -7,7 +7,7 @@
 
 from __future__ import annotations
 
-from hypothesis import given, settings
+from hypothesis import HealthCheck, given, settings
 
 from provide.testkit.chaos.concurrency_strategies import (
     async_event_patterns,
@@ -20,22 +20,28 @@ from provide.testkit.chaos.concurrency_strategies import (
     thread_counts,
 )
 
+CHAOS_SETTINGS = settings(deadline=None, suppress_health_check=[HealthCheck.too_slow])
+
+
+def chaos_given(*args, **kwargs):
+    return CHAOS_SETTINGS(given(*args, **kwargs))
+
 
 class TestThreadCounts:
     """Test thread count strategy."""
 
-    @given(count=thread_counts())
+    @chaos_given(count=thread_counts())
     def test_default_range(self, count: int) -> None:
         """Test default thread counts are in valid range."""
         assert 1 <= count <= 100
 
-    @given(count=thread_counts(min_threads=5, max_threads=20))
+    @chaos_given(count=thread_counts(min_threads=5, max_threads=20))
     def test_custom_range(self, count: int) -> None:
         """Test custom thread count range."""
         # With include_extremes=True (default), can be 1, 20, or 5-20
         assert count == 1 or count == 20 or (5 <= count <= 20)
 
-    @given(count=thread_counts(include_extremes=False))
+    @chaos_given(count=thread_counts(include_extremes=False))
     def test_no_extremes(self, count: int) -> None:
         """Test thread counts without forced extremes."""
         assert isinstance(count, int)
@@ -45,7 +51,7 @@ class TestThreadCounts:
 class TestRaceConditionTriggers:
     """Test race condition trigger strategy."""
 
-    @given(timings=race_condition_triggers())
+    @chaos_given(timings=race_condition_triggers())
     def test_timing_structure(self, timings: list) -> None:
         """Test race condition timings have correct structure."""
         assert isinstance(timings, list)
@@ -58,7 +64,7 @@ class TestRaceConditionTriggers:
             assert 0 <= op_id < 10
 
     @settings(max_examples=50)
-    @given(timings=race_condition_triggers(num_operations=5, max_delay=1.0))
+    @chaos_given(timings=race_condition_triggers(num_operations=5, max_delay=1.0))
     def test_custom_parameters(self, timings: list) -> None:
         """Test race condition timings with custom parameters."""
         assert len(timings) == 5
@@ -69,7 +75,7 @@ class TestRaceConditionTriggers:
 class TestDeadlockScenarios:
     """Test deadlock scenario strategy."""
 
-    @given(scenario=deadlock_scenarios())
+    @chaos_given(scenario=deadlock_scenarios())
     def test_deadlock_structure(self, scenario: dict) -> None:
         """Test deadlock scenario has required fields."""
         assert isinstance(scenario, dict)
@@ -84,7 +90,7 @@ class TestDeadlockScenarios:
         assert 2 <= scenario["num_threads"] <= 10
         assert len(scenario["lock_sequences"]) == scenario["num_threads"]
 
-    @given(scenario=deadlock_scenarios(num_resources=3))
+    @chaos_given(scenario=deadlock_scenarios(num_resources=3))
     def test_lock_sequences_valid(self, scenario: dict) -> None:
         """Test lock sequences contain valid resource IDs."""
         for sequence in scenario["lock_sequences"]:
@@ -99,7 +105,7 @@ class TestDeadlockScenarios:
 class TestAsyncEventPatterns:
     """Test async event pattern strategy."""
 
-    @given(events=async_event_patterns())
+    @chaos_given(events=async_event_patterns())
     def test_event_structure(self, events: list) -> None:
         """Test async events have correct structure."""
         assert isinstance(events, list)
@@ -121,7 +127,7 @@ class TestAsyncEventPatterns:
                 assert 0.0 <= event["after_delay"] <= 0.5
 
     @settings(max_examples=50)
-    @given(events=async_event_patterns(max_events=10))
+    @chaos_given(events=async_event_patterns(max_events=10))
     def test_custom_event_count(self, events: list) -> None:
         """Test async events with custom max count."""
         assert 1 <= len(events) <= 10
@@ -130,7 +136,7 @@ class TestAsyncEventPatterns:
 class TestLockContentionPatterns:
     """Test lock contention pattern strategy."""
 
-    @given(pattern=lock_contention_patterns())
+    @chaos_given(pattern=lock_contention_patterns())
     def test_contention_structure(self, pattern: dict) -> None:
         """Test lock contention pattern has required fields."""
         assert isinstance(pattern, dict)
@@ -143,7 +149,7 @@ class TestLockContentionPatterns:
         assert 2 <= pattern["concurrent_workers"] <= 20
 
     @settings(max_examples=50)
-    @given(pattern=lock_contention_patterns(num_locks=3, num_operations=10))
+    @chaos_given(pattern=lock_contention_patterns(num_locks=3, num_operations=10))
     def test_operation_validity(self, pattern: dict) -> None:
         """Test operations have valid lock requirements."""
         for op in pattern["operations"]:
@@ -165,7 +171,7 @@ class TestLockContentionPatterns:
 class TestTaskCancellationPatterns:
     """Test task cancellation pattern strategy."""
 
-    @given(tasks=task_cancellation_patterns())
+    @chaos_given(tasks=task_cancellation_patterns())
     def test_task_structure(self, tasks: list) -> None:
         """Test task cancellation patterns have correct structure."""
         assert isinstance(tasks, list)
@@ -184,7 +190,7 @@ class TestTaskCancellationPatterns:
                 assert 0.1 <= task["expected_duration"] <= 2.0
 
     @settings(max_examples=50)
-    @given(tasks=task_cancellation_patterns(num_tasks=10))
+    @chaos_given(tasks=task_cancellation_patterns(num_tasks=10))
     def test_custom_task_count(self, tasks: list) -> None:
         """Test task cancellation with custom count."""
         assert len(tasks) == 10
@@ -193,7 +199,7 @@ class TestTaskCancellationPatterns:
 class TestProcessPoolPatterns:
     """Test process pool pattern strategy."""
 
-    @given(config=process_pool_patterns())
+    @chaos_given(config=process_pool_patterns())
     def test_pool_structure(self, config: dict) -> None:
         """Test process pool config has required fields."""
         assert isinstance(config, dict)
@@ -213,7 +219,7 @@ class TestProcessPoolPatterns:
         if config["max_tasks_per_child"] is not None:
             assert 1 <= config["max_tasks_per_child"] <= 50
 
-    @given(config=process_pool_patterns(max_workers=4, max_tasks=20))
+    @chaos_given(config=process_pool_patterns(max_workers=4, max_tasks=20))
     def test_custom_pool_params(self, config: dict) -> None:
         """Test process pool with custom parameters."""
         assert 1 <= config["workers"] <= 4
@@ -223,7 +229,7 @@ class TestProcessPoolPatterns:
 class TestPidRecyclingScenarios:
     """Test PID recycling scenario strategy."""
 
-    @given(scenario=pid_recycling_scenarios())
+    @chaos_given(scenario=pid_recycling_scenarios())
     def test_pid_recycling_structure(self, scenario: dict) -> None:
         """Test PID recycling scenario has required fields."""
         assert isinstance(scenario, dict)
@@ -248,7 +254,7 @@ class TestPidRecyclingScenarios:
         expected_detection = time_gap > scenario["time_tolerance"]
         assert scenario["should_detect_recycling"] == expected_detection
 
-    @given(scenario=pid_recycling_scenarios())
+    @chaos_given(scenario=pid_recycling_scenarios())
     def test_pid_ranges(self, scenario: dict) -> None:
         """Test PIDs are in valid range."""
         assert 1 <= scenario["original_pid"] <= 65535

@@ -17,6 +17,12 @@ from provide.testkit.quality.base import QualityToolError
 from provide.testkit.quality.security.safety_scanner import SAFETY_AVAILABLE, SafetyScanner
 
 
+@pytest.fixture(autouse=True)
+def disable_default_policy(monkeypatch) -> None:
+    """Prevent auto-detecting the repository-wide policy file during tests."""
+    monkeypatch.setattr(SafetyScanner, "_get_default_config_path", lambda self: None)
+
+
 class TestSafetyAvailability:
     """Tests for Safety availability checking."""
 

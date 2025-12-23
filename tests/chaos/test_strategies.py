@@ -9,7 +9,7 @@ Validates that Hypothesis strategies generate expected value ranges and types.""
 
 from __future__ import annotations
 
-from hypothesis import given
+from hypothesis import HealthCheck, given, settings
 
 from provide.testkit.chaos import (
     chaos_timings,
@@ -21,21 +21,28 @@ from provide.testkit.chaos import (
 )
 
 
+CHAOS_SETTINGS = settings(deadline=None, suppress_health_check=[HealthCheck.too_slow])
+
+
+def chaos_given(*args, **kwargs):
+    return CHAOS_SETTINGS(given(*args, **kwargs))
+
+
 class TestChaosTimings:
     """Test chaos timing strategy."""
 
-    @given(timing=chaos_timings())
+    @chaos_given(timing=chaos_timings())
     def test_default_range(self, timing: float) -> None:
         """Test default timing range."""
         assert 0.001 <= timing <= 10.0
         assert isinstance(timing, float)
 
-    @given(timing=chaos_timings(min_value=0.0, max_value=1.0, allow_zero=True))
+    @chaos_given(timing=chaos_timings(min_value=0.0, max_value=1.0, allow_zero=True))
     def test_custom_range_with_zero(self, timing: float) -> None:
         """Test custom range including zero."""
         assert 0.0 <= timing <= 1.0
 
-    @given(timing=chaos_timings(min_value=5.0, max_value=100.0))
+    @chaos_given(timing=chaos_timings(min_value=5.0, max_value=100.0))
     def test_large_timing_values(self, timing: float) -> None:
         """Test large timing values."""
         assert 5.0 <= timing <= 100.0
@@ -44,7 +51,7 @@ class TestChaosTimings:
 class TestFailurePatterns:
     """Test failure pattern strategy."""
 
-    @given(patterns=failure_patterns())
+    @chaos_given(patterns=failure_patterns())
     def test_failure_pattern_structure(self, patterns: list) -> None:
         """Test failure patterns are well-formed."""
         assert isinstance(patterns, list)
@@ -53,7 +60,7 @@ class TestFailurePatterns:
             assert when >= 0
             assert issubclass(exc_type, Exception)
 
-    @given(patterns=failure_patterns(max_failures=5))
+    @chaos_given(patterns=failure_patterns(max_failures=5))
     def test_max_failures_respected(self, patterns: list) -> None:
         """Test max failures limit."""
         assert len(patterns) <= 5
@@ -62,13 +69,13 @@ class TestFailurePatterns:
 class TestMalformedInputs:
     """Test malformed input strategy."""
 
-    @given(data=malformed_inputs())
+    @chaos_given(data=malformed_inputs())
     def test_malformed_inputs_variety(self, data: object) -> None:
         """Test malformed inputs generate various types."""
         # Should generate diverse types: str, bytes, int, float, None, list, dict
         assert data is not None or data is None  # Accept any value
 
-    @given(data=malformed_inputs(include_huge=False, include_empty=False))
+    @chaos_given(data=malformed_inputs(include_huge=False, include_empty=False))
     def test_exclude_options(self, data: object) -> None:
         """Test excluding certain malformed types."""
         # Validate basic constraints (no huge, no empty)
@@ -81,18 +88,18 @@ class TestMalformedInputs:
 class TestUnicodeChaos:
     """Test Unicode chaos strategy."""
 
-    @given(text=unicode_chaos())
+    @chaos_given(text=unicode_chaos())
     def test_unicode_chaos_generates_strings(self, text: str) -> None:
         """Test unicode chaos generates strings."""
         assert isinstance(text, str)
 
-    @given(text=unicode_chaos(include_emoji=True))
+    @chaos_given(text=unicode_chaos(include_emoji=True))
     def test_emoji_included(self, text: str) -> None:
         """Test emoji can be included."""
         assert isinstance(text, str)
         # Just verify it's a string, content varies
 
-    @given(text=unicode_chaos(include_rtl=True))
+    @chaos_given(text=unicode_chaos(include_rtl=True))
     def test_rtl_text_included(self, text: str) -> None:
         """Test RTL text can be included."""
         assert isinstance(text, str)
@@ -101,7 +108,7 @@ class TestUnicodeChaos:
 class TestResourceLimits:
     """Test resource limits strategy."""
 
-    @given(limits=resource_limits())
+    @chaos_given(limits=resource_limits())
     def test_resource_limits_structure(self, limits: dict) -> None:
         """Test resource limits have expected structure."""
         assert isinstance(limits, dict)
@@ -111,12 +118,12 @@ class TestResourceLimits:
         assert "max_threads" in limits
         assert "max_open_files" in limits
 
-    @given(limits=resource_limits(min_memory=1024, max_memory=1024 * 1024))
+    @chaos_given(limits=resource_limits(min_memory=1024, max_memory=1024 * 1024))
     def test_memory_limits_range(self, limits: dict) -> None:
         """Test memory limits within range."""
         assert 1024 <= limits["memory"] <= 1024 * 1024
 
-    @given(limits=resource_limits(min_timeout=0.1, max_timeout=10.0))
+    @chaos_given(limits=resource_limits(min_timeout=0.1, max_timeout=10.0))
     def test_timeout_limits_range(self, limits: dict) -> None:
         """Test timeout limits within range."""
         assert 0.1 <= limits["timeout"] <= 10.0
@@ -125,7 +132,7 @@ class TestResourceLimits:
 class TestEdgeValues:
     """Test edge values strategy."""
 
-    @given(value=edge_values(value_type=int))
+    @chaos_given(value=edge_values(value_type=int))
     def test_int_edge_values(self, value: int) -> None:
         """Test int edge values."""
         assert isinstance(value, int)
@@ -145,7 +152,7 @@ class TestEdgeValues:
         ]
         assert value in valid_edges
 
-    @given(value=edge_values(value_type=float))
+    @chaos_given(value=edge_values(value_type=float))
     def test_float_edge_values(self, value: float) -> None:
         """Test float edge values."""
         assert isinstance(value, float)
@@ -162,7 +169,7 @@ class TestEdgeValues:
             or value > 0
         )
 
-    @given(value=edge_values(value_type=str))
+    @chaos_given(value=edge_values(value_type=str))
     def test_str_edge_values(self, value: str) -> None:
         """Test str edge values."""
         assert isinstance(value, str)

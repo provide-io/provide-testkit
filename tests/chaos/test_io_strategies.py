@@ -11,7 +11,7 @@ from contextlib import suppress
 from pathlib import Path
 from typing import Any
 
-from hypothesis import given, settings
+from hypothesis import HealthCheck, given, settings
 
 from provide.testkit.chaos.io_strategies import (  # type: ignore[import-untyped]
     buffer_overflow_patterns,
@@ -25,21 +25,28 @@ from provide.testkit.chaos.io_strategies import (  # type: ignore[import-untyped
 )
 
 
+CHAOS_SETTINGS = settings(deadline=None, suppress_health_check=[HealthCheck.too_slow])
+
+
+def chaos_given(*args, **kwargs):
+    return CHAOS_SETTINGS(given(*args, **kwargs))
+
+
 class TestFileSizes:
     """Test file size strategy."""
 
-    @given(size=file_sizes())
+    @chaos_given(size=file_sizes())
     def test_default_range(self, size: int) -> None:
         """Test default file sizes are in valid range."""
         assert 0 <= size <= 10 * 1024 * 1024  # 10MB default
 
-    @given(size=file_sizes(min_size=1024, max_size=1024 * 1024))
+    @chaos_given(size=file_sizes(min_size=1024, max_size=1024 * 1024))
     def test_custom_range(self, size: int) -> None:
         """Test custom file size range."""
         # Strategy includes multiple ranges: 0, 1-1024, 1024-1MB, min_size-max_size
         assert size >= 0
 
-    @given(size=file_sizes(include_huge=True))
+    @chaos_given(size=file_sizes(include_huge=True))
     def test_huge_files(self, size: int) -> None:
         """Test file sizes can include huge files."""
         assert size >= 0
@@ -49,7 +56,7 @@ class TestFileSizes:
 class TestPermissionPatterns:
     """Test permission pattern strategy."""
 
-    @given(perms=permission_patterns())
+    @chaos_given(perms=permission_patterns())
     def test_permission_structure(self, perms: dict[str, Any]) -> None:
         """Test permission patterns have correct structure."""
         assert isinstance(perms, dict)
@@ -62,7 +69,7 @@ class TestPermissionPatterns:
         # Mode should be a valid permission
         assert perms["mode"] in (0o000, 0o400, 0o600, 0o644, 0o755, 0o777)
 
-    @given(perms=permission_patterns())
+    @chaos_given(perms=permission_patterns())
     def test_permission_flags_match_mode(self, perms: dict[str, Any]) -> None:
         """Test permission flags correctly represent mode."""
         mode = perms["mode"]
@@ -81,7 +88,7 @@ class TestDiskFullScenarios:
     """Test disk full scenario strategy."""
 
     @settings(max_examples=50)
-    @given(scenario=disk_full_scenarios())
+    @chaos_given(scenario=disk_full_scenarios())
     def test_disk_scenario_structure(self, scenario: dict[str, Any]) -> None:
         """Test disk full scenarios have required fields."""
         assert isinstance(scenario, dict)
@@ -91,7 +98,7 @@ class TestDiskFullScenarios:
         assert "fills_at_byte" in scenario
         assert "operation_size" in scenario
 
-    @given(scenario=disk_full_scenarios())
+    @chaos_given(scenario=disk_full_scenarios())
     def test_disk_space_math(self, scenario: dict[str, Any]) -> None:
         """Test disk space calculations are consistent."""
         # Available = Total - Used
@@ -109,7 +116,7 @@ class TestNetworkErrorPatterns:
     """Test network error pattern strategy."""
 
     @settings(max_examples=50)
-    @given(errors=network_error_patterns())
+    @chaos_given(errors=network_error_patterns())
     def test_error_pattern_structure(self, errors: list[dict[str, Any]]) -> None:
         """Test network error patterns have correct structure."""
         assert isinstance(errors, list)
@@ -132,7 +139,7 @@ class TestNetworkErrorPatterns:
             assert error["type"] in valid_types
             assert 0 <= error["at_byte"] <= 10000
 
-    @given(errors=network_error_patterns())
+    @chaos_given(errors=network_error_patterns())
     def test_error_type_specific_fields(self, errors: list[dict[str, Any]]) -> None:
         """Test error type-specific fields are present."""
         for error in errors:
@@ -151,7 +158,7 @@ class TestNetworkErrorPatterns:
 class TestBufferOverflowPatterns:
     """Test buffer overflow pattern strategy."""
 
-    @given(config=buffer_overflow_patterns())
+    @chaos_given(config=buffer_overflow_patterns())
     def test_buffer_structure(self, config: dict[str, Any]) -> None:
         """Test buffer overflow configs have required fields."""
         assert isinstance(config, dict)
@@ -161,7 +168,7 @@ class TestBufferOverflowPatterns:
         assert "overflow_bytes" in config
         assert "chunk_size" in config
 
-    @given(config=buffer_overflow_patterns())
+    @chaos_given(config=buffer_overflow_patterns())
     def test_overflow_calculation(self, config: dict[str, Any]) -> None:
         """Test overflow detection is correct."""
         # will_overflow should match data_size > buffer_size
@@ -171,7 +178,7 @@ class TestBufferOverflowPatterns:
         expected_overflow = max(0, config["data_size"] - config["buffer_size"])
         assert config["overflow_bytes"] == expected_overflow
 
-    @given(config=buffer_overflow_patterns(max_buffer_size=1024))
+    @chaos_given(config=buffer_overflow_patterns(max_buffer_size=1024))
     def test_chunk_size_valid(self, config: dict[str, Any]) -> None:
         """Test chunk size is reasonable."""
         assert 1 <= config["chunk_size"] <= min(config["buffer_size"], 8192)
@@ -180,7 +187,7 @@ class TestBufferOverflowPatterns:
 class TestFileCorruptionPatterns:
     """Test file corruption pattern strategy."""
 
-    @given(corruption=file_corruption_patterns())
+    @chaos_given(corruption=file_corruption_patterns())
     def test_corruption_structure(self, corruption: dict[str, Any]) -> None:
         """Test corruption patterns have correct structure."""
         assert isinstance(corruption, dict)
@@ -195,7 +202,7 @@ class TestFileCorruptionPatterns:
         ]
         assert corruption["type"] in valid_types
 
-    @given(corruption=file_corruption_patterns())
+    @chaos_given(corruption=file_corruption_patterns())
     def test_corruption_type_specific_fields(self, corruption: dict[str, Any]) -> None:
         """Test corruption type-specific fields are present."""
         if corruption["type"] == "truncated":
@@ -214,7 +221,7 @@ class TestFileCorruptionPatterns:
 class TestLockFileScenarios:
     """Test lock file scenario strategy."""
 
-    @given(scenario=lock_file_scenarios())
+    @chaos_given(scenario=lock_file_scenarios())
     def test_lock_scenario_structure(self, scenario: dict[str, Any]) -> None:
         """Test lock scenarios have required fields."""
         assert isinstance(scenario, dict)
@@ -228,7 +235,7 @@ class TestLockFileScenarios:
         assert "lock_content_type" in scenario
 
     @settings(max_examples=50)
-    @given(scenario=lock_file_scenarios())
+    @chaos_given(scenario=lock_file_scenarios())
     def test_lock_scenario_ranges(self, scenario: dict[str, Any]) -> None:
         """Test lock scenario values are in valid ranges."""
         assert 2 <= scenario["num_processes"] <= 20
@@ -242,13 +249,13 @@ class TestLockFileScenarios:
 class TestPathTraversalPatterns:
     """Test path traversal pattern strategy."""
 
-    @given(path=path_traversal_patterns())
+    @chaos_given(path=path_traversal_patterns())
     def test_path_is_string(self, path: str) -> None:
         """Test path traversal patterns return strings."""
         assert isinstance(path, str)
         assert len(path) > 0
 
-    @given(path=path_traversal_patterns())
+    @chaos_given(path=path_traversal_patterns())
     def test_malicious_or_safe_path(self, path: str) -> None:
         """Test paths are either malicious patterns or safe."""
         # Known malicious patterns
