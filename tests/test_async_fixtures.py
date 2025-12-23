@@ -11,8 +11,6 @@ import asyncio
 
 import pytest
 
-from provide.testkit.process.async_fixtures import clean_event_loop
-
 
 @pytest.mark.asyncio
 async def test_clean_event_loop_no_recursion(clean_event_loop):
