@@ -25,11 +25,14 @@ from provide.testkit.chaos.io_strategies import (  # type: ignore[import-untyped
 )
 
 
-CHAOS_SETTINGS = settings(deadline=None, suppress_health_check=[HealthCheck.too_slow])
+CHAOS_SETTINGS = {"deadline": None, "suppress_health_check": [HealthCheck.too_slow]}
 
 
-def chaos_given(*args, **kwargs):
-    return CHAOS_SETTINGS(given(*args, **kwargs))
+def chaos_given(*args, max_examples: int | None = None, **kwargs):
+    config = dict(CHAOS_SETTINGS)
+    if max_examples is not None:
+        config["max_examples"] = max_examples
+    return settings(**config)(given(*args, **kwargs))
 
 
 class TestFileSizes:
@@ -87,8 +90,7 @@ class TestPermissionPatterns:
 class TestDiskFullScenarios:
     """Test disk full scenario strategy."""
 
-    @settings(max_examples=50)
-    @chaos_given(scenario=disk_full_scenarios())
+    @chaos_given(scenario=disk_full_scenarios(), max_examples=50)
     def test_disk_scenario_structure(self, scenario: dict[str, Any]) -> None:
         """Test disk full scenarios have required fields."""
         assert isinstance(scenario, dict)
@@ -115,8 +117,7 @@ class TestDiskFullScenarios:
 class TestNetworkErrorPatterns:
     """Test network error pattern strategy."""
 
-    @settings(max_examples=50)
-    @chaos_given(errors=network_error_patterns())
+    @chaos_given(errors=network_error_patterns(), max_examples=50)
     def test_error_pattern_structure(self, errors: list[dict[str, Any]]) -> None:
         """Test network error patterns have correct structure."""
         assert isinstance(errors, list)
@@ -234,8 +235,7 @@ class TestLockFileScenarios:
         assert "corrupted_lock_file" in scenario
         assert "lock_content_type" in scenario
 
-    @settings(max_examples=50)
-    @chaos_given(scenario=lock_file_scenarios())
+    @chaos_given(scenario=lock_file_scenarios(), max_examples=50)
     def test_lock_scenario_ranges(self, scenario: dict[str, Any]) -> None:
         """Test lock scenario values are in valid ranges."""
         assert 2 <= scenario["num_processes"] <= 20

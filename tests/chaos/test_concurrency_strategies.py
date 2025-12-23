@@ -20,11 +20,14 @@ from provide.testkit.chaos.concurrency_strategies import (
     thread_counts,
 )
 
-CHAOS_SETTINGS = settings(deadline=None, suppress_health_check=[HealthCheck.too_slow])
+CHAOS_SETTINGS = {"deadline": None, "suppress_health_check": [HealthCheck.too_slow]}
 
 
-def chaos_given(*args, **kwargs):
-    return CHAOS_SETTINGS(given(*args, **kwargs))
+def chaos_given(*args, max_examples: int | None = None, **kwargs):
+    config = dict(CHAOS_SETTINGS)
+    if max_examples is not None:
+        config["max_examples"] = max_examples
+    return settings(**config)(given(*args, **kwargs))
 
 
 class TestThreadCounts:
@@ -63,8 +66,7 @@ class TestRaceConditionTriggers:
             assert 0 <= delay <= 0.1  # Default max_delay
             assert 0 <= op_id < 10
 
-    @settings(max_examples=50)
-    @chaos_given(timings=race_condition_triggers(num_operations=5, max_delay=1.0))
+    @chaos_given(timings=race_condition_triggers(num_operations=5, max_delay=1.0), max_examples=50)
     def test_custom_parameters(self, timings: list) -> None:
         """Test race condition timings with custom parameters."""
         assert len(timings) == 5
@@ -126,8 +128,7 @@ class TestAsyncEventPatterns:
                 assert "after_delay" in event
                 assert 0.0 <= event["after_delay"] <= 0.5
 
-    @settings(max_examples=50)
-    @chaos_given(events=async_event_patterns(max_events=10))
+    @chaos_given(events=async_event_patterns(max_events=10), max_examples=50)
     def test_custom_event_count(self, events: list) -> None:
         """Test async events with custom max count."""
         assert 1 <= len(events) <= 10
@@ -148,8 +149,7 @@ class TestLockContentionPatterns:
         assert len(pattern["operations"]) == 20  # Default num_operations
         assert 2 <= pattern["concurrent_workers"] <= 20
 
-    @settings(max_examples=50)
-    @chaos_given(pattern=lock_contention_patterns(num_locks=3, num_operations=10))
+    @chaos_given(pattern=lock_contention_patterns(num_locks=3, num_operations=10), max_examples=50)
     def test_operation_validity(self, pattern: dict) -> None:
         """Test operations have valid lock requirements."""
         for op in pattern["operations"]:
@@ -189,8 +189,7 @@ class TestTaskCancellationPatterns:
                 assert "expected_duration" in task
                 assert 0.1 <= task["expected_duration"] <= 2.0
 
-    @settings(max_examples=50)
-    @chaos_given(tasks=task_cancellation_patterns(num_tasks=10))
+    @chaos_given(tasks=task_cancellation_patterns(num_tasks=10), max_examples=50)
     def test_custom_task_count(self, tasks: list) -> None:
         """Test task cancellation with custom count."""
         assert len(tasks) == 10
