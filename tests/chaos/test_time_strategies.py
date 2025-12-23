@@ -20,11 +20,14 @@ from provide.testkit.chaos import (
 )
 
 
-CHAOS_SETTINGS = settings(deadline=None, suppress_health_check=[HealthCheck.too_slow])
+CHAOS_SETTINGS = {"deadline": None, "suppress_health_check": [HealthCheck.too_slow]}
 
 
-def chaos_given(*args, **kwargs):
-    return CHAOS_SETTINGS(given(*args, **kwargs))
+def chaos_given(*args, max_examples: int | None = None, **kwargs):
+    config = dict(CHAOS_SETTINGS)
+    if max_examples is not None:
+        config["max_examples"] = max_examples
+    return settings(**config)(given(*args, **kwargs))
 
 
 class TestTimeAdvances:
