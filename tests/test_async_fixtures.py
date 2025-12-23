@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -10,6 +10,8 @@ from __future__ import annotations
 import asyncio
 
 import pytest
+
+from provide.testkit.process.async_fixtures import clean_event_loop
 
 
 @pytest.mark.asyncio
