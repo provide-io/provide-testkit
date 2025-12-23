@@ -7,7 +7,7 @@
 
 from __future__ import annotations
 
-from hypothesis import given
+from hypothesis import HealthCheck, given, settings
 
 from provide.testkit.chaos import (
     clock_skew,
@@ -20,20 +20,27 @@ from provide.testkit.chaos import (
 )
 
 
+CHAOS_SETTINGS = settings(deadline=None, suppress_health_check=[HealthCheck.too_slow])
+
+
+def chaos_given(*args, **kwargs):
+    return CHAOS_SETTINGS(given(*args, **kwargs))
+
+
 class TestTimeAdvances:
     """Test time advance strategy."""
 
-    @given(advance=time_advances())
+    @chaos_given(advance=time_advances())
     def test_positive_time_advances(self, advance: float) -> None:
         """Test default time advances are positive."""
         assert 0.0 <= advance <= 3600.0
 
-    @given(advance=time_advances(allow_backwards=True))
+    @chaos_given(advance=time_advances(allow_backwards=True))
     def test_backwards_time_advances(self, advance: float) -> None:
         """Test backwards time advances when allowed."""
         assert -3600.0 <= advance <= 3600.0
 
-    @given(advance=time_advances(min_advance=10.0, max_advance=100.0))
+    @chaos_given(advance=time_advances(min_advance=10.0, max_advance=100.0))
     def test_custom_range(self, advance: float) -> None:
         """Test custom time advance range."""
         assert 10.0 <= advance <= 100.0
@@ -42,7 +49,7 @@ class TestTimeAdvances:
 class TestClockSkew:
     """Test clock skew strategy."""
 
-    @given(skew=clock_skew())
+    @chaos_given(skew=clock_skew())
     def test_clock_skew_structure(self, skew: dict) -> None:
         """Test clock skew has expected structure."""
         assert isinstance(skew, dict)
@@ -51,7 +58,7 @@ class TestClockSkew:
         assert "has_backwards_jump" in skew
         assert "sync_interval" in skew
 
-    @given(skew=clock_skew(max_skew=60.0))
+    @chaos_given(skew=clock_skew(max_skew=60.0))
     def test_skew_within_range(self, skew: dict) -> None:
         """Test skew seconds within specified range."""
         assert -60.0 <= skew["skew_seconds"] <= 60.0
@@ -60,14 +67,14 @@ class TestClockSkew:
 class TestTimeoutPatterns:
     """Test timeout pattern strategy."""
 
-    @given(timeout=timeout_patterns())
+    @chaos_given(timeout=timeout_patterns())
     def test_timeout_or_none(self, timeout: float | None) -> None:
         """Test timeout is float or None."""
         if timeout is not None:
             assert isinstance(timeout, float)
             assert timeout > 0
 
-    @given(timeout=timeout_patterns(include_none=False))
+    @chaos_given(timeout=timeout_patterns(include_none=False))
     def test_timeout_never_none(self, timeout: float | None) -> None:
         """Test timeout is never None when disabled."""
         assert timeout is not None
@@ -77,7 +84,7 @@ class TestTimeoutPatterns:
 class TestRateBurstPatterns:
     """Test rate burst pattern strategy."""
 
-    @given(bursts=rate_burst_patterns())
+    @chaos_given(bursts=rate_burst_patterns())
     def test_burst_pattern_structure(self, bursts: list) -> None:
         """Test burst patterns have correct structure."""
         assert isinstance(bursts, list)
@@ -89,7 +96,7 @@ class TestRateBurstPatterns:
             assert time_offset >= 0
             assert count >= 1
 
-    @given(bursts=rate_burst_patterns(max_burst_size=100))
+    @chaos_given(bursts=rate_burst_patterns(max_burst_size=100))
     def test_burst_size_limit(self, bursts: list) -> None:
         """Test burst sizes respect limit."""
         for _, count in bursts:
@@ -99,7 +106,7 @@ class TestRateBurstPatterns:
 class TestJitterPatterns:
     """Test jitter pattern strategy."""
 
-    @given(intervals=jitter_patterns())
+    @chaos_given(intervals=jitter_patterns())
     def test_jitter_around_base(self, intervals: list) -> None:
         """Test jitter is around base interval."""
         assert isinstance(intervals, list)
@@ -110,7 +117,7 @@ class TestJitterPatterns:
             # With 50% jitter on 1.0 base, range is 0.5 to 1.5
             assert interval > 0
 
-    @given(intervals=jitter_patterns(base_interval=0.1, max_jitter_percent=10.0))
+    @chaos_given(intervals=jitter_patterns(base_interval=0.1, max_jitter_percent=10.0))
     def test_custom_jitter(self, intervals: list) -> None:
         """Test custom jitter parameters."""
         for interval in intervals:
@@ -121,7 +128,7 @@ class TestJitterPatterns:
 class TestDeadlineScenarios:
     """Test deadline scenario strategy."""
 
-    @given(scenario=deadline_scenarios())
+    @chaos_given(scenario=deadline_scenarios())
     def test_deadline_scenario_structure(self, scenario: dict) -> None:
         """Test deadline scenarios have correct structure."""
         assert isinstance(scenario, dict)
@@ -133,7 +140,7 @@ class TestDeadlineScenarios:
         assert scenario["deadline"] > 0
         assert scenario["work_duration"] >= 0
 
-    @given(scenario=deadline_scenarios())
+    @chaos_given(scenario=deadline_scenarios())
     def test_exceeds_deadline_flag(self, scenario: dict) -> None:
         """Test exceeds_deadline flag is accurate."""
         if scenario["exceeds_deadline"]:
@@ -145,7 +152,7 @@ class TestDeadlineScenarios:
 class TestRetryBackoffPatterns:
     """Test retry backoff pattern strategy."""
 
-    @given(pattern=retry_backoff_patterns())
+    @chaos_given(pattern=retry_backoff_patterns())
     def test_retry_pattern_structure(self, pattern: dict) -> None:
         """Test retry patterns have expected structure."""
         assert isinstance(pattern, dict)
@@ -155,12 +162,12 @@ class TestRetryBackoffPatterns:
         assert pattern["max_attempts"] >= 1
         assert pattern["backoff_type"] in ["constant", "linear", "exponential", "jittered"]
 
-    @given(pattern=retry_backoff_patterns(max_retries=5))
+    @chaos_given(pattern=retry_backoff_patterns(max_retries=5))
     def test_max_retries_respected(self, pattern: dict) -> None:
         """Test max retries limit."""
         assert 1 <= pattern["max_attempts"] <= 5
 
-    @given(pattern=retry_backoff_patterns())
+    @chaos_given(pattern=retry_backoff_patterns())
     def test_backoff_type_config(self, pattern: dict) -> None:
         """Test backoff type has appropriate config."""
         if pattern["backoff_type"] == "constant":
