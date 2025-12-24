@@ -211,7 +211,7 @@ async def clean_event_loop() -> AsyncGenerator[None, None]:
     # Break potential task child cycles before cancellation to avoid recursion errors.
     for task in pending:
         children = getattr(task, "_children", None)
-        if isinstance(children, set):
+        if children is not None and hasattr(children, "clear"):
             children.clear()
 
     def _is_safe_to_cancel(task: asyncio.Task[object]) -> bool:
