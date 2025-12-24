@@ -122,7 +122,7 @@ class AsyncPipeline:
         result = data
         for stage in self.stages:
             if asyncio.iscoroutinefunction(stage):
-                result = await stage(result)
+                result = await stage(result)  # type: ignore[arg-type]
             else:
                 result = stage(result)
             self.results.append(result)
@@ -192,15 +192,18 @@ async def clean_event_loop() -> AsyncGenerator[None, None]:
 
     # Clean up any pending tasks
     loop = asyncio.get_event_loop()
+    current_task = asyncio.current_task(loop)
     pending = asyncio.all_tasks(loop)
 
-    for task in pending:
-        if not task.done():
-            task.cancel()
+    # Exclude the current task to avoid self-cancellation recursion
+    tasks_to_cancel = [t for t in pending if t is not current_task and not t.done()]
+
+    for task in tasks_to_cancel:
+        task.cancel()
 
     # Wait for all tasks to complete cancellation
-    if pending:
-        await asyncio.gather(*pending, return_exceptions=True)
+    if tasks_to_cancel:
+        await asyncio.gather(*tasks_to_cancel, return_exceptions=True)
 
 
 @pytest.fixture
