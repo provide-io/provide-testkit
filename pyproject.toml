@@ -287,7 +287,8 @@ show_error_codes = true
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -s --strict-markers --strict-config --dist load"
+addopts = "-ra -s --strict-markers --strict-config"
+# Parallel execution: pytest -n <workers> (range: 2-16, recommend: CPU cores or 8, max: 16 to avoid xdist hang)
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
