@@ -24,6 +24,10 @@ from types import TracebackType
 from typing import Any, Generic, TypeVar
 
 import pytest
+try:
+    import pytest_asyncio
+except ImportError:  # pragma: no cover - pytest-asyncio is a test dependency
+    pytest_asyncio = None
 
 from provide.testkit.mocking import AsyncMock
 
@@ -178,7 +182,10 @@ class AsyncRateLimiter:
         return None
 
 
-@pytest.fixture
+_async_fixture = pytest_asyncio.fixture if pytest_asyncio else pytest.fixture
+
+
+@_async_fixture
 async def clean_event_loop() -> AsyncGenerator[None, None]:
     """
     Ensure clean event loop for async tests.
@@ -191,12 +198,24 @@ async def clean_event_loop() -> AsyncGenerator[None, None]:
     yield
 
     # Clean up any pending tasks
-    loop = asyncio.get_event_loop()
-    current_task = asyncio.current_task(loop)
-    pending = asyncio.all_tasks(loop)
+    loop = asyncio.get_running_loop()
+    current_task = asyncio.current_task()
+    pending = asyncio.all_tasks()
 
-    # Exclude the current task to avoid self-cancellation recursion
-    tasks_to_cancel = [t for t in pending if t is not current_task and not t.done()]
+    # Break potential task child cycles before cancellation to avoid recursion errors.
+    for task in pending:
+        children = getattr(task, "_children", None)
+        if children is not None and hasattr(children, "clear"):
+            children.clear()
+
+    def _is_safe_to_cancel(task: asyncio.Task[object]) -> bool:
+        children = getattr(task, "_children", None)
+        if children:
+            return False
+        return task is not current_task and not task.done()
+
+    # Exclude the current task and any task with children to avoid recursive cancellation.
+    tasks_to_cancel = [t for t in pending if _is_safe_to_cancel(t)]
 
     for task in tasks_to_cancel:
         task.cancel()
