@@ -1,6 +1,8 @@
 from hypothesis import HealthCheck, settings
 import hypothesis
 
+pytest_plugins = ["provide.testkit.process.fixtures"]
+
 
 hypothesis.settings.register_profile(
     "ci",
