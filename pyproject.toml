@@ -55,7 +55,7 @@ dev = [
     "provide-testkit[quality,advanced-testing]",
 ]
 docs = [
-    "provide-foundry",
+    # provide-foundry - install separately for docs builds
 ]
 
 [project.scripts]
@@ -320,9 +320,6 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
-
-[tool.uv.sources]
-provide-foundry = { path = "../provide-foundry", editable = true }
 
 [tool.bandit]
 exclude_dirs = [".venv", "tests", "workenv"]
