@@ -323,3 +323,6 @@ exclude_lines = [
 
 [tool.uv.sources]
 provide-foundry = { path = "../provide-foundry", editable = true }
+
+[tool.bandit]
+exclude_dirs = [".venv", "tests", "workenv"]
