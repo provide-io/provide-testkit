@@ -40,14 +40,14 @@ classifiers = [
 ]
 dependencies = [
     "provide-foundation",
-    "click>=8.1.8", # For CLI testing utilities
-    # Core testing - use highest versions across ecosystem
-    "pytest>=8.3.5",
-    "pytest-asyncio>=0.26.0",
-    "pytest-cov>=6.3.0",
-    "pytest-mock>=3.15.0",
-    "pytest-xdist>=3.8.0",
-    "mkdocs-material>=9.7.1",
+    "click", # For CLI testing utilities
+    # Core testing - use highest versions across ecosystem (no upper bounds)
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-mock",
+    "pytest-xdist",
+    "mkdocs-material",
 ]
 
 [project.urls]
@@ -58,10 +58,10 @@ Issues = "https://github.com/provide-io/provide-testkit/issues"
 
 [dependency-groups]
 dev = [
-    "mkdocs-autorefs>=1.4.3",
-    "mkdocs-macros-plugin>=1.4.0",
-    "mkdocstrings>=0.30.1",
-    "mkdocstrings-python>=1.18.2",
+    "mkdocs-autorefs",
+    "mkdocs-macros-plugin",
+    "mkdocstrings",
+    "mkdocstrings-python",
     "provide-testkit[quality,advanced-testing]",
 ]
 docs = [
@@ -80,13 +80,13 @@ provide_testkit = "provide.testkit.pytest_plugin"
 
 # Comprehensive code quality tools (no upper bounds - use latest)
 quality = [
-    "ruff>=0.11.8",
-    "mypy>=1.17.1",
-    "bandit>=1.8.3",
-    "coverage[toml]>=7.0.0",
-    "radon>=6.0.0",
-    "interrogate>=1.7.0",  # Note: requires 'py' package with known vulnerability (PYSEC-2022-42969, low risk)
-    "mutmut>=3.3.1",
+    "ruff",
+    "mypy",
+    "bandit",
+    "coverage[toml]",
+    "radon",
+    "interrogate",  # Note: requires 'py' package with known vulnerability (PYSEC-2022-42969, low risk)
+    "mutmut",
 ]
 
 # Advanced type checking (no upper bounds - use latest)
@@ -124,29 +124,28 @@ profiling = [
 
 # Network and HTTP testing (no upper bounds - use latest)
 transport = [
-    "httpx>=0.28.1",
-    "pytest-httpx>=0.35.0",
-    "h2>=4.3.0",
+    "httpx",
+    "pytest-httpx",
+    "h2",
 ]
 
 # Cryptography (no upper bounds - use latest)
 crypto = [
-    "cryptography>=45.0.7",  # SHARED with Foundation
+    "cryptography",
     "types-cryptography",
 ]
 
 # System monitoring (no upper bounds - use latest)
 process = [
-    "psutil>=7.0.0",  # SHARED with Foundation
-    "setproctitle>=1.3.7",  # SHARED with Foundation - for .pth blocker
+    "psutil",
 ]
 
 # gRPC/Protobuf development (no upper bounds - use latest)
 grpc = [
-    "grpc-stubs>=1.53.0.6",
-    "grpcio>=1.76.0",
-    "grpcio-tools>=1.76.0",
-    "grpcio-health-checking>=1.76.0",
+    "grpc-stubs",
+    "grpcio",
+    "grpcio-tools",
+    "grpcio-health-checking",
 ]
 
 # Build and release tools (no upper bounds - use latest)
@@ -212,9 +211,9 @@ fuzzing = [
 
 # Comprehensive security scanning (no upper bounds - use latest)
 security = [
-    "bandit>=1.8.3",           # Python SAST (static application security testing)
-    "safety>=3.0.0",           # Dependency vulnerability scanner (PyUp database)
-    "pip-audit>=2.7.0",        # PyPI security advisory scanner
+    "bandit",           # Python SAST (static application security testing)
+    "safety",           # Dependency vulnerability scanner (PyUp database)
+    "pip-audit",        # PyPI security advisory scanner
     # Note: semgrep removed due to dependency conflicts with mkdocs ecosystem
     # Install separately: uv pip install semgrep
     # Note: gitleaks and trufflehog are Go binaries, not pip packages
