@@ -1,95 +1,81 @@
-name: 🚀 Release
+name: 🚀 Release to PyPI
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
-  workflow_dispatch:
-    inputs:
-      dry-run:
-        description: 'Dry run (validate without publishing)'
-        type: boolean
-        default: true
-      test-pypi:
-        description: 'Release to TestPyPI instead of PyPI'
-        type: boolean
-        default: false
-
-env:
-  UV_VERSION: "0.9.13"
 
 jobs:
   build:
-    name: 🏗️ Build Package
+    name: 📦 Build Distribution
     runs-on: ubuntu-latest
-
     steps:
-      - name: 📥 Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-
-      - name: ⚡ Install uv
-        uses: astral-sh/setup-uv@v4
-        with:
-          version: ${{ env.UV_VERSION }}
-
-      - name: 📦 Setup Environment
-        run: |
-          uv venv workenv
-          source workenv/bin/activate
-          uv pip install -e ".[dev]"
-
-      - name: 🧹 Quality Checks
-        run: |
-          source workenv/bin/activate
-          ruff check src/ --output-format=github || true
-          ruff format --check src/ || true
-          mypy src/ --show-error-codes --pretty || true
-        continue-on-error: true
-
-      - name: 🧪 Run Tests
-        run: |
-          source workenv/bin/activate
-          pytest
-
-      - name: 🏗️ Build Package
-        run: |
-          source workenv/bin/activate
-          uv build
-
-      - name: 📤 Upload Build Artifacts
+          python-version: '3.11'
+      - name: Install uv
+        run: pip install uv
+      - name: Build package
+        run: uv build
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: python-package-distributions
+          name: dist
           path: dist/
+
+  test-release:
+    name: 🧪 Test Release to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        continue-on-error: true
 
   release:
     name: 🚀 Release to PyPI
-    needs: build
+    needs: test-release
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ github.event.inputs.test-pypi == 'true' && 'testpypi' || 'pypi' }}
-      url: ${{ steps.release.outputs.pypi-url }}
-
+    environment: pypi
     permissions:
-      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
-
+      id-token: write
     steps:
-      - name: 📥 Download Build Artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: python-package-distributions
+          name: dist
           path: dist/
-
-      - name: 🚀 Release Package
-        id: release
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-          repository-url: ${{ github.event.inputs.test-pypi == 'true' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
-          print-hash: ${{ github.event.inputs.dry-run || 'false' }}
-          packages-dir: 'dist/'
+        continue-on-error: true
+
+  github-release:
+    name: 📋 Create GitHub Release
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+          generate_release_notes: true
