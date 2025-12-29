@@ -24,7 +24,6 @@ from provide.testkit.chaos.io_strategies import (  # type: ignore[import-untyped
     permission_patterns,
 )
 
-
 CHAOS_SETTINGS = {"deadline": None, "suppress_health_check": [HealthCheck.too_slow]}
 
 
