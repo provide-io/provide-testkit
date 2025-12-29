@@ -150,10 +150,8 @@ class QualityConfigError(QualityError):
     """Exception for configuration errors."""
 
 
-
 class QualityToolError(QualityError):
     """Exception for tool execution errors."""
-
 
 
 # 🧪✅🔚
