@@ -30,15 +30,15 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "provide-foundation",
-    "click", # For CLI testing utilities
-    # Core testing - use highest versions across ecosystem (no upper bounds)
-    "pytest",
-    "pytest-asyncio",
-    "pytest-cov",
-    "pytest-mock",
-    "pytest-xdist",
-    "mkdocs-material",
+    "provide-foundation>=0.0.1111",
+    "click>=8.3.1", # For CLI testing utilities - SHARED with Foundation
+    # Core testing - minimum version constraints for stability
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.0.0",
+    "pytest-mock>=3.15.1",
+    "pytest-xdist>=3.8.0",
+    "mkdocs-material>=9.7.1",
 ]
 
 [project.urls]
@@ -115,20 +115,21 @@ profiling = [
 
 # Network and HTTP testing (no upper bounds - use latest)
 transport = [
-    "httpx",
+    "httpx>=0.28.1",  # SHARED with Foundation
     "pytest-httpx",
     "h2",
 ]
 
 # Cryptography (no upper bounds - use latest)
 crypto = [
-    "cryptography",
+    "cryptography>=45.0.7",  # SHARED with Foundation
     "types-cryptography",
 ]
 
 # System monitoring (no upper bounds - use latest)
 process = [
-    "psutil",
+    "psutil>=7.0.0",  # SHARED with Foundation
+    "setproctitle>=1.3.7",  # SHARED with Foundation - for .pth blocker
 ]
 
 # gRPC/Protobuf development (no upper bounds - use latest)
