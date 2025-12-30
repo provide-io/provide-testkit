@@ -292,7 +292,9 @@ show_error_codes = true
 minversion = "7.0"
 addopts = "-ra -s --strict-markers --strict-config"
 # Parallel execution: pytest -n <workers> (range: 2-16, recommend: CPU cores or 8, max: 16 to avoid xdist hang)
+asyncio_mode = "auto"
 testpaths = ["tests"]
+pythonpath = ["src", "."]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
