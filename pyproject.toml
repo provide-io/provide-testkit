@@ -31,14 +31,14 @@ classifiers = [
 ]
 dependencies = [
     "provide-foundation",
-    "click>=8.1.8", # For CLI testing utilities
-    # Core testing - use highest versions across ecosystem
-    "pytest>=8.3.5",
-    "pytest-asyncio>=0.26.0",
-    "pytest-cov>=6.3.0",
-    "pytest-mock>=3.15.0",
-    "pytest-xdist>=3.8.0",
-    "mkdocs-material>=9.6.20",
+    "click", # For CLI testing utilities
+    # Core testing - use highest versions across ecosystem (no upper bounds)
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-mock",
+    "pytest-xdist",
+    "mkdocs-material",
 ]
 
 [project.urls]
@@ -49,10 +49,10 @@ Issues = "https://github.com/provide-io/provide-testkit/issues"
 
 [dependency-groups]
 dev = [
-    "mkdocs-autorefs>=1.4.3",
-    "mkdocs-macros-plugin>=1.4.0",
-    "mkdocstrings>=0.30.1",
-    "mkdocstrings-python>=1.18.2",
+    "mkdocs-autorefs",
+    "mkdocs-macros-plugin",
+    "mkdocstrings",
+    "mkdocstrings-python",
     "provide-testkit[quality,advanced-testing]",
 ]
 docs = [
@@ -69,142 +69,142 @@ provide_testkit = "provide.testkit.pytest_plugin"
 
 [project.optional-dependencies]
 
-# Comprehensive code quality tools
+# Comprehensive code quality tools (no upper bounds - use latest)
 quality = [
-    "ruff>=0.11.8",
-    "mypy>=1.17.1",
-    "bandit>=1.8.3",
-    "coverage[toml]>=7.0.0",
-    "radon>=6.0.0",
-    "interrogate>=1.7.0",  # Note: requires 'py' package with known vulnerability (PYSEC-2022-42969, low risk)
-    "mutmut>=3.3.1",
+    "ruff",
+    "mypy",
+    "bandit",
+    "coverage[toml]",
+    "radon",
+    "interrogate",  # Note: requires 'py' package with known vulnerability (PYSEC-2022-42969, low risk)
+    "mutmut",
 ]
 
-# Advanced type checking
+# Advanced type checking (no upper bounds - use latest)
 typecheck = [
-    "mypy>=1.17.1",
-    "pyright>=1.1.401",
-    "pyre-check>=0.9.23",
-    "pyre-extensions>=0.0.32",
-    "pyrefly>=0.18.1",
-    "ty>=0.0.1a6",
-    "types-cryptography>=3.3.23.2",
-    "types-grpcio>=1.0.0.20250603",
-    "types-toml>=0.10.8.20240310",
-    "types-protobuf>=6.30.2.20250516",
-    "types-click>=7.1.8",
-    "types-pyyaml>=6.0.12.20250915",
-    "types-psutil>=7.0.0.20250822",
+    "mypy",
+    "pyright",
+    "pyre-check",
+    "pyre-extensions",
+    "pyrefly",
+    "ty",
+    "types-cryptography",
+    "types-grpcio",
+    "types-toml",
+    "types-protobuf",
+    "types-click",
+    "types-pyyaml",
+    "types-psutil",
 ]
 
-# Property-based and advanced testing
+# Property-based and advanced testing (no upper bounds - use latest)
 advanced-testing = [
-    "hypothesis>=6.131.28",
-    "freezegun>=1.5.1",
-    "behave>=1.2.6",
-    "pytest-benchmark>=5.1.0",
-    "pytest-testmon>=2.1.3",
-    "pytest-json-report>=1.5.0",
+    "hypothesis",
+    "freezegun",
+    "behave",
+    "pytest-benchmark",
+    "pytest-testmon",
+    "pytest-json-report",
 ]
 
-# Performance profiling
+# Performance profiling (no upper bounds - use latest)
 profiling = [
-    "memray>=1.17.2",
-    "viztracer>=1.0.2",
+    "memray",
+    "viztracer",
 ]
 
-# Network and HTTP testing
+# Network and HTTP testing (no upper bounds - use latest)
 transport = [
-    "httpx>=0.28.1",
-    "pytest-httpx>=0.35.0",
-    "h2>=4.3.0",
+    "httpx",
+    "pytest-httpx",
+    "h2",
 ]
 
-# Cryptography
+# Cryptography (no upper bounds - use latest)
 crypto = [
-    "cryptography>=45.0.7",
-    "types-cryptography>=3.3.23.2",
+    "cryptography",
+    "types-cryptography",
 ]
 
-# System monitoring
+# System monitoring (no upper bounds - use latest)
 process = [
-    "psutil>=7.0.0",
+    "psutil",
 ]
 
-# gRPC/Protobuf development
+# gRPC/Protobuf development (no upper bounds - use latest)
 grpc = [
-    "grpc-stubs>=1.53.0.6",
-    "grpcio>=1.76.0",
-    "grpcio-tools>=1.76.0",
-    "grpcio-health-checking>=1.76.0",
+    "grpc-stubs",
+    "grpcio",
+    "grpcio-tools",
+    "grpcio-health-checking",
 ]
 
-# Build and release tools
+# Build and release tools (no upper bounds - use latest)
 build = [
-    "hatch>=1.14.1",
-    "twine>=6.1.0",
-    "uv>=0.6.5",
-    "pre-commit>=3.5.0",
+    "hatch",
+    "twine",
+    "uv",
+    "pre-commit",
 ]
 
-# Documentation tools - comprehensive set for entire ecosystem
+# Documentation tools - comprehensive set for entire ecosystem (no upper bounds - use latest)
 docs = [
     # Core MkDocs
-    "mkdocs>=1.6.0",
-    "mkdocs-material>=9.6.0",
-    "mkdocstrings[python]>=0.26.0",
-    "mkdocs-autorefs>=1.4.0",
-    "mike>=2.1.0",
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "mkdocs-autorefs",
+    "mike",
 
     # Organization and navigation
-    "mkdocs-gen-files>=0.5.0",
-    "mkdocs-literate-nav>=0.6.0",
-    "mkdocs-section-index>=0.3.0",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-section-index",
 
     # Content enhancement
-    "markdown-callouts>=0.4",
-    "markdown-exec>=1.8",
-    "markdown-include>=0.8.0",
-    "pymdown-extensions>=10.16.0",
+    "markdown-callouts",
+    "markdown-exec",
+    "markdown-include",
+    "pymdown-extensions",
 
     # Advanced plugins
-    "mkdocs-git-revision-date-localized-plugin>=1.2.0",
-    "mkdocs-macros-plugin>=1.0.0",
-    "mkdocs-include-markdown-plugin>=7.0.0",
-    "mkdocs-coverage>=1.0",
-    "mkdocs-llmstxt>=0.2",
-    "mkdocs-minify-plugin>=0.8",
-    "mkdocs-redirects>=1.2",
+    "mkdocs-git-revision-date-localized-plugin",
+    "mkdocs-macros-plugin",
+    "mkdocs-include-markdown-plugin",
+    "mkdocs-coverage",
+    "mkdocs-llmstxt",
+    "mkdocs-minify-plugin",
+    "mkdocs-redirects",
 
     # Code quality
     "linkchecker",
-    "mkdocs-htmlproofer-plugin>=1.4.0",
+    "mkdocs-htmlproofer-plugin",
 
     # Additional dependencies
-    "pygments>=2.19.0",
-    "griffe>=1.14.0",
-    "watchdog>=3.0.0",
-    "pyyaml>=6.0.0",
+    "pygments",
+    "griffe",
+    "watchdog",
+    "pyyaml",
 ]
 
-# Misc utilities
+# Misc utilities (no upper bounds - use latest)
 utils = [
-    "pyyaml>=6.0.2",
-    "reuse>=1.1.0",
-    "tabulate>=0.9.0",
-    "sapp>=0.4",
+    "pyyaml",
+    "reuse",
+    "tabulate",
+    "sapp",
 ]
 
-# Fuzzing and test generation
+# Fuzzing and test generation (no upper bounds - use latest)
 fuzzing = [
-    "pynguin>=0.40.0",
+    "pynguin",
 ]
 
-# Comprehensive security scanning
+# Comprehensive security scanning (no upper bounds - use latest)
 security = [
-    "bandit>=1.8.3",           # Python SAST (static application security testing)
-    "safety>=3.0.0",           # Dependency vulnerability scanner (PyUp database)
-    "pip-audit>=2.7.0",        # PyPI security advisory scanner
+    "bandit",           # Python SAST (static application security testing)
+    "safety",           # Dependency vulnerability scanner (PyUp database)
+    "pip-audit",        # PyPI security advisory scanner
     # Note: semgrep removed due to dependency conflicts with mkdocs ecosystem
     # Install separately: uv pip install semgrep
     # Note: gitleaks and trufflehog are Go binaries, not pip packages
