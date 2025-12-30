@@ -42,7 +42,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/provide-io/provide-testkit"
+Homepage = "https://foundry.provide.io/testkit/"
+Documentation = "https://foundry.provide.io/testkit/"
 Repository = "https://github.com/provide-io/provide-testkit"
 Issues = "https://github.com/provide-io/provide-testkit/issues"
 
