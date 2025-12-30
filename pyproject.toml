@@ -135,7 +135,7 @@ process = [
 # gRPC/Protobuf development (no upper bounds - use latest)
 grpc = [
     "grpc-stubs",
-    "grpcio",
+    "grpcio>=1.76.0",
     "grpcio-tools",
     "grpcio-health-checking",
 ]
