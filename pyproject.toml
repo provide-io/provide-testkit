@@ -1,6 +1,12 @@
 #
-# pyproject.toml
+# provide-testkit/pyproject.toml
 #
+# Testing utilities and fixtures for the provide ecosystem.
+#
+
+[build-system]
+requires = ["setuptools>=75.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "provide-testkit"
@@ -46,26 +52,6 @@ Homepage = "https://foundry.provide.io/testkit/"
 Documentation = "https://foundry.provide.io/testkit/"
 Repository = "https://github.com/provide-io/provide-testkit"
 Issues = "https://github.com/provide-io/provide-testkit/issues"
-
-[dependency-groups]
-dev = [
-    "mkdocs-autorefs",
-    "mkdocs-macros-plugin",
-    "mkdocstrings",
-    "mkdocstrings-python",
-    "provide-testkit[quality,advanced-testing]",
-]
-docs = [
-    # provide-foundry - install separately for docs builds
-]
-
-[project.scripts]
-provide-testkit = "provide.testkit.main:main"
-provide-testkit-install-pth = "provide.testkit._install_pth:_cli_install"
-provide-testkit-uninstall-pth = "provide.testkit._install_pth:_cli_uninstall"
-
-[project.entry-points.pytest11]
-provide_testkit = "provide.testkit.pytest_plugin"
 
 [project.optional-dependencies]
 
@@ -239,9 +225,29 @@ docs-standalone = [
     "provide-testkit[docs]",
 ]
 
-[build-system]
-requires = ["setuptools>=75.0", "wheel"]
-build-backend = "setuptools.build_meta"
+[project.scripts]
+provide-testkit = "provide.testkit.main:main"
+provide-testkit-install-pth = "provide.testkit._install_pth:_cli_install"
+provide-testkit-uninstall-pth = "provide.testkit._install_pth:_cli_uninstall"
+
+[project.entry-points.pytest11]
+provide_testkit = "provide.testkit.pytest_plugin"
+
+[dependency-groups]
+dev = [
+    "mkdocs-autorefs",
+    "mkdocs-macros-plugin",
+    "mkdocstrings",
+    "mkdocstrings-python",
+    "provide-testkit[quality,advanced-testing]",
+]
+docs = [
+    # provide-foundry - install separately for docs builds
+]
+
+################################################################################
+# Build Configuration
+################################################################################
 
 [tool.setuptools]
 packages = {find = {where = ["src"]}}
@@ -254,6 +260,30 @@ packages = {find = {where = ["src"]}}
 
 [tool.setuptools.dynamic]
 version = {file = "VERSION"}
+
+################################################################################
+# Testing
+################################################################################
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -s --strict-markers --strict-config"
+# Parallel execution: pytest -n <workers> (range: 2-16, recommend: CPU cores or 8, max: 16 to avoid xdist hang)
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+################################################################################
+# Code Quality
+################################################################################
 
 [tool.ruff]
 target-version = "py311"
@@ -307,22 +337,6 @@ check_untyped_defs = true
 warn_redundant_casts = true
 warn_unused_ignores = true
 show_error_codes = true
-
-[tool.pytest.ini_options]
-minversion = "7.0"
-addopts = "-ra -s --strict-markers --strict-config"
-# Parallel execution: pytest -n <workers> (range: 2-16, recommend: CPU cores or 8, max: 16 to avoid xdist hang)
-asyncio_mode = "auto"
-testpaths = ["tests"]
-pythonpath = ["src", "."]
-python_files = ["test_*.py", "*_test.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
-    "unit: marks tests as unit tests",
-]
 
 [tool.coverage.run]
 source = ["src"]
