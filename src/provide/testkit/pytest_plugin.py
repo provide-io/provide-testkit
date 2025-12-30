@@ -38,7 +38,6 @@ def pytest_load_initial_conftests() -> None:
     not in this hook, because hooks run too late - xdist imports
     setproctitle before hooks execute.
     """
-    pass
 
 
 # 🧪✅🔚

@@ -16,7 +16,6 @@ from .quality.cli import quality_cli
 @click.version_option()
 def main() -> None:
     """Provide Testkit - Testing utilities for the provide ecosystem."""
-    pass
 
 
 # Add quality commands

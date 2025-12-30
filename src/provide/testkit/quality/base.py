@@ -92,12 +92,10 @@ class BaseQualityFixture(ABC):
     @abstractmethod
     def setup(self) -> None:
         """Setup the quality tool."""
-        pass
 
     @abstractmethod
     def teardown(self) -> None:
         """Cleanup after quality check."""
-        pass
 
     def add_result(self, result: QualityResult) -> None:
         """Add a result to the tracked results."""
@@ -151,13 +149,11 @@ class QualityError(Exception):
 class QualityConfigError(QualityError):
     """Exception for configuration errors."""
 
-    pass
 
 
 class QualityToolError(QualityError):
     """Exception for tool execution errors."""
 
-    pass
 
 
 # 🧪✅🔚

@@ -44,7 +44,6 @@ class SecurityFixture(BaseQualityFixture):
     def teardown(self) -> None:
         """Cleanup security scanner."""
         # No cleanup needed for security scanner
-        pass
 
     def scan(self, path: Path) -> dict[str, Any]:
         """Perform security scan.

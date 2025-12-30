@@ -86,7 +86,6 @@ def mock_server(free_port: int) -> Generator[dict[str, Any], None, None]:
 
         def log_message(self, format: str, *args: Any) -> None:
             """Suppress log messages."""
-            pass
 
     server = HTTPServer(("localhost", free_port), MockHandler)
     server_thread = threading.Thread(target=server.serve_forever)

@@ -261,7 +261,6 @@ def create_temp_file(
         if cleanup:
             return path
         # For non-cleanup mode, return the path but don't use context manager
-        pass
 
     # If cleanup=False, we need to create the file manually
     fd, temp_path = tempfile.mkstemp(suffix=suffix, prefix=prefix, text=True)

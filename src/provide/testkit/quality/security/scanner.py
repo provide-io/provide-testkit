@@ -236,7 +236,6 @@ class SecurityScanner:
         """
         # Extension point: Future versions may customize bandit config here
         # Current implementation relies on defaults + post-scan filtering
-        pass
 
     def _discover_python_files(self, path: Path) -> list[str]:
         """Discover Python files to scan."""

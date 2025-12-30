@@ -1,5 +1,5 @@
-from hypothesis import HealthCheck, settings
 import hypothesis
+from hypothesis import HealthCheck
 
 pytest_plugins = ["provide.testkit.process.fixtures"]
 
