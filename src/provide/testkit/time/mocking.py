@@ -65,7 +65,6 @@ def mock_sleep_with_callback() -> Callable[[Callable[[float], None] | None], Moc
         def sleep_side_effect(seconds: float) -> None:
             if callback:
                 callback(seconds)
-            return None
 
         mock = Mock(side_effect=sleep_side_effect)
         return mock

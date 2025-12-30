@@ -44,7 +44,6 @@ class ComplexityFixture(BaseQualityFixture):
     def teardown(self) -> None:
         """Cleanup complexity analyzer."""
         # No cleanup needed for complexity analyzer
-        pass
 
     def analyze(self, path: Path) -> dict[str, Any]:
         """Perform complexity analysis.
