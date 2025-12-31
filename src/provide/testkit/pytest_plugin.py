@@ -38,8 +38,8 @@ import structlog
 def _strip_foundation_context(
     _logger: object,
     _method_name: str,
-    event_dict: dict[str, object],
-) -> dict[str, object]:
+    event_dict: dict,
+) -> dict:
     """Strip Foundation-specific bound context before rendering.
 
     Foundation binds logger_name and other context that PrintLogger
@@ -53,7 +53,7 @@ def _strip_foundation_context(
 structlog.configure(
     processors=[
         structlog.processors.TimeStamper(fmt="iso"),
-        _strip_foundation_context,  # type: ignore[list-item]
+        _strip_foundation_context,
         structlog.dev.ConsoleRenderer(),
     ],
     wrapper_class=structlog.BoundLogger,
