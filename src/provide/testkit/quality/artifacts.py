@@ -173,7 +173,7 @@ class ArtifactManager:
         }
 
         for tool, result in results.items():
-            summary["tools"][tool] = {  # type: ignore[index]
+            summary["tools"][tool] = {
                 "passed": result.passed,
                 "score": result.score,
                 "execution_time": result.execution_time,

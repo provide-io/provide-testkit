@@ -192,7 +192,7 @@ class AsyncRateLimiter:
 _async_fixture: Any = pytest_asyncio.fixture if pytest_asyncio else pytest.fixture
 
 
-@_async_fixture  # type: ignore[misc]
+@_async_fixture  # type: ignore[untyped-decorator]
 async def clean_event_loop() -> AsyncGenerator[None, None]:
     """
     Ensure clean event loop for async tests.
