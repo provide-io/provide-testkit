@@ -124,7 +124,7 @@ def temp_config_file(
                             f.write(f"{key} = {value}\n")
             elif format == "yaml":
                 try:
-                    import yaml
+                    import yaml  # type: ignore[import-untyped]
 
                     yaml.safe_dump(content, f)
                 except ImportError as e:

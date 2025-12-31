@@ -20,7 +20,7 @@ from typing import Any
 from provide.foundation.file import temp_file
 
 try:
-    import memray
+    import memray  # type: ignore[import-not-found]
 
     MEMRAY_AVAILABLE = True
 except ImportError:
