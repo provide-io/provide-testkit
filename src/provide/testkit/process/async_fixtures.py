@@ -29,7 +29,7 @@ import pytest
 try:
     import pytest_asyncio
 except ImportError:  # pragma: no cover - pytest-asyncio is a test dependency
-    pytest_asyncio = None
+    pytest_asyncio = None  # type: ignore[assignment]
 
 try:
     import pytest_asyncio
@@ -133,7 +133,7 @@ class AsyncPipeline:
         result = data
         for stage in self.stages:
             if asyncio.iscoroutinefunction(stage):
-                result = await stage(result)  # type: ignore[arg-type]
+                result = await stage(result)
             else:
                 result = stage(result)
             self.results.append(result)
@@ -189,7 +189,7 @@ class AsyncRateLimiter:
         return None
 
 
-_async_fixture = pytest_asyncio.fixture if pytest_asyncio else pytest.fixture
+_async_fixture: Any = pytest_asyncio.fixture if pytest_asyncio else pytest.fixture
 
 
 @_async_fixture
