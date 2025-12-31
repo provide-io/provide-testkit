@@ -51,9 +51,9 @@ def _strip_foundation_context(
 
 
 structlog.configure(
-    processors=[  # type: ignore[list-item]
+    processors=[
         structlog.processors.TimeStamper(fmt="iso"),
-        _strip_foundation_context,
+        _strip_foundation_context,  # type: ignore[list-item]
         structlog.dev.ConsoleRenderer(),
     ],
     wrapper_class=structlog.BoundLogger,
