@@ -139,7 +139,7 @@ class DocumentationChecker:
         # Verbosity and output
         config["verbose"] = self.config.get("verbose", 0)
         if self.config.get("quiet", False):
-            config["quiet"] = True
+            config["quiet"] = True  # type: ignore[assignment]
 
         return config
 

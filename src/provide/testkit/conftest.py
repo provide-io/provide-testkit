@@ -26,7 +26,7 @@ __all__ = [
 ]
 
 # Make pytest discover fixtures
-pytest_plugins = []
+pytest_plugins: list[str] = []
 
 
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:

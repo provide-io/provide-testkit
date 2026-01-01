@@ -58,7 +58,7 @@ def quality_gate(
 
             # Run quality gates
             runner = QualityRunner()
-            results = runner.run_with_gates(
+            passed, tool_results = runner.run_with_gates(
                 analysis_path,
                 gates,
                 artifact_dir=Path(artifact_dir) if artifact_dir else None,
@@ -66,14 +66,14 @@ def quality_gate(
             )
 
             # Check if gates passed
-            if not results.passed:
-                failed_tools = [tool for tool, result in results.results.items() if not result.passed]
+            if not passed:
+                failed_tools = [tool for tool, result in tool_results.items() if not result.passed]
                 raise AssertionError(f"Quality gates failed for tools: {failed_tools}")
 
             # Execute original function
             return func(*args, **kwargs)
 
-        return wrapper
+        return wrapper  # type: ignore[return-value]
 
     return decorator
 
@@ -156,10 +156,8 @@ def complexity_gate(
     if min_score is not None:
         gate_config["min_score"] = min_score
 
-    if not gate_config:
-        gate_config = True  # Use default requirements
-
-    return quality_gate({"complexity": gate_config}, path, artifact_dir)
+    gate_config_value: dict[str, Any] | bool = gate_config if gate_config else True
+    return quality_gate({"complexity": gate_config_value}, path, artifact_dir)
 
 
 def documentation_gate(
@@ -196,10 +194,8 @@ def documentation_gate(
     if min_score is not None:
         gate_config["min_score"] = min_score
 
-    if not gate_config:
-        gate_config = True  # Use default requirements
-
-    return quality_gate({"documentation": gate_config}, path, artifact_dir)
+    gate_config_value: dict[str, Any] | bool = gate_config if gate_config else True
+    return quality_gate({"documentation": gate_config_value}, path, artifact_dir)
 
 
 def performance_gate(
@@ -235,7 +231,7 @@ def performance_gate(
             # Extract and return the actual function result
             return _extract_function_result(result)
 
-        return wrapper
+        return wrapper  # type: ignore[return-value]
 
     return decorator
 
@@ -246,7 +242,7 @@ def _create_performance_profiler(
     """Create and configure a performance profiler."""
     from .profiling.profiler import PerformanceProfiler
 
-    config = {"profile_memory": True, "profile_cpu": True}
+    config: dict[str, Any] = {"profile_memory": True, "profile_cpu": True}
 
     if max_memory_mb is not None:
         config["max_memory_mb"] = max_memory_mb
@@ -335,7 +331,7 @@ def quality_check(
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             # Build gates configuration
-            gates = {}
+            gates: dict[str, Any] = {}
 
             if coverage is not None:
                 gates["coverage"] = coverage
@@ -371,7 +367,7 @@ def quality_check(
             # Execute the decorated function
             return func_with_gates(*args, **kwargs)
 
-        return wrapper
+        return wrapper  # type: ignore[return-value]
 
     return decorator
 

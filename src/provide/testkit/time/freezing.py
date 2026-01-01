@@ -9,7 +9,7 @@ Fixtures for freezing time and controlling time flow in tests."""
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from contextlib import suppress
 import datetime
 
@@ -47,7 +47,7 @@ def freeze_time() -> Callable[[datetime.datetime | None], FrozenTime]:
 
 
 @pytest.fixture
-def time_machine(request: pytest.FixtureRequest) -> TimeMachine:
+def time_machine(request: pytest.FixtureRequest) -> Generator[TimeMachine, None, None]:
     """Advanced time manipulation fixture.
 
     Yields:

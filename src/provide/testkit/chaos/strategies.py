@@ -14,7 +14,7 @@ import sys
 from typing import Any
 
 from hypothesis import strategies as st
-from hypothesis.strategies import DrawFn, composite
+from hypothesis.strategies import DrawFn, SearchStrategy, composite
 
 # Common exception types for failure injection
 COMMON_EXCEPTIONS: tuple[type[Exception], ...] = (
@@ -126,7 +126,7 @@ def malformed_inputs(
             result = parse(data)  # Should handle gracefully
         ```
     """
-    strategies = []
+    strategies: list[SearchStrategy[Any]] = []
 
     # Text inputs
     strategies.append(st.text(min_size=0, max_size=1000))
@@ -185,7 +185,7 @@ def unicode_chaos(
             result = process_text(text)
         ```
     """
-    strategies = []
+    strategies: list[SearchStrategy[str]] = []
 
     # Basic Unicode text
     strategies.append(st.text(min_size=0, max_size=100))
@@ -224,7 +224,8 @@ def unicode_chaos(
         st.text(alphabet=st.characters(min_codepoint=0x0300, max_codepoint=0x036F), min_size=1, max_size=20)
     )
 
-    return draw(st.one_of(*strategies))
+    result: str = draw(st.one_of(*strategies))
+    return result
 
 
 @composite
@@ -288,7 +289,7 @@ def edge_values(
         ```
     """
     if value_type is int:
-        edges = [
+        int_edges: list[SearchStrategy[int]] = [
             st.just(0),
             st.just(1),
             st.just(-1),
@@ -299,10 +300,10 @@ def edge_values(
             st.just(2**63 - 1),  # INT64_MAX
             st.just(-(2**63)),  # INT64_MIN
         ]
-        return draw(st.one_of(*edges))
+        return draw(st.one_of(*int_edges))
 
     elif value_type is float:
-        edges = [
+        float_edges: list[SearchStrategy[float]] = [
             st.just(0.0),
             st.just(-0.0),
             st.just(1.0),
@@ -314,10 +315,10 @@ def edge_values(
             st.just(sys.float_info.max),
             st.just(sys.float_info.epsilon),
         ]
-        return draw(st.one_of(*edges))
+        return draw(st.one_of(*float_edges))
 
     elif value_type is str:
-        edges = [
+        str_edges: list[SearchStrategy[str]] = [
             st.just(""),
             st.just(" "),
             st.just("\n"),
@@ -329,7 +330,7 @@ def edge_values(
             st.just("None"),
             st.just("undefined"),
         ]
-        return draw(st.one_of(*edges))
+        return draw(st.one_of(*str_edges))
 
     else:
         # Generic approach for other types

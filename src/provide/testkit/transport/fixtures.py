@@ -31,7 +31,7 @@ def free_port() -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(("", 0))
         s.listen(1)
-        port = s.getsockname()[1]
+        port: int = s.getsockname()[1]
     return port
 
 
@@ -46,8 +46,8 @@ def mock_server(free_port: int) -> Generator[dict[str, Any], None, None]:
     Yields:
         Dict with server info including url, port, and server instance.
     """
-    responses = {}
-    requests_received = []
+    responses: dict[str, dict[str, Any]] = {}
+    requests_received: list[dict[str, Any]] = []
 
     class MockHandler(BaseHTTPRequestHandler):
         """Handler for mock HTTP server."""
@@ -73,7 +73,7 @@ def mock_server(free_port: int) -> Generator[dict[str, Any], None, None]:
                     "method": "POST",
                     "path": self.path,
                     "headers": dict(self.headers),
-                    "body": body,
+                    "body": body.decode("utf-8", errors="replace") if body else "",
                 }
             )
 

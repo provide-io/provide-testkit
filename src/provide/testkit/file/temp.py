@@ -107,7 +107,7 @@ class TempFileManager:
             ImportError: If PyYAML is not available.
         """
         try:
-            import yaml
+            import yaml  # type: ignore[import-untyped]
         except ImportError as e:
             raise ImportError("PyYAML required for YAML file creation") from e
 

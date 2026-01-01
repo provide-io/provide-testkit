@@ -160,7 +160,7 @@ def _build_gates_config(
     config: Path | None,
 ) -> dict[str, Any]:
     """Build gates configuration from CLI arguments and config file."""
-    gates = {}
+    gates: dict[str, Any] = {}
 
     # Add CLI-specified gates
     if coverage is not None:
@@ -200,9 +200,9 @@ def _handle_gate_results(results: Any, verbose: bool) -> None:
     """Handle and display gate results, exit on failure."""
     # Print summary
     if results.passed:
-        click.echo("✅ Quality gates passed!", fg="green")
+        click.secho("✅ Quality gates passed!", fg="green")
     else:
-        click.echo("❌ Quality gates failed!", fg="red")
+        click.secho("❌ Quality gates failed!", fg="red")
 
     # Print detailed results if verbose
     if verbose:
@@ -391,10 +391,10 @@ def _print_summary(results: dict[str, Any], verbose: bool) -> None:
     total = len(results)
 
     if passed == total:
-        click.echo(f"✅ {passed}/{total} quality checks passed!", fg="green")
+        click.secho(f"✅ {passed}/{total} quality checks passed!", fg="green")
     else:
         failed = total - passed
-        click.echo(f"❌ {failed}/{total} quality checks failed!", fg="red")
+        click.secho(f"❌ {failed}/{total} quality checks failed!", fg="red")
 
     if verbose:
         for tool, result in results.items():

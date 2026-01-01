@@ -71,7 +71,7 @@ def mock_sleep(
         if track_calls:
             tracker.add_call(duration)
         if not instant and side_effect:
-            return side_effect(duration)
+            side_effect(duration)
 
     async def asyncio_sleep_mock(duration: float) -> None:
         """Mock implementation of asyncio.sleep."""
@@ -80,8 +80,7 @@ def mock_sleep(
         if not instant and side_effect:
             result = side_effect(duration)
             if asyncio.iscoroutine(result):
-                return await result
-            return result
+                await result
 
     with (
         patch("time.sleep", side_effect=time_sleep_mock),
@@ -116,7 +115,7 @@ def mock_time_sleep(
         if track_calls:
             tracker.add_call(duration)
         if not instant and side_effect:
-            return side_effect(duration)
+            side_effect(duration)
 
     with patch("time.sleep", side_effect=time_sleep_mock):
         yield tracker
@@ -147,8 +146,7 @@ def mock_asyncio_sleep(
         if not instant and side_effect:
             result = side_effect(duration)
             if asyncio.iscoroutine(result):
-                return await result
-            return result
+                await result
 
     with patch("asyncio.sleep", side_effect=asyncio_sleep_mock):
         yield tracker

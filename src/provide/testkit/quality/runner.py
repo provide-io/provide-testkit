@@ -7,7 +7,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 import time
 from typing import Any
@@ -75,7 +75,7 @@ class QualityRunner:
         elif tool_name == "profiling":
             from .profiling import PerformanceProfiler
 
-            return PerformanceProfiler(self.config.get("profiling", {}))
+            return PerformanceProfiler(self.config.get("profiling", {}))  # type: ignore[return-value]
         elif tool_name == "documentation":
             from .documentation import DocumentationChecker
 
@@ -185,7 +185,8 @@ class QualityRunner:
             return False
 
         if "min_score" in requirement and result.score is not None:
-            return result.score >= requirement["min_score"]
+            passed: bool = result.score >= requirement["min_score"]
+            return passed
 
         return True
 
@@ -318,11 +319,7 @@ class QualityGateResults:
 
     passed: bool
     results: dict[str, QualityResult]
-    failed_gates: list[str] = None
-
-    def __post_init__(self) -> None:
-        if self.failed_gates is None:
-            self.failed_gates = []
+    failed_gates: list[str] = field(default_factory=list)
 
 
 # 🧪✅🔚

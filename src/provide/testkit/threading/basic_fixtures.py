@@ -9,7 +9,7 @@ Core fixtures for creating threads, thread pools, mocks, and thread-local storag
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from concurrent.futures import ThreadPoolExecutor
 import threading
 from typing import Any
@@ -20,9 +20,13 @@ from provide.testkit.mocking import Mock
 
 
 @pytest.fixture
-def test_thread() -> Callable[
-    [Callable[..., Any], tuple[Any, ...], dict[str, Any] | None, bool],
-    threading.Thread,
+def test_thread() -> Generator[
+    Callable[
+        [Callable[..., Any], tuple[Any, ...], dict[str, Any] | None, bool],
+        threading.Thread,
+    ],
+    None,
+    None,
 ]:
     """
     Create a test thread with automatic cleanup.
@@ -65,7 +69,7 @@ def test_thread() -> Callable[
 
 
 @pytest.fixture
-def thread_pool() -> ThreadPoolExecutor:
+def thread_pool() -> Generator[ThreadPoolExecutor, None, None]:
     """
     Create a thread pool executor for testing.
 

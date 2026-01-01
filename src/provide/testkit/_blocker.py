@@ -70,7 +70,7 @@ class SetproctitleImportBlocker:
                     with _debug_file.open("a") as f:
                         f.write(f"🐛📝 [PID {_pid}] Using stub file: {stub_path}\n")
                         f.flush()
-                    loader = importlib.machinery.SourceFileLoader(fullname, stub_path)
+                    loader = importlib.machinery.SourceFileLoader(fullname, str(stub_path))
                     spec = importlib.util.spec_from_file_location(
                         fullname, stub_path, loader=loader, submodule_search_locations=None
                     )
