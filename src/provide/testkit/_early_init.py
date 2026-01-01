@@ -66,8 +66,54 @@ def _get_logger() -> Any:
         return None
 
 
+def _configure_structlog_for_testing() -> None:
+    """Configure structlog with test-safe defaults.
+
+    This must run BEFORE any Foundation modules are imported to ensure that
+    fallback loggers created during circular import resolution have proper
+    configuration. Specifically:
+    - Uses BoundLogger wrapper (supports trace level) instead of BoundLoggerFilteringAtNotset
+    - Strips logger_name and other Foundation-specific context keys before rendering
+    - Disables logger caching for test isolation
+
+    This configuration will be overridden later by Foundation's setup, but this
+    ensures any loggers created during the import phase have valid configuration.
+    """
+    try:
+        import structlog
+
+        if os.getenv("TESTKIT_PTH_LOG"):
+            sys.stderr.write("🔧 EARLY INIT: Configuring structlog for testing\n")
+            sys.stderr.flush()
+
+        def _strip_foundation_context(
+            _logger: object,
+            _method_name: str,
+            event_dict: dict,
+        ) -> dict:
+            """Strip Foundation-specific bound context before rendering."""
+            event_dict.pop("logger_name", None)
+            event_dict.pop("_foundation_level_hint", None)
+            return event_dict
+
+        structlog.configure(
+            processors=[
+                structlog.processors.TimeStamper(fmt="iso"),
+                _strip_foundation_context,
+                structlog.dev.ConsoleRenderer(),
+            ],
+            wrapper_class=structlog.BoundLogger,
+            context_class=dict,
+            logger_factory=structlog.PrintLoggerFactory(file=sys.stdout),
+            cache_logger_on_first_use=False,  # Disable caching for test isolation
+        )
+    except Exception:
+        # Silently ignore - structlog might not be installed
+        pass
+
+
 def _install_blocker() -> None:
-    """Install setproctitle import blocker if in testing context.
+    """Install setproctitle import blocker and configure structlog for testing.
 
     This function is called during Python site initialization via the .pth file.
     It performs quick detection and installs the blocker only if needed.
@@ -84,7 +130,16 @@ def _install_blocker() -> None:
         dependency. The blocker must be installed BEFORE Foundation is imported.
     """
     try:
-        # Only proceed if we're in a testing context
+        # Always configure structlog with test-safe defaults when this module loads.
+        # This is safe because:
+        # 1. This module only loads via .pth file during Python site initialization
+        # 2. Foundation will reconfigure structlog later with proper settings
+        # 3. This ensures any fallback loggers created during import have valid config
+        # We do this unconditionally because _is_testing_context() may not detect
+        # all testing scenarios (e.g., wrknv subprocess invocations).
+        _configure_structlog_for_testing()
+
+        # Only proceed with blocker installation if we're in a testing context
         if not _is_testing_context():
             return
 
@@ -109,6 +164,6 @@ def _install_blocker() -> None:
 _install_blocker()
 
 
-__all__ = ["_get_logger", "_install_blocker", "_is_testing_context"]
+__all__ = ["_configure_structlog_for_testing", "_get_logger", "_install_blocker", "_is_testing_context"]
 
 # 🧪✅🔚
