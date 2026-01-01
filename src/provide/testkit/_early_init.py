@@ -89,8 +89,8 @@ def _configure_structlog_for_testing() -> None:
         def _strip_foundation_context(
             _logger: object,
             _method_name: str,
-            event_dict: dict,
-        ) -> dict:
+            event_dict: dict[str, object],
+        ) -> dict[str, object]:
             """Strip Foundation-specific bound context before rendering."""
             event_dict.pop("logger_name", None)
             event_dict.pop("_foundation_level_hint", None)
@@ -99,7 +99,7 @@ def _configure_structlog_for_testing() -> None:
         structlog.configure(
             processors=[
                 structlog.processors.TimeStamper(fmt="iso"),
-                _strip_foundation_context,
+                _strip_foundation_context,  # type: ignore[list-item]
                 structlog.dev.ConsoleRenderer(),
             ],
             wrapper_class=structlog.BoundLogger,
