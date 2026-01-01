@@ -5,40 +5,32 @@ This directory contains practical examples demonstrating how to use provide-test
 ## Example Categories
 
 ### 🚀 Getting Started
-
-- **[basics/basic_usage.py](https://github.com/provide-io/provide-testkit/blob/main/examples/basics/basic_usage.py)**: Simple examples showing core fixture usage
-- **[basics/first_test.py](https://github.com/provide-io/provide-testkit/blob/main/examples/basics/first_test.py)**: Your first test using provide-testkit
+- **[basics/basic_usage.py](basics/basic_usage.py)**: Simple examples showing core fixture usage
+- **[basics/first_test.py](basics/first_test.py)**: Your first test using provide-testkit
 
 ### 🔍 Quality Analysis
-
-- **[quality/framework_demo.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/framework_demo.py)**: Quality framework demonstration
-- **[quality/decorators_demo.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/decorators_demo.py)**: Quality decorators examples
-- **[quality/generate_reports.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/generate_reports.py)**: Report generation examples
+- **[quality/framework_demo.py](quality/framework_demo.py)**: Quality framework demonstration
+- **[quality/decorators_demo.py](quality/decorators_demo.py)**: Quality decorators examples
+- **[quality/generate_reports.py](quality/generate_reports.py)**: Report generation examples
 
 ### 📁 File and Directory Testing
-
-- **[file/file_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/file/file_testing.py)**: Testing file creation, reading, and manipulation
-- **[file/advanced_file_operations.py](https://github.com/provide-io/provide-testkit/blob/main/examples/file/advanced_file_operations.py)**: Working with complex file workflows
+- **[file/file_testing.py](file/file_testing.py)**: Testing file creation, reading, and manipulation
+- **[file/advanced_file_operations.py](file/advanced_file_operations.py)**: Working with complex file workflows
 
 ### ⚡ Async Testing
-
-- **[async/async_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/async/async_testing.py)**: Testing async/await operations
+- **[async/async_testing.py](async/async_testing.py)**: Testing async/await operations
 
 ### 🌐 Network and Transport Testing
-
-- **[network/http_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/network/http_testing.py)**: Testing HTTP clients with mock servers
+- **[network/http_testing.py](network/http_testing.py)**: Testing HTTP clients with mock servers
 
 ### 💻 CLI and Command-Line Testing
-
-- **[cli/cli_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/cli/cli_testing.py)**: Testing command-line applications
+- **[cli/cli_testing.py](cli/cli_testing.py)**: Testing command-line applications
 
 ### 🧩 Patterns
-
-- **[patterns/mocking_patterns.py](https://github.com/provide-io/provide-testkit/blob/main/examples/patterns/mocking_patterns.py)**: Mocking and test organization patterns
+- **[patterns/mocking_patterns.py](patterns/mocking_patterns.py)**: Mocking and test organization patterns
 
 ### 🔐 Security
-
-- **[security_scan_example.py](https://github.com/provide-io/provide-testkit/blob/main/examples/security_scan_example.py)**: Security scan fixtures and reporting
+- **[security_scan_example.py](security_scan_example.py)**: Security scan fixtures and reporting
 
 ## Running Examples
 
@@ -302,4 +294,4 @@ See [CONTRIBUTING.md](https://github.com/provide-io/provide-testkit/blob/main/CO
 
 ______________________________________________________________________
 
-Ready to explore? Start with [basics/basic_usage.py](https://github.com/provide-io/provide-testkit/blob/main/examples/basics/basic_usage.py) or pick an example that matches your testing needs!
+Ready to explore? Start with [basic_usage.py](basic_usage.py) or pick an example that matches your testing needs!
