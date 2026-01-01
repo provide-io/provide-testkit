@@ -7,7 +7,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from pathlib import Path
 from typing import Any
 
@@ -18,7 +18,7 @@ from ..base import BaseQualityFixture
 try:
     from .profiler import MEMRAY_AVAILABLE, PerformanceProfiler
 except ImportError:
-    PerformanceProfiler = None
+    PerformanceProfiler = None  # type: ignore[misc, assignment]
     MEMRAY_AVAILABLE = False
 
 
@@ -270,16 +270,15 @@ class ProfilingFixture(BaseQualityFixture):
 
 
 @pytest.fixture
-def profiling_fixture() -> ProfilingFixture:
+def profiling_fixture() -> Generator[ProfilingFixture, None, None]:
     """Provide performance profiling fixture.
 
     Returns:
         ProfilingFixture instance
     """
-    fixture = ProfilingFixture()
+    fixture = ProfilingFixture()  # type: ignore[abstract]
     fixture.setup()
     yield fixture
-    fixture.teardown()
 
 
 @pytest.fixture
@@ -300,7 +299,7 @@ def profiling_config() -> dict[str, Any]:
 
 
 @pytest.fixture
-def memory_profiler(profiling_config: dict[str, Any]) -> ProfilingFixture:
+def memory_profiler(profiling_config: dict[str, Any]) -> Generator[ProfilingFixture, None, None]:
     """Provide memory-only profiling fixture.
 
     Args:
@@ -312,14 +311,13 @@ def memory_profiler(profiling_config: dict[str, Any]) -> ProfilingFixture:
     config = profiling_config.copy()
     config.update({"profile_memory": True, "profile_cpu": False})
 
-    fixture = ProfilingFixture(config)
+    fixture = ProfilingFixture(config)  # type: ignore[abstract]
     fixture.setup()
     yield fixture
-    fixture.teardown()
 
 
 @pytest.fixture
-def cpu_profiler(profiling_config: dict[str, Any]) -> ProfilingFixture:
+def cpu_profiler(profiling_config: dict[str, Any]) -> Generator[ProfilingFixture, None, None]:
     """Provide CPU-only profiling fixture.
 
     Args:
@@ -331,10 +329,9 @@ def cpu_profiler(profiling_config: dict[str, Any]) -> ProfilingFixture:
     config = profiling_config.copy()
     config.update({"profile_memory": False, "profile_cpu": True})
 
-    fixture = ProfilingFixture(config)
+    fixture = ProfilingFixture(config)  # type: ignore[abstract]
     fixture.setup()
     yield fixture
-    fixture.teardown()
 
 
 # 🧪✅🔚

@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from pathlib import Path
 from typing import Any
 
@@ -17,7 +18,7 @@ from ..base import BaseQualityFixture
 try:
     from .checker import INTERROGATE_AVAILABLE, DocumentationChecker
 except ImportError:
-    DocumentationChecker = None
+    DocumentationChecker = None  # type: ignore[misc, assignment]
     INTERROGATE_AVAILABLE = False
 
 
@@ -135,7 +136,7 @@ class DocumentationFixture(BaseQualityFixture):
 
 
 @pytest.fixture
-def documentation_checker() -> DocumentationFixture:
+def documentation_checker() -> Generator[DocumentationFixture, None, None]:
     """Provide documentation coverage checker fixture.
 
     Returns:
@@ -166,7 +167,7 @@ def documentation_config() -> dict[str, Any]:
 
 
 @pytest.fixture
-def documentation_checker_strict(documentation_config: dict[str, Any]) -> DocumentationFixture:
+def documentation_checker_strict(documentation_config: dict[str, Any]) -> Generator[DocumentationFixture, None, None]:
     """Provide strict documentation checker fixture.
 
     Args:

@@ -32,9 +32,9 @@ class MockContext(CLIContext):
     def __init__(self, **kwargs: Any) -> None:
         """Initialize mock context with tracking."""
         super().__init__(**kwargs)
-        self.calls = []
-        self.saved_configs = []
-        self.loaded_configs = []
+        self.calls: list[str] = []
+        self.saved_configs: list[str | Path] = []
+        self.loaded_configs: list[str | Path] = []
 
     def save_config(self, path: str | Path) -> None:
         """Track save_config calls."""
@@ -85,7 +85,7 @@ def isolated_cli_runner(
 def temp_config_file(
     content: dict[str, Any] | str,
     format: str = "json",
-) -> Path:
+) -> Generator[Path, None, None]:
     """
     Create a temporary configuration file for testing.
 
@@ -124,7 +124,7 @@ def temp_config_file(
                             f.write(f"{key} = {value}\n")
             elif format == "yaml":
                 try:
-                    import yaml
+                    import yaml  # type: ignore[import-untyped]
 
                     yaml.safe_dump(content, f)
                 except ImportError as e:
@@ -159,7 +159,7 @@ def create_test_cli(
     @click.group(name=name)
     @standard_options
     @click.pass_context
-    def cli(ctx: click.Context, **kwargs: Any) -> None:
+    def cli(ctx: click.Context, /, **kwargs: Any) -> None:
         """Test CLI for testing."""
         ctx.obj = CLIContext(**{k: v for k, v in kwargs.items() if v is not None})
 
@@ -176,7 +176,7 @@ class CliTestCase:
     def setup_method(self) -> None:
         """Set up test case."""
         self.runner = CliRunner()
-        self.temp_files = []
+        self.temp_files: list[Path] = []
 
     def teardown_method(self) -> None:
         """Clean up test case."""

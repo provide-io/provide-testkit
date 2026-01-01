@@ -251,10 +251,10 @@ class MockRateLimiter:
 
     def __init__(self) -> None:
         """Initialize mock rate limiter."""
-        self.calls = []
-        self.should_limit = False
-        self.limit_after = None
-        self.call_count = 0
+        self.calls: list[float] = []
+        self.should_limit: bool = False
+        self.limit_after: int | None = None
+        self.call_count: int = 0
 
     def check(self) -> bool:
         """Check if rate limit is exceeded."""

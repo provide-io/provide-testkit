@@ -39,7 +39,7 @@ class AutoPatch:
     def object(self, target: Any, attribute: str, **kwargs: Any) -> Mock:
         """Patch an object's attribute."""
         patcher = patch.object(target, attribute, **kwargs)
-        mock = patcher.start()
+        mock: Mock = patcher.start()
         self.patches.append(patcher)
         return mock
 
@@ -88,7 +88,7 @@ def mock_factory() -> Callable[..., Mock]:
         }
         defaults.update(kwargs)
 
-        mock = Mock(name=name, **defaults)
+        mock: Mock = Mock(name=name, **defaults)
         return mock
 
     return _create_mock
@@ -208,7 +208,7 @@ def patch_fixture() -> Generator[Callable[..., Mock], None, None]:
             The mock object
         """
         patcher = patch(target, **kwargs)
-        mock = patcher.start()
+        mock: Mock = patcher.start()
         patches.append(patcher)
         return mock
 
@@ -243,7 +243,7 @@ def patch_multiple_fixture() -> Generator[Callable[..., dict[str, Mock]], None, 
         from unittest.mock import patch as mock_patch
 
         patcher = mock_patch.multiple(target_module, **kwargs)
-        mocks = patcher.start()
+        mocks: dict[str, Mock] = patcher.start()
         patches.append(patcher)
         return mocks
 
@@ -287,7 +287,8 @@ def mock_open_fixture() -> Callable[[str | None], Mock]:
         Returns:
             Mock object for open()
         """
-        return mock_open(read_data=read_data)
+        result: Mock = mock_open(read_data=read_data)
+        return result
 
     return _mock_open
 

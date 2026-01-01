@@ -9,7 +9,7 @@ Fixtures for thread barriers, events, conditions, and other synchronization prim
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from contextlib import suppress
 import threading
 
@@ -17,7 +17,7 @@ import pytest
 
 
 @pytest.fixture
-def thread_barrier() -> Callable[[int, float | None], threading.Barrier]:
+def thread_barrier() -> Generator[Callable[[int, float | None], threading.Barrier], None, None]:
     """
     Create a barrier for thread synchronization.
 
@@ -50,7 +50,7 @@ def thread_barrier() -> Callable[[int, float | None], threading.Barrier]:
 
 
 @pytest.fixture
-def thread_event() -> Callable[[], threading.Event]:
+def thread_event() -> Generator[Callable[[], threading.Event], None, None]:
     """
     Create thread events for signaling.
 

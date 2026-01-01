@@ -165,7 +165,7 @@ class ArtifactManager:
         summary_path = summary_dir / f"quality_summary_{timestamp}.json"
 
         # Build summary data
-        summary = {
+        summary: dict[str, Any] = {
             "timestamp": time.time(),
             "session_id": self.session_id,
             "overall_passed": all(result.passed for result in results.values()),
@@ -277,7 +277,7 @@ class ArtifactManager:
             shutil.copytree(self.base_dir, export_path)
             return export_path
 
-    def get_disk_usage(self) -> dict[str, int]:
+    def get_disk_usage(self) -> dict[str, Any]:
         """Get disk usage statistics for artifacts.
 
         Returns:
@@ -287,7 +287,7 @@ class ArtifactManager:
             return {"total_bytes": 0, "tool_breakdown": {}}
 
         total_size = 0
-        tool_breakdown = {}
+        tool_breakdown: dict[str, int] = {}
 
         for item in self.base_dir.rglob("*"):
             if item.is_file():
@@ -326,7 +326,7 @@ class ArtifactManager:
             if not tool_dir.is_dir() or tool_dir.name in ["summaries", "exports"]:
                 continue
 
-            tool_info = {"latest_run": None, "total_runs": 0, "artifacts": []}
+            tool_info: dict[str, Any] = {"latest_run": None, "total_runs": 0, "artifacts": []}
 
             # Find all run directories
             run_dirs = [d for d in tool_dir.iterdir() if d.is_dir()]
@@ -351,7 +351,7 @@ class ArtifactManager:
                         }
                     )
 
-            index_data["tools"][tool_dir.name] = tool_info
+            index_data["tools"][tool_dir.name] = tool_info  # type: ignore[index]
 
         # Write index
         with index_path.open("w") as f:

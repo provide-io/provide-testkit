@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import os
 import sys
+from typing import Any
 
 
 def _is_testing_context() -> bool:
@@ -48,7 +49,7 @@ def _is_testing_context() -> bool:
     return "pytest" in sys.modules
 
 
-def _get_logger() -> any:
+def _get_logger() -> Any:
     """Get Foundation logger if available, otherwise return None.
 
     We attempt to import Foundation logger but gracefully handle if it's

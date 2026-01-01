@@ -106,7 +106,7 @@ def timeout_patterns(
             await asyncio.wait_for(operation(), timeout=timeout)
         ```
     """
-    strategies = [
+    strategies: list[st.SearchStrategy[float | None]] = [
         st.floats(min_value=min_timeout, max_value=max_timeout, allow_nan=False, allow_infinity=False),
         # Edge case: very short timeouts
         st.floats(min_value=0.001, max_value=0.01),
@@ -115,7 +115,8 @@ def timeout_patterns(
     if include_none:
         strategies.append(st.just(None))
 
-    return draw(st.one_of(*strategies))
+    result: float | None = draw(st.one_of(*strategies))
+    return result
 
 
 @composite

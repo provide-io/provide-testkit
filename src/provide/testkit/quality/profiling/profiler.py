@@ -20,7 +20,7 @@ from typing import Any
 from provide.foundation.file import temp_file
 
 try:
-    import memray
+    import memray  # type: ignore[import-not-found]
 
     MEMRAY_AVAILABLE = True
 except ImportError:
@@ -193,7 +193,7 @@ class PerformanceProfiler:
 
         # Get top functions by cumulative time
         top_functions = []
-        for func_info, (_, nc, tt, ct, _) in stats.stats.items():
+        for func_info, (_, nc, tt, ct, _) in stats.stats.items():  # type: ignore[attr-defined]
             filename, line, func_name = func_info
             top_functions.append(
                 {
@@ -212,8 +212,8 @@ class PerformanceProfiler:
             "cpu_profiling": {
                 "tool": "cProfile",
                 "execution_time": end_time - start_time,
-                "total_function_calls": stats.total_calls,
-                "primitive_calls": stats.prim_calls,
+                "total_function_calls": stats.total_calls,  # type: ignore[attr-defined]
+                "primitive_calls": stats.prim_calls,  # type: ignore[attr-defined]
                 "top_functions": top_functions[:10],
                 "function_result": result,
             }

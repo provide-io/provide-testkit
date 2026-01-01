@@ -84,13 +84,15 @@ def ca_cert() -> Certificate:
 @pytest.fixture(scope="module")
 def valid_key_pem(client_cert: Certificate) -> str:
     """Get a valid key PEM from the client cert fixture."""
-    return client_cert.key_pem
+    result: str = client_cert.key_pem
+    return result
 
 
 @pytest.fixture
 def valid_cert_pem(client_cert: Certificate) -> str:
     """Get a valid certificate PEM from the client cert fixture."""
-    return client_cert.cert_pem
+    result: str = client_cert.cert_pem
+    return result
 
 
 @pytest.fixture
@@ -118,7 +120,7 @@ def empty_cert() -> str:
 
 
 @pytest.fixture
-def temporary_cert_file(tmp_path: any, client_cert: Certificate) -> str:
+def temporary_cert_file(tmp_path: Path, client_cert: Certificate) -> str:
     """Creates a temporary file containing the client certificate."""
     cert_file = tmp_path / "client_cert.pem"
     cert_file.write_text(client_cert.cert_pem)
@@ -130,7 +132,7 @@ def temporary_cert_file(tmp_path: any, client_cert: Certificate) -> str:
 
 
 @pytest.fixture
-def temporary_key_file(tmp_path: any, client_cert: Certificate) -> str:
+def temporary_key_file(tmp_path: Path, client_cert: Certificate) -> str:
     """Creates a temporary file containing the client private key."""
     key_file = tmp_path / "client_key.pem"
     key_file.write_text(client_cert.key_pem)
@@ -144,13 +146,15 @@ def temporary_key_file(tmp_path: any, client_cert: Certificate) -> str:
 @pytest.fixture
 def cert_with_windows_line_endings(client_cert: Certificate) -> str:
     """Returns a certificate PEM with Windows line endings."""
-    return client_cert.cert_pem.replace("\n", "\r\n")
+    pem: str = client_cert.cert_pem
+    return pem.replace("\n", "\r\n")
 
 
 @pytest.fixture
 def cert_with_utf8_bom(client_cert: Certificate) -> str:
     """Returns a certificate PEM with UTF-8 BOM."""
-    return "\ufeff" + client_cert.cert_pem
+    pem: str = client_cert.cert_pem
+    return "\ufeff" + pem
 
 
 @pytest.fixture
