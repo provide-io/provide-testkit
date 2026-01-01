@@ -170,7 +170,7 @@ class ScriptExecutionContext:
                 env=self.env if self.env else None,
                 timeout=self.timeout,
                 check=check,
-                shell=isinstance(command, str),
+                shell=isinstance(command, str),  # nosec B604 - test helper, command is from test code
             )
             duration = time.time() - start_time
 
