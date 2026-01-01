@@ -113,22 +113,19 @@ def test_example_functionality(fixture_name):
 ## Key Learning Paths
 
 ### Path 1: Testing Basics
-
-1. **[basics/basic_usage.py](https://github.com/provide-io/provide-testkit/blob/main/examples/basics/basic_usage.py)**: Start here for fundamental concepts
-1. **[file/file_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/file/file_testing.py)**: Learn file testing patterns
-1. **[async/async_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/async/async_testing.py)**: Understand async testing
+1. **[basics/basic_usage.py](basics/basic_usage.py)**: Start here for fundamental concepts
+2. **[file/file_testing.py](file/file_testing.py)**: Learn file testing patterns
+3. **[async/async_testing.py](async/async_testing.py)**: Understand async testing
 
 ### Path 2: Quality & Reporting
-
-1. **[quality/framework_demo.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/framework_demo.py)**: Quality framework overview
-1. **[quality/decorators_demo.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/decorators_demo.py)**: Quality decorators in action
-1. **[quality/generate_reports.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/generate_reports.py)**: Report generation workflow
+1. **[quality/framework_demo.py](quality/framework_demo.py)**: Quality framework overview
+2. **[quality/decorators_demo.py](quality/decorators_demo.py)**: Quality decorators in action
+3. **[quality/generate_reports.py](quality/generate_reports.py)**: Report generation workflow
 
 ### Path 3: CLI & Automation
-
-1. **[cli/cli_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/cli/cli_testing.py)**: Command-line application testing
-1. **[patterns/mocking_patterns.py](https://github.com/provide-io/provide-testkit/blob/main/examples/patterns/mocking_patterns.py)**: Mocking and organization patterns
-1. **[security_scan_example.py](https://github.com/provide-io/provide-testkit/blob/main/examples/security_scan_example.py)**: Security scan fixtures
+1. **[cli/cli_testing.py](cli/cli_testing.py)**: Command-line application testing
+2. **[patterns/mocking_patterns.py](patterns/mocking_patterns.py)**: Mocking and organization patterns
+3. **[security_scan_example.py](security_scan_example.py)**: Security scan fixtures
 
 ## Common Patterns
 
@@ -294,4 +291,4 @@ See [CONTRIBUTING.md](https://github.com/provide-io/provide-testkit/blob/main/CO
 
 ______________________________________________________________________
 
-Ready to explore? Start with [basic_usage.py](basic_usage.py) or pick an example that matches your testing needs!
+Ready to explore? Start with [basics/basic_usage.py](basics/basic_usage.py) or pick an example that matches your testing needs!
