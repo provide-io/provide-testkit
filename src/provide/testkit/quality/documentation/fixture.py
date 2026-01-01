@@ -167,7 +167,9 @@ def documentation_config() -> dict[str, Any]:
 
 
 @pytest.fixture
-def documentation_checker_strict(documentation_config: dict[str, Any]) -> Generator[DocumentationFixture, None, None]:
+def documentation_checker_strict(
+    documentation_config: dict[str, Any],
+) -> Generator[DocumentationFixture, None, None]:
     """Provide strict documentation checker fixture.
 
     Args:
