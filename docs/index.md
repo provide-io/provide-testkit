@@ -2,12 +2,13 @@
 
 !!! info "Release Status" provide-testkit is in its pre-release series. Some APIs may change during the pre-release series.
 
-```
-- **Current version:** v0.3.0
-- **Status:** Pre-release
+!!! info "Release Status"
+    provide-testkit is in its initial release series.
 
-See [Quality Guide](quality_guide.md) for testing patterns.
-```
+    - **Current version:** v0.3.0
+    - **Status:** Initial release
+
+    See [Quality Guide](quality_guide/) for testing patterns.
 
 ## Features
 
