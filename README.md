@@ -19,17 +19,10 @@ TestKit provides a unified testing framework designed specifically for applicati
 - 🧵 **Thread Safety Testing** - Multi-threading test utilities
 
 ## Quick Start
-
-> **Note**: provide-testkit is in pre-release (v0.x.x). APIs and features may change before 1.0 release.
-
-1. Install: `uv add provide-testkit`
-1. Read the [Quick Start guide](https://github.com/provide-io/provide-testkit/blob/main/docs/getting-started/quick-start.md).
-1. Explore examples in [examples/README.md](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md).
+For a quick start, see [docs/index.md](docs/index.md).
 
 ## Documentation
-
-- [Documentation index](https://github.com/provide-io/provide-testkit/blob/main/docs/index.md)
-- [Examples](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md)
+Documentation lives in [docs/index.md](docs/index.md).
 
 ## Development
 
@@ -54,8 +47,10 @@ See [CLAUDE.md](https://github.com/provide-io/provide-testkit/blob/main/CLAUDE.m
 
 See [CONTRIBUTING.md](https://github.com/provide-io/provide-testkit/blob/main/CONTRIBUTING.md) for contribution guidelines.
 
+See [CLAUDE.md](CLAUDE.md) for detailed development instructions and architecture information.
+
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+
 ## License
-
-See [LICENSE](https://github.com/provide-io/provide-testkit/blob/main/LICENSE) for license details.
-
-Copyright (c) provide.io LLC.
+See [LICENSE](LICENSE) for license details.
