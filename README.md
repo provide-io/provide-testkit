@@ -22,6 +22,15 @@ TestKit provides a unified testing framework designed specifically for applicati
 - ⚡ **Async Support** - Full async/await testing capabilities
 - 🧵 **Thread Safety Testing** - Multi-threading test utilities
 
+## Quick Start
+1. Install: `pip install provide-testkit`
+2. Read the [Quick Start guide](https://github.com/provide-io/provide-testkit/blob/main/docs/getting-started/quick-start.md).
+3. Explore examples in [examples/README.md](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md).
+
+## Documentation
+- [Documentation index](https://github.com/provide-io/provide-testkit/blob/main/docs/index.md)
+- [Examples](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md)
+
 ## Development
 
 ### Quick Start
@@ -50,4 +59,12 @@ This project uses `wrknv` for task automation. Run `we tasks` to see all availab
 - `we format` - Format code
 - `we typecheck` - Run type checker
 
-See [CLAUDE.md](CLAUDE.md) for detailed development instructions and architecture information.
+See [CLAUDE.md](https://github.com/provide-io/provide-testkit/blob/main/CLAUDE.md) for detailed development instructions and architecture information.
+
+## Contributing
+See [CONTRIBUTING.md](https://github.com/provide-io/provide-testkit/blob/main/CONTRIBUTING.md) for contribution guidelines.
+
+## License
+See [LICENSE](https://github.com/provide-io/provide-testkit/blob/main/LICENSE) for license details.
+
+Copyright (c) Provide.io LLC.
