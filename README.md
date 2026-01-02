@@ -20,12 +20,12 @@ TestKit provides a unified testing framework designed specifically for applicati
 
 ## Quick Start
 1. Install: `pip install provide-testkit`
-2. Read the [Quick Start guide](docs/getting-started/quick-start.md).
-3. Explore examples in [examples/README.md](examples/README.md).
+2. Read the [Quick Start guide](https://github.com/provide-io/provide-testkit/blob/main/docs/getting-started/quick-start.md).
+3. Explore examples in [examples/README.md](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md).
 
 ## Documentation
-- [Documentation index](docs/index.md)
-- [Examples](examples/README.md)
+- [Documentation index](https://github.com/provide-io/provide-testkit/blob/main/docs/index.md)
+- [Examples](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md)
 
 ## Development
 
@@ -50,10 +50,12 @@ See [CLAUDE.md](https://github.com/provide-io/provide-testkit/blob/main/CLAUDE.m
 
 See [CONTRIBUTING.md](https://github.com/provide-io/provide-testkit/blob/main/CONTRIBUTING.md) for contribution guidelines.
 
-See [CLAUDE.md](CLAUDE.md) for detailed development instructions and architecture information.
+See [CLAUDE.md](https://github.com/provide-io/provide-testkit/blob/main/CLAUDE.md) for detailed development instructions and architecture information.
 
 ## Contributing
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+See [CONTRIBUTING.md](https://github.com/provide-io/provide-testkit/blob/main/CONTRIBUTING.md) for contribution guidelines.
 
 ## License
-See [LICENSE](LICENSE) for license details.
+See [LICENSE](https://github.com/provide-io/provide-testkit/blob/main/LICENSE) for license details.
+
+Copyright (c) Provide.io LLC.
