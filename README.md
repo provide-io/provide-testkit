@@ -19,10 +19,13 @@ TestKit provides a unified testing framework designed specifically for applicati
 - 🧵 **Thread Safety Testing** - Multi-threading test utilities
 
 ## Quick Start
-For a quick start, see [docs/index.md](docs/index.md).
+1. Install: `pip install provide-testkit`
+2. Read the [Quick Start guide](docs/getting-started/quick-start.md).
+3. Explore examples in [examples/README.md](examples/README.md).
 
 ## Documentation
-Documentation lives in [docs/index.md](docs/index.md).
+- [Documentation index](docs/index.md)
+- [Examples](examples/README.md)
 
 ## Development
 
