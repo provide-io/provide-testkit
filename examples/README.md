@@ -5,62 +5,32 @@ This directory contains practical examples demonstrating how to use provide-test
 ## Example Categories
 
 ### 🚀 Getting Started
-- **[basic_usage.py](basic_usage.py)**: Simple examples showing core fixture usage
-- **[first_test.py](first_test.py)**: Your first test using provide-testkit
-- **[fixture_discovery.py](fixture_discovery.py)**: How to discover and use available fixtures
+- **[basics/basic_usage.py](basics/basic_usage.py)**: Simple examples showing core fixture usage
+- **[basics/first_test.py](basics/first_test.py)**: Your first test using provide-testkit
 
 ### 🔍 Quality Analysis
-- **[quality/quality_examples.py](quality/quality_examples.py)**: Comprehensive quality module usage examples
 - **[quality/framework_demo.py](quality/framework_demo.py)**: Quality framework demonstration
 - **[quality/decorators_demo.py](quality/decorators_demo.py)**: Quality decorators examples
 - **[quality/generate_reports.py](quality/generate_reports.py)**: Report generation examples
 
 ### 📁 File and Directory Testing
-- **[file_operations.py](file_operations.py)**: Testing file creation, reading, and manipulation
-- **[directory_structures.py](directory_structures.py)**: Working with complex directory structures
-- **[file_permissions.py](file_permissions.py)**: Testing file permissions and ownership
-- **[symlinks_and_special_files.py](symlinks_and_special_files.py)**: Testing symbolic links and special file types
+- **[file/file_testing.py](file/file_testing.py)**: Testing file creation, reading, and manipulation
+- **[file/advanced_file_operations.py](file/advanced_file_operations.py)**: Working with complex file workflows
 
-### ⚡ Async and Process Testing
-- **[async_operations.py](async_operations.py)**: Testing async/await operations
-- **[subprocess_testing.py](subprocess_testing.py)**: Testing subprocess execution
-- **[event_loop_management.py](event_loop_management.py)**: Managing event loops in tests
-- **[timeout_handling.py](timeout_handling.py)**: Testing timeout scenarios
+### ⚡ Async Testing
+- **[async/async_testing.py](async/async_testing.py)**: Testing async/await operations
 
 ### 🌐 Network and Transport Testing
-- **[http_client_testing.py](http_client_testing.py)**: Testing HTTP clients with mock servers
-- **[api_integration.py](api_integration.py)**: Integration testing with external APIs
-- **[websocket_testing.py](websocket_testing.py)**: Testing WebSocket connections
-- **[grpc_testing.py](grpc_testing.py)**: Testing gRPC services and clients
-
-### 🧵 Threading and Concurrency
-- **[thread_safety.py](thread_safety.py)**: Testing thread-safe operations
-- **[concurrent_access.py](concurrent_access.py)**: Testing concurrent data access
-- **[lock_testing.py](lock_testing.py)**: Testing synchronization primitives
-- **[thread_pool_usage.py](thread_pool_usage.py)**: Testing with thread pools
-
-### 🔐 Cryptography and Security
-- **[certificate_testing.py](certificate_testing.py)**: Testing with TLS certificates
-- **[key_management.py](key_management.py)**: Testing cryptographic key operations
-- **[encryption_testing.py](encryption_testing.py)**: Testing encryption and decryption
-- **[signature_verification.py](signature_verification.py)**: Testing digital signatures
-
-### 📦 Archive and Compression
-- **[archive_creation.py](archive_creation.py)**: Testing archive creation and extraction
-- **[compression_testing.py](compression_testing.py)**: Testing different compression formats
-- **[archive_validation.py](archive_validation.py)**: Validating archive integrity
-
-### ⏰ Time and Scheduling
-- **[time_freezing.py](time_freezing.py)**: Testing with frozen time
-- **[clock_mocking.py](clock_mocking.py)**: Mocking system clocks
-- **[scheduled_operations.py](scheduled_operations.py)**: Testing scheduled tasks
-- **[timeout_scenarios.py](timeout_scenarios.py)**: Testing various timeout scenarios
+- **[network/http_testing.py](network/http_testing.py)**: Testing HTTP clients with mock servers
 
 ### 💻 CLI and Command-Line Testing
-- **[cli_applications.py](cli_applications.py)**: Testing command-line applications
-- **[argument_parsing.py](argument_parsing.py)**: Testing CLI argument parsing
-- **[interactive_commands.py](interactive_commands.py)**: Testing interactive CLI commands
-- **[cli_output_testing.py](cli_output_testing.py)**: Testing CLI output and formatting
+- **[cli/cli_testing.py](cli/cli_testing.py)**: Testing command-line applications
+
+### 🧩 Patterns
+- **[patterns/mocking_patterns.py](patterns/mocking_patterns.py)**: Mocking and test organization patterns
+
+### 🔐 Security
+- **[security_scan_example.py](security_scan_example.py)**: Security scan fixtures and reporting
 
 ## Running Examples
 
@@ -78,13 +48,13 @@ source .venv/bin/activate
 ### Running Individual Examples
 ```bash
 # Run a specific example
-pytest examples/basic_usage.py -v
+pytest examples/basics/basic_usage.py -v
 
 # Run all examples in a category
-pytest examples/file_operations.py examples/directory_structures.py -v
+pytest examples/file/file_testing.py examples/file/advanced_file_operations.py -v
 
 # Run with output capture disabled (to see print statements)
-pytest examples/basic_usage.py -v -s
+pytest examples/basics/basic_usage.py -v -s
 ```
 
 ### Running All Examples
@@ -140,24 +110,19 @@ def test_example_functionality(fixture_name):
 ## Key Learning Paths
 
 ### Path 1: Testing Basics
-1. **[basic_usage.py](basic_usage.py)**: Start here for fundamental concepts
-2. **[file_operations.py](file_operations.py)**: Learn file testing patterns
-3. **[async_operations.py](async_operations.py)**: Understand async testing
+1. **[basics/basic_usage.py](basics/basic_usage.py)**: Start here for fundamental concepts
+2. **[file/file_testing.py](file/file_testing.py)**: Learn file testing patterns
+3. **[async/async_testing.py](async/async_testing.py)**: Understand async testing
 
-### Path 2: Web Applications
-1. **[http_client_testing.py](http_client_testing.py)**: HTTP client testing
-2. **[api_integration.py](api_integration.py)**: API integration patterns
-3. **[websocket_testing.py](websocket_testing.py)**: Real-time communication testing
+### Path 2: Quality & Reporting
+1. **[quality/framework_demo.py](quality/framework_demo.py)**: Quality framework overview
+2. **[quality/decorators_demo.py](quality/decorators_demo.py)**: Quality decorators in action
+3. **[quality/generate_reports.py](quality/generate_reports.py)**: Report generation workflow
 
-### Path 3: System Applications
-1. **[subprocess_testing.py](subprocess_testing.py)**: Process execution testing
-2. **[file_permissions.py](file_permissions.py)**: System-level file testing
-3. **[cli_applications.py](cli_applications.py)**: Command-line application testing
-
-### Path 4: Security Applications
-1. **[certificate_testing.py](certificate_testing.py)**: TLS certificate testing
-2. **[encryption_testing.py](encryption_testing.py)**: Cryptographic operations
-3. **[signature_verification.py](signature_verification.py)**: Digital signature validation
+### Path 3: CLI & Automation
+1. **[cli/cli_testing.py](cli/cli_testing.py)**: Command-line application testing
+2. **[patterns/mocking_patterns.py](patterns/mocking_patterns.py)**: Mocking and organization patterns
+3. **[security_scan_example.py](security_scan_example.py)**: Security scan fixtures
 
 ## Common Patterns
 
@@ -315,4 +280,4 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed contribution guidelines.
 
 ---
 
-Ready to explore? Start with [basic_usage.py](basic_usage.py) or pick an example that matches your testing needs!
+Ready to explore? Start with [basics/basic_usage.py](basics/basic_usage.py) or pick an example that matches your testing needs!
