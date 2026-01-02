@@ -28,6 +28,12 @@
 uv add provide-testkit
 ```
 
+### Using pip
+
+```bash
+uv add provide-testkit
+```
+
 ### From Source
 
 For development or the latest features:
