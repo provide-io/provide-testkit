@@ -22,10 +22,13 @@ provide-testkit includes production-focused security scanners that integrate sea
 
 ```bash
 # Basic installation
-pip install provide-testkit
+uv add provide-testkit
 
 # With all security scanners (requires Go binaries for GitLeaks/TruffleHog)
-pip install bandit semgrep safety pip-audit
+uv tool install bandit
+uv tool install semgrep
+uv tool install safety
+uv tool install pip-audit
 
 # Install GitLeaks (macOS)
 brew install gitleaks
@@ -354,7 +357,11 @@ jobs:
 
       - name: Install scanners
         run: |
-          pip install provide-testkit bandit semgrep safety pip-audit
+          uv add provide-testkit
+          uv tool install bandit
+          uv tool install semgrep
+          uv tool install safety
+          uv tool install pip-audit
           # Install GitLeaks
           wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
           tar -xzf gitleaks_8.18.0_linux_x64.tar.gz

@@ -20,13 +20,13 @@ The quality module has optional dependencies for different tools:
 
 ```bash
 # Install with all quality tools
-pip install provide-testkit[quality]
+uv add provide-testkit[quality]
 
 # Install specific tool sets
-pip install provide-testkit[coverage,security,complexity]
+uv add provide-testkit[coverage,security,complexity]
 
 # Install for development with all tools
-pip install provide-testkit[all]
+uv add provide-testkit[all]
 ```
 
 ## Quick Start
@@ -508,7 +508,7 @@ Implement quality gates incrementally:
 
 1. **Missing Dependencies**: Install optional dependencies:
    ```bash
-   pip install provide-testkit[quality]
+   uv add provide-testkit[quality]
    ```
 
 2. **Permission Errors**: Ensure write access to artifact directories:
