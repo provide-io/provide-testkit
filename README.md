@@ -23,7 +23,7 @@ TestKit provides a unified testing framework designed specifically for applicati
 - 🧵 **Thread Safety Testing** - Multi-threading test utilities
 
 ## Quick Start
-1. Install: `pip install provide-testkit`
+1. Install: `uv add provide-testkit`
 2. Read the [Quick Start guide](https://github.com/provide-io/provide-testkit/blob/main/docs/getting-started/quick-start.md).
 3. Explore examples in [examples/README.md](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md).
 
