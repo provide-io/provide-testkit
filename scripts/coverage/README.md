@@ -88,7 +88,7 @@ Here's a typical workflow for running tests across all packages and analyzing re
 
 ```bash
 # 1. Navigate to the scripts directory
-cd /REDACTED_ABS_PATH
+cd /path/to/provide-io/provide-testkit/scripts/coverage
 
 # 2. Run all tests in parallel (takes a few minutes)
 ./run_tests.sh
