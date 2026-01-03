@@ -4,7 +4,7 @@ Comprehensive guide for using provide-testkit security scanners across the provi
 
 ## Overview
 
-provide-testkit includes production-ready security scanners that integrate seamlessly with CI/CD pipelines. All scanners follow a consistent plugin architecture and return standardized `QualityResult` objects.
+provide-testkit includes production-focused security scanners that integrate seamlessly with CI/CD pipelines. All scanners follow a consistent plugin architecture and return standardized `QualityResult` objects.
 
 **Available Scanners:**
 - **GitLeaks** - Secret detection (API keys, tokens, credentials)
