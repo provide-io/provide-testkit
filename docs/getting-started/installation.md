@@ -30,7 +30,7 @@ uv add provide-testkit
 ### Using pip
 
 ```bash
-pip install provide-testkit
+uv add provide-testkit
 ```
 
 ### From Source
@@ -58,7 +58,7 @@ Provide TestKit offers several optional feature sets:
 Install all code quality analysis tools:
 
 ```bash
-pip install provide-testkit[quality]
+uv add provide-testkit[quality]
 ```
 
 Includes:
@@ -74,10 +74,10 @@ Install only the tools you need:
 
 ```bash
 # Coverage and security only
-pip install provide-testkit[coverage,security]
+uv add provide-testkit[coverage,security]
 
 # All complexity tools
-pip install provide-testkit[complexity]
+uv add provide-testkit[complexity]
 ```
 
 ### All Features
@@ -85,7 +85,7 @@ pip install provide-testkit[complexity]
 Install everything:
 
 ```bash
-pip install provide-testkit[all]
+uv add provide-testkit[all]
 ```
 
 ## Verify Installation
