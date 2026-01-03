@@ -37,7 +37,7 @@ This directory contains practical examples demonstrating how to use provide-test
 ### Prerequisites
 ```bash
 # Install provide-testkit with development dependencies
-pip install provide-testkit[dev]
+uv add provide-testkit[dev]
 
 # Or use the ecosystem setup
 cd /path/to/provide-io
