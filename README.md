@@ -67,4 +67,4 @@ See [CONTRIBUTING.md](https://github.com/provide-io/provide-testkit/blob/main/CO
 ## License
 See [LICENSE](https://github.com/provide-io/provide-testkit/blob/main/LICENSE) for license details.
 
-Copyright (c) Provide.io LLC.
+Copyright (c) provide.io LLC.
