@@ -36,19 +36,24 @@ TestKit provides a unified testing framework designed specifically for applicati
 uv sync
 
 # Run common tasks
-uv run pytest              # Run tests
-uv run pytest -n auto      # Run tests in parallel
-uv run pytest --cov        # Run tests with coverage
-uv run ruff check .        # Check code
-uv run ruff format .       # Format code
-uv run mypy src/           # Type checking
+we run test       # Run tests
+we run lint       # Check code
+we run format     # Format code
+we tasks          # See all available commands
 ```
 
 See [CLAUDE.md](https://github.com/provide-io/provide-testkit/blob/main/CLAUDE.md) for detailed development instructions and architecture information.
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/provide-io/provide-testkit/blob/main/CONTRIBUTING.md) for contribution guidelines.
+**Common tasks:**
+- `we run test` - Run all tests
+- `we run test.coverage` - Run tests with coverage
+- `we run test.parallel` - Run tests in parallel
+- `we run lint` - Check code quality
+- `we run lint.fix` - Auto-fix linting issues
+- `we run format` - Format code
+- `we run typecheck` - Run type checker
 
 See [CLAUDE.md](https://github.com/provide-io/provide-testkit/blob/main/CLAUDE.md) for detailed development instructions and architecture information.
 
