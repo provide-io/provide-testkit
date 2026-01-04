@@ -23,6 +23,9 @@ TestKit provides a unified testing framework designed specifically for applicati
 - 🧵 **Thread Safety Testing** - Multi-threading test utilities
 
 ## Quick Start
+
+> **Note**: provide-testkit is in pre-release (v0.x.x). APIs and features may change before 1.0 release.
+
 1. Install: `uv add provide-testkit`
 2. Read the [Quick Start guide](https://github.com/provide-io/provide-testkit/blob/main/docs/getting-started/quick-start.md).
 3. Explore examples in [examples/README.md](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md).
