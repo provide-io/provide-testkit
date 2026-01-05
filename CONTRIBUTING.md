@@ -27,7 +27,7 @@ If you're working on the entire ecosystem:
 ```bash
 # From the provide-io root directory
 cd /path/to/provide-io
-uv sync --extra all --extra dev
+uv sync --all-groups
 source .venv/bin/activate
 ```
 

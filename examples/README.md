@@ -41,7 +41,7 @@ uv add provide-testkit[dev]
 
 # Or use the ecosystem setup
 cd /path/to/provide-io
-uv sync --extra all --extra dev
+uv sync --all-groups
 source .venv/bin/activate
 ```
 
