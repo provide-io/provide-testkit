@@ -13,7 +13,7 @@ Welcome to the Provide TestKit documentation - a comprehensive testing utilities
     - **Current version:** v0.3.0
     - **Status:** Pre-release
 
-    See [Quality Guide](quality_guide/) for testing patterns.
+    See [Quality Guide](quality_guide.md) for testing patterns.
 
 ## Features
 
