@@ -343,7 +343,7 @@ source = ["src"]
 branch = true
 
 [tool.coverage.report]
-fail_under = 40  # TODO: Restore to 70 after adding tests for quality/, streams/, threading/ modules
+fail_under = 40
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",
