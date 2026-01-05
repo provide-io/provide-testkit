@@ -44,7 +44,7 @@ Ready to write your first test? Check out the [Quick Start Guide](quick-start.md
 
 - **[Quick Start](quick-start.md)** - Get started in 5 minutes
 - **[API Reference](../api/index.md)** - Complete API documentation
-- **[Examples](../examples/)** - Practical examples and patterns
+- **[Examples](../../examples/README.md)** - Practical examples and patterns
 
 ## Core Features
 
@@ -97,7 +97,7 @@ Testkit automatically detects testing contexts and adjusts behavior:
 
 1. **[Quick Start Guide](quick-start.md)** - Build your first test in 5 minutes
 2. **[API Reference](../api/index.md)** - Explore available fixtures and utilities
-3. **[Examples](../examples/)** - See practical testing patterns
+3. **[Examples](../../examples/README.md)** - See practical testing patterns
 
 ______________________________________________________________________
 
