@@ -18,12 +18,6 @@ Provide TestKit is a comprehensive testing utilities library that provides:
 uv add provide-testkit --group dev
 ```
 
-### Using pip
-
-```bash
-pip install provide-testkit
-```
-
 ### Optional Dependencies
 
 Install additional features as needed:
