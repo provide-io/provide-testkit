@@ -5,7 +5,7 @@
 
 """Post-install script to symlink .pth file to site-packages root.
 
-This script is called automatically via pip's console_scripts entry point
+This script is called automatically via the console_scripts entry point
 after package installation to ensure the .pth file is in the correct location."""
 
 from __future__ import annotations

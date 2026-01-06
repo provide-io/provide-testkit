@@ -233,11 +233,11 @@ def main() -> int:
     if not TRUFFLEHOG_AVAILABLE:
         print("  TruffleHog: brew install trufflehog")
     if not PIP_AUDIT_AVAILABLE:
-        print("  PipAudit: pip install pip-audit")
+        print("  PipAudit: uv tool install pip-audit")
     if not SAFETY_AVAILABLE:
-        print("  Safety: pip install safety")
+        print("  Safety: uv tool install safety")
     if not SEMGREP_AVAILABLE:
-        print("  Semgrep: pip install semgrep")
+        print("  Semgrep: uv tool install semgrep")
 
     print("\n" + "=" * 60 + "\n")
 

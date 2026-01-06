@@ -35,9 +35,7 @@ def install_quality_tools() -> None:
     for tool in tools:
         try:
             print(f"  Installing {tool}...")
-            subprocess.run(
-                [sys.executable, "-m", "pip", "install", tool], check=True, capture_output=True, text=True
-            )
+            subprocess.run(["uv", "tool", "install", tool], check=True, capture_output=True, text=True)
         except subprocess.CalledProcessError as e:
             print(f"  ⚠️  Failed to install {tool}: {e}")
             print(f"     Error output: {e.stderr}")

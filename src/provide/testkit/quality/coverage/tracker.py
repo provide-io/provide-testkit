@@ -38,7 +38,7 @@ class CoverageTracker:
         """
         if not COVERAGE_AVAILABLE:
             raise QualityToolError(
-                "Coverage.py not available. Install with: pip install coverage", tool="coverage"
+                "Coverage.py not available. Install with: uv tool install coverage", tool="coverage"
             )
 
         self.config = config or {}
