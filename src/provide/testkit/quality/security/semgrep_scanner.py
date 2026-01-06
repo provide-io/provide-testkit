@@ -54,7 +54,7 @@ class SemgrepScanner:
         """
         if not SEMGREP_AVAILABLE:
             raise QualityToolError(
-                "Semgrep not available. Install with: pip install semgrep",
+                "Semgrep not available. Install with: uv tool install semgrep",
                 tool="semgrep",
             )
 

@@ -193,7 +193,7 @@ security = [
     "safety",           # Dependency vulnerability scanner (PyUp database)
     "pip-audit",        # PyPI security advisory scanner
     # Note: semgrep removed due to dependency conflicts with mkdocs ecosystem
-    # Install separately: uv pip install semgrep
+    # Install separately: uv tool install semgrep
     # Note: gitleaks and trufflehog are Go binaries, not pip packages
     # They should be installed via system package manager or downloaded binaries
     # Wrappers will check for their availability at runtime

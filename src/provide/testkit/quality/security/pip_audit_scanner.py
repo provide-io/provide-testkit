@@ -56,7 +56,7 @@ class PipAuditScanner:
         """
         if not PIP_AUDIT_AVAILABLE:
             raise QualityToolError(
-                "pip-audit not available. Install with: pip install pip-audit",
+                "pip-audit not available. Install with: uv tool install pip-audit",
                 tool="pip-audit",
             )
 

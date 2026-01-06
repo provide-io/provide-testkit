@@ -53,7 +53,7 @@ class SafetyScanner:
         """
         if not SAFETY_AVAILABLE:
             raise QualityToolError(
-                "Safety not available. Install with: pip install safety",
+                "Safety not available. Install with: uv tool install safety",
                 tool="safety",
             )
 

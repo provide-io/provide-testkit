@@ -44,7 +44,7 @@ class DocumentationChecker:
         """
         if not INTERROGATE_AVAILABLE:
             raise QualityToolError(
-                "Interrogate not available. Install with: pip install interrogate", tool="documentation"
+                "Interrogate not available. Install with: uv tool install interrogate", tool="documentation"
             )
 
         self.config = config or {}
