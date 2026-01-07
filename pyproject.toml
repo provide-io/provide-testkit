@@ -359,3 +359,23 @@ exclude_lines = [
 
 [tool.bandit]
 exclude_dirs = [".venv", "tests", "workenv"]
+
+################################################################################
+# Security Scanning Allowlist
+################################################################################
+
+[tool.security]
+# Paths to exclude from secret scanning (TruffleHog, GitGuardian, Gitleaks)
+# Run: we security generate (via wrknv) to regenerate tool configs
+description = "Test fixtures with example credentials - intentionally committed"
+allowed_paths = [
+    # Test EC private keys used for mTLS/crypto testing fixtures
+    # Current location
+    "src/provide/testkit/crypto/fixtures.py",
+    # Legacy location (in git history before rename)
+    "src/provide/testkit/crypto.py",
+    # Example files with test API keys/credentials
+    "examples/**/*.py",
+    # Legacy security scan output files (in git history)
+    ".security/**",
+]
