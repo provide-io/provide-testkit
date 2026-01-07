@@ -207,14 +207,6 @@ standard = [
     "provide-testkit[quality,transport,crypto,process]",
 ]
 
-grpc-dev = [
-    "provide-testkit[standard,grpc,typecheck]",
-]
-
-pyvider-dev = [
-    "provide-testkit[standard,advanced-testing,typecheck,grpc,build,profiling,security]",
-]
-
 all = [
     "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils,security,fuzzing]",
 ]
