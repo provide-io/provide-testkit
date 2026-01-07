@@ -50,9 +50,7 @@ class MemoryChatStore:
         # Reverse to get chronological order (oldest first)
         return list(reversed(messages))
 
-    async def update_typing(
-        self, session_id: str, player_id: str, is_typing: bool
-    ) -> set[str]:
+    async def update_typing(self, session_id: str, player_id: str, is_typing: bool) -> set[str]:
         """Update typing indicator for a player."""
         if is_typing:
             self._typing[session_id].add(player_id)
@@ -144,9 +142,7 @@ class MemoryChatRateLimiter:
         key = self._key(session_id, player_id)
         return max(0, self.max_messages - self._counts[key])
 
-    def reset(
-        self, session_id: str | None = None, player_id: str | None = None
-    ) -> None:
+    def reset(self, session_id: str | None = None, player_id: str | None = None) -> None:
         """Reset rate limits (for testing)."""
         if session_id is None and player_id is None:
             self._counts.clear()

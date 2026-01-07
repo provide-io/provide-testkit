@@ -46,7 +46,9 @@ class ComplexityAnalyzer:
             config: Complexity analyzer configuration options
         """
         if not RADON_AVAILABLE:
-            raise QualityToolError("Radon not available. Install with: uv tool install radon", tool="complexity")
+            raise QualityToolError(
+                "Radon not available. Install with: uv tool install radon", tool="complexity"
+            )
 
         self.config = config or {}
         self.artifact_dir: Path | None = None

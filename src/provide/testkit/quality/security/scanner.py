@@ -102,7 +102,9 @@ class SecurityScanner:
             QualityToolError: If bandit is not available
         """
         if not BANDIT_AVAILABLE:
-            raise QualityToolError("Bandit not available. Install with: uv tool install bandit", tool="security")
+            raise QualityToolError(
+                "Bandit not available. Install with: uv tool install bandit", tool="security"
+            )
 
         self.config = config or {}
         self.artifact_dir: Path | None = None
