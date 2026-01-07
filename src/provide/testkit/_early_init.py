@@ -160,19 +160,17 @@ def _install_blocker() -> None:
         2. Foundation may output debug logs during import
         3. Any stdout pollution breaks UV with "expected value at line 1 column 1"
     """
-    try:
-        # Always configure structlog with test-safe defaults when this module loads.
-        # This is safe because:
-        # 1. This module only loads via .pth file during Python site initialization
-        # 2. Foundation will reconfigure structlog later with proper settings
-        # 3. This ensures any fallback loggers created during import have valid config
-        # We do this unconditionally because _is_testing_context() may not detect
-        # all testing scenarios (e.g., wrknv subprocess invocations).
-        _configure_structlog_for_testing()
-
-        # Only proceed with blocker installation if we're in a testing context
-        if not _is_testing_context():
-            return
+    # Suppress stdout to prevent any logging from polluting UV's Python query
+    with _SuppressStdout():
+        try:
+            # Always configure structlog with test-safe defaults when this module loads.
+            # This is safe because:
+            # 1. This module only loads via .pth file during Python site initialization
+            # 2. Foundation will reconfigure structlog later with proper settings
+            # 3. This ensures any fallback loggers created during import have valid config
+            # We do this unconditionally because _is_testing_context() may not detect
+            # all testing scenarios (e.g., wrknv subprocess invocations).
+            _configure_structlog_for_testing()
 
             # Only proceed with blocker installation if we're in a testing context
             if not _is_testing_context():
@@ -199,6 +197,12 @@ def _install_blocker() -> None:
 _install_blocker()
 
 
-__all__ = ["_configure_structlog_for_testing", "_get_logger", "_install_blocker", "_is_testing_context"]
+__all__ = [
+    "_SuppressStdout",
+    "_configure_structlog_for_testing",
+    "_get_logger",
+    "_install_blocker",
+    "_is_testing_context",
+]
 
 # 🧪✅🔚
