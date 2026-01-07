@@ -1,10 +1,4 @@
-# Provide TestKit Documentation
-
-!!! warning "Pre-release"
-    This documentation covers a pre-release. APIs and features may change during the pre-release series.
-
-
-Welcome to the Provide TestKit documentation - a comprehensive testing utilities and fixtures library for the Provide Foundry ecosystem.
+# Provide TestKit DocumentationWelcome to the Provide TestKit documentation - a comprehensive testing utilities and fixtures library for the Provide Foundry ecosystem.
 
 !!! info "Release Status"
     provide-testkit is in its pre-release series.
