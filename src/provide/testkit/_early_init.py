@@ -105,11 +105,13 @@ def _configure_structlog_for_testing() -> None:
             processors=[
                 structlog.processors.TimeStamper(fmt="iso"),
                 _strip_foundation_context,  # type: ignore[list-item]
-                structlog.dev.ConsoleRenderer(),
+                # Disable colors to avoid ANSI codes breaking pytest-xdist worker communication
+                structlog.dev.ConsoleRenderer(colors=False),
             ],
             wrapper_class=structlog.BoundLogger,
             context_class=dict,
-            logger_factory=structlog.PrintLoggerFactory(file=sys.stdout),
+            # Use stderr instead of stdout to avoid polluting pytest-xdist pipe communication
+            logger_factory=structlog.PrintLoggerFactory(file=sys.stderr),
             cache_logger_on_first_use=False,  # Disable caching for test isolation
         )
     except Exception:
