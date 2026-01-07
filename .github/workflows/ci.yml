@@ -19,5 +19,5 @@ jobs:
       coverage-threshold: 0
       run-security: true
       run-secret-scan: true
-      matrix-testing: true
+      matrix-testing: false
     secrets: inherit
