@@ -20,4 +20,5 @@ jobs:
       run-security: true
       run-secret-scan: true
       matrix-testing: false
+      parallel-testing: false  # Disable xdist - conflicts with provide-testkit's .pth file early init
     secrets: inherit
