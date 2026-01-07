@@ -42,7 +42,7 @@ class _SuppressStdout:
         self._original_stdout: Any = None
         self._devnull: Any = None
 
-    def __enter__(self) -> "_SuppressStdout":
+    def __enter__(self) -> _SuppressStdout:
         self._original_stdout = sys.stdout
         self._devnull = io.StringIO()
         sys.stdout = self._devnull
