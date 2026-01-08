@@ -17,13 +17,41 @@ The .pth file approach ensures the blocker is installed:
 - At the same time as sitecustomize.py would run
 
 This provides the best developer experience - completely automatic activation
-with zero configuration needed."""
+with zero configuration needed.
+
+IMPORTANT: This module MUST NOT output anything to stdout during initialization.
+UV queries Python to get environment info and expects pure JSON output. Any
+stdout pollution will break UV with "expected value at line 1 column 1"."""
 
 from __future__ import annotations
 
+import io
 import os
 import sys
 from typing import Any
+
+
+class _SuppressStdout:
+    """Context manager that completely suppresses stdout.
+
+    This is necessary because Foundation may output debug logs during import,
+    which would pollute UV's Python query that expects only JSON output.
+    """
+
+    def __init__(self) -> None:
+        self._original_stdout: Any = None
+        self._devnull: Any = None
+
+    def __enter__(self) -> _SuppressStdout:
+        self._original_stdout = sys.stdout
+        self._devnull = io.StringIO()
+        sys.stdout = self._devnull
+        return self
+
+    def __exit__(self, *args: Any) -> None:
+        sys.stdout = self._original_stdout
+        if self._devnull:
+            self._devnull.close()
 
 
 def _is_testing_context() -> bool:
@@ -100,11 +128,13 @@ def _configure_structlog_for_testing() -> None:
             processors=[
                 structlog.processors.TimeStamper(fmt="iso"),
                 _strip_foundation_context,  # type: ignore[list-item]
-                structlog.dev.ConsoleRenderer(),
+                # Disable colors to avoid ANSI codes breaking pytest-xdist worker communication
+                structlog.dev.ConsoleRenderer(colors=False),
             ],
             wrapper_class=structlog.BoundLogger,
             context_class=dict,
-            logger_factory=structlog.PrintLoggerFactory(file=sys.stdout),
+            # Use stderr instead of stdout to avoid polluting pytest-xdist pipe communication
+            logger_factory=structlog.PrintLoggerFactory(file=sys.stderr),
             cache_logger_on_first_use=False,  # Disable caching for test isolation
         )
     except Exception:
@@ -125,38 +155,41 @@ def _install_blocker() -> None:
         This function must be extremely defensive with error handling since any
         uncaught exception will cause Python startup to fail.
 
-        IMPORTANT: We cannot use Foundation logger here because Foundation itself
-        imports setproctitle during initialization, which would create a circular
-        dependency. The blocker must be installed BEFORE Foundation is imported.
+        IMPORTANT: We suppress stdout during this entire function because:
+        1. UV queries Python for environment info and expects pure JSON output
+        2. Foundation may output debug logs during import
+        3. Any stdout pollution breaks UV with "expected value at line 1 column 1"
     """
-    try:
-        # Always configure structlog with test-safe defaults when this module loads.
-        # This is safe because:
-        # 1. This module only loads via .pth file during Python site initialization
-        # 2. Foundation will reconfigure structlog later with proper settings
-        # 3. This ensures any fallback loggers created during import have valid config
-        # We do this unconditionally because _is_testing_context() may not detect
-        # all testing scenarios (e.g., wrknv subprocess invocations).
-        _configure_structlog_for_testing()
+    # Suppress stdout to prevent any logging from polluting UV's Python query
+    with _SuppressStdout():
+        try:
+            # Always configure structlog with test-safe defaults when this module loads.
+            # This is safe because:
+            # 1. This module only loads via .pth file during Python site initialization
+            # 2. Foundation will reconfigure structlog later with proper settings
+            # 3. This ensures any fallback loggers created during import have valid config
+            # We do this unconditionally because _is_testing_context() may not detect
+            # all testing scenarios (e.g., wrknv subprocess invocations).
+            _configure_structlog_for_testing()
 
-        # Only proceed with blocker installation if we're in a testing context
-        if not _is_testing_context():
-            return
+            # Only proceed with blocker installation if we're in a testing context
+            if not _is_testing_context():
+                return
 
-        # Use centralized installation logic with force=True
-        # We use force=True here because context detection can fail in pytest-xdist
-        # worker processes (different sys.argv, no PYTEST env vars yet), but we
-        # still need the blocker installed to prevent macOS freezing.
-        from provide.testkit._install_blocker import install_setproctitle_blocker
+            # Use centralized installation logic with force=True
+            # We use force=True here because context detection can fail in pytest-xdist
+            # worker processes (different sys.argv, no PYTEST env vars yet), but we
+            # still need the blocker installed to prevent macOS freezing.
+            from provide.testkit._install_blocker import install_setproctitle_blocker
 
-        install_setproctitle_blocker(force=True)
+            install_setproctitle_blocker(force=True)
 
-    except Exception:
-        # Silently ignore any errors during blocker installation
-        # We don't want to break Python startup if something goes wrong
-        # The fallback mechanisms (pytest11 entry point, __init__.py) will
-        # still attempt to install the blocker later
-        pass
+        except Exception:
+            # Silently ignore any errors during blocker installation
+            # We don't want to break Python startup if something goes wrong
+            # The fallback mechanisms (pytest11 entry point, __init__.py) will
+            # still attempt to install the blocker later
+            pass
 
 
 # Install the blocker immediately when this module is imported
@@ -164,6 +197,12 @@ def _install_blocker() -> None:
 _install_blocker()
 
 
-__all__ = ["_configure_structlog_for_testing", "_get_logger", "_install_blocker", "_is_testing_context"]
+__all__ = [
+    "_SuppressStdout",
+    "_configure_structlog_for_testing",
+    "_get_logger",
+    "_install_blocker",
+    "_is_testing_context",
+]
 
 # 🧪✅🔚
