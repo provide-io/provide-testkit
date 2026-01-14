@@ -36,7 +36,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "provide-foundation @ git+https://github.com/provide-io/provide-foundation.git@main",
+    "provide-foundation>=0.3.0",  # Version constraint - allows editable install when used as dev dep
     "click>=8.3.1", # For CLI testing utilities - SHARED with Foundation
     # Core testing - minimum version constraints for stability
     "pytest>=9.0.2",
