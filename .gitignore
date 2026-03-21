@@ -87,3 +87,6 @@ kv-data-*
 bin/
 .secrets
 .env.local
+
+# Local act CI config (machine-specific)
+.actrc
