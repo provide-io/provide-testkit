@@ -2751,7 +2751,7 @@ requires-dist = [
     { name = "mypy", marker = "extra == 'typecheck'" },
     { name = "pip-audit", marker = "extra == 'security'" },
     { name = "pre-commit", marker = "extra == 'build'" },
-    { name = "provide-foundation", specifier = ">=0.3.21,<0.4" },
+    { name = "provide-foundation", specifier = ">=0.3.21" },
     { name = "provide-testkit", extras = ["advanced-testing", "build", "crypto", "docs", "fuzzing", "grpc", "process", "profiling", "quality", "security", "transport", "typecheck", "utils"], marker = "extra == 'all'" },
     { name = "provide-testkit", extras = ["advanced-testing", "build", "grpc", "profiling", "security", "standard", "typecheck"], marker = "extra == 'pyvider-dev'" },
     { name = "provide-testkit", extras = ["advanced-testing", "quality"], marker = "extra == 'dev'" },
