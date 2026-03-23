@@ -41,8 +41,7 @@ zvpvL+mfy1c5oHQhh6KPnxpoo1WyDJGYplwPTGS68DvvWmolrPAtC7I7r7spgyJS
 1358E5fA2NWk9/YPaiUzK2gsyrL9dKY=
 -----END EC PRIVATE KEY-----"""
 
-    if logger.is_debug_enabled():
-        logger.debug(f"Created CLIENT_CERT fixture: {cert_pem[:30]}...")
+    logger.debug(f"Created CLIENT_CERT fixture: {cert_pem[:30]}...")
     return Certificate.from_pem(cert_pem=cert_pem, key_pem=key_pem)
 
 
@@ -70,8 +69,7 @@ UPMkxknGheO2e55qeHp/tkEFzYt9AH8du1xJLKKFbsGV5q9vipGNx5XMbj2RMdH5
 VXHTAdc/bLFFy9kybQqo300Rv6ViW2I=
 -----END EC PRIVATE KEY-----"""
 
-    if logger.is_debug_enabled():
-        logger.debug(f"Created SERVER_CERT fixture: {cert_pem[:30]}...")
+    logger.debug(f"Created SERVER_CERT fixture: {cert_pem[:30]}...")
     return Certificate.from_pem(cert_pem=cert_pem, key_pem=key_pem)
 
 
