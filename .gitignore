@@ -45,6 +45,7 @@ logs/
 # Profiling
 *.prof
 memray-*.bin
+memray-output/
 
 # Type checking / linting
 .mypy_cache/

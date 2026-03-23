@@ -1,0 +1,5 @@
+{
+  "fixture_creation_total_allocations": 232216,
+  "foundation_reset_total_allocations": 38011,
+  "test_case_setup_total_allocations": 228310
+}

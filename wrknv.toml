@@ -2,6 +2,10 @@
 typecheck = "mypy src/"
 build = "uv build"
 
+[tasks.memray]
+_default = "pytest -m memray --no-header -rN"
+stress = "python scripts/memray/memray_foundation_reset_stress.py && python scripts/memray/memray_fixture_creation_stress.py && python scripts/memray/memray_test_case_setup_stress.py"
+
 [tasks.test]
 _default = "pytest"
 parallel = "pytest -n auto"
