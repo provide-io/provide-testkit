@@ -11,6 +11,7 @@ async context management across the provide-io ecosystem."""
 from __future__ import annotations
 
 import asyncio
+import time
 from collections.abc import (
     AsyncGenerator,
     AsyncIterable,
