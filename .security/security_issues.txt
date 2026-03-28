@@ -8,9 +8,9 @@ Issue #1:
   Description: Consider possible security implications associated with the subprocess module.
 
   Code:
-    1 
+    1
     2 import subprocess
-    3 
+    3
 
 Issue #2:
   File: /private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/pytest-of-tim/pytest-245/popen-gw20/test_real_security_integration0/vulnerable.py:6
@@ -21,7 +21,7 @@ Issue #2:
   Code:
     5     # This should trigger a security warning
     6     subprocess.call(user_input, shell=True)
-    7 
+    7
 
 Issue #3:
   File: /private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/pytest-of-tim/pytest-245/popen-gw20/test_real_security_integration0/vulnerable.py:13

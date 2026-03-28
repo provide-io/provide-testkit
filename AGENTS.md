@@ -167,7 +167,7 @@ Comprehensive CLI testing utilities in `cli.py`:
 
 - All fixtures are pytest-compatible and follow pytest naming conventions
 - Tests use `pytest-asyncio` for async support
-- Parallel execution with `pytest-xdist` 
+- Parallel execution with `pytest-xdist`
 - Coverage tracking with `pytest-cov`
 - Markers: `slow`, `integration`, `unit` for selective test execution
 
