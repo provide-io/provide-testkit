@@ -20,12 +20,12 @@ from typing import Any
 from provide.foundation.file import temp_file
 
 try:
-    import memray  # type: ignore[import-not-found]
+    import memray
 
     MEMRAY_AVAILABLE = True
 except ImportError:
     MEMRAY_AVAILABLE = False
-    memray = None
+    memray = None  # type: ignore[assignment]
 
 from ..base import QualityResult, QualityToolError
 
@@ -103,10 +103,10 @@ class PerformanceProfiler:
                     result = func(*args, **kwargs)
 
                 # Generate basic statistics
-                stats = memray.FileReader(output_path).get_memory_snapshots()
-                if stats:
-                    peak_memory = max(snapshot.heap_size for snapshot in stats)
-                    avg_memory = sum(snapshot.heap_size for snapshot in stats) / len(stats)
+                snapshots = list(memray.FileReader(output_path).get_memory_snapshots())
+                if snapshots:
+                    peak_memory = max(snapshot.heap for snapshot in snapshots)
+                    avg_memory = sum(snapshot.heap for snapshot in snapshots) / len(snapshots)
                 else:
                     peak_memory = 0
                     avg_memory = 0

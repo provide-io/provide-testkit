@@ -12,7 +12,7 @@ import os
 
 os.environ.setdefault("LOG_LEVEL", "ERROR")
 
-from provide.testkit.base.foundation import FoundationTestCase  # noqa: E402
+from provide.testkit.base.foundation import FoundationTestCase
 
 
 class StubTestCase(FoundationTestCase):

@@ -12,9 +12,9 @@ import os
 
 os.environ.setdefault("LOG_LEVEL", "ERROR")
 
-from provide.testkit.logger.mocks import mock_logger_factory  # noqa: E402
-from provide.testkit.mocking.fixtures import AutoPatch  # noqa: E402
-from provide.testkit.mocking.time import SleepTracker, create_sleep_mock  # noqa: E402
+from provide.testkit.logger.mocks import mock_logger_factory
+from provide.testkit.mocking.fixtures import AutoPatch
+from provide.testkit.mocking.time import SleepTracker, create_sleep_mock
 
 
 def _stress_mock_loggers(cycles: int) -> None:

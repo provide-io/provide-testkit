@@ -11,7 +11,7 @@ import os
 
 os.environ.setdefault("LOG_LEVEL", "ERROR")
 
-from provide.testkit.logger.reset import (  # noqa: E402
+from provide.testkit.logger.reset import (
     reset_foundation_setup_for_testing,
     reset_foundation_state,
 )
