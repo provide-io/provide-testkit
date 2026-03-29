@@ -11,6 +11,7 @@ async context management across the provide-io ecosystem."""
 from __future__ import annotations
 
 import asyncio
+import time
 from collections.abc import (
     AsyncGenerator,
     AsyncIterable,
@@ -151,11 +152,11 @@ class AsyncRateLimiter:
         self.rate = rate
         self.per = per
         self.allowance = float(rate)
-        self.last_check = asyncio.get_event_loop().time()
+        self.last_check = time.monotonic()
 
     async def acquire(self) -> None:
         """Acquire permission to continue, respecting rate limits."""
-        current = asyncio.get_event_loop().time()
+        current = time.monotonic()
         time_passed = current - self.last_check
         self.last_check = current
 
@@ -404,9 +405,9 @@ def async_condition_waiter() -> Callable[[Callable[[], bool], float, float], Awa
         Returns:
             True if condition met, False if timeout
         """
-        start = asyncio.get_event_loop().time()
+        start = time.monotonic()
 
-        while asyncio.get_event_loop().time() - start < timeout:
+        while time.monotonic() - start < timeout:
             if condition():
                 return True
             await asyncio.sleep(interval)

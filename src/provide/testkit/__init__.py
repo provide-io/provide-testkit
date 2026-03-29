@@ -137,15 +137,6 @@ _LAZY_IMPORTS = {
         "network_timeout",
         "mock_http_headers",
     ],
-    # Archive testing utilities
-    "archive.fixtures": [
-        "archive_test_content",
-        "large_file_for_compression",
-        "multi_format_archives",
-        "archive_with_permissions",
-        "corrupted_archives",
-        "archive_stress_test_files",
-    ],
     # Crypto fixtures
     "crypto.fixtures": [
         "client_cert",
@@ -245,8 +236,8 @@ _LAZY_IMPORTS = {
 
 # Submodules that can be imported directly
 _DIRECT_SUBMODULES = [
-    "archive",
     "base",
+    "chaos",
     "cli",
     "common",
     "crypto",
