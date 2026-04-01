@@ -39,7 +39,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "provide-foundation>=0.3.21",  # Bump to >=0.3.28 after foundation is published to PyPI
+    "provide-foundation>=0.3.29",
     "attrs>=25.4.0",
     "click>=8.3.1", # For CLI testing utilities - SHARED with Foundation
     # Core testing - minimum version constraints for stability
