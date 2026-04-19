@@ -206,3 +206,8 @@ node_modules/
 *.tar.gz
 *.tgz
 *.whl
+
+# Tool output / generated artifacts
+.complexity/
+.documentation/
+.security/
