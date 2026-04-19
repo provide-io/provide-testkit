@@ -5,11 +5,13 @@ Thank you for your interest in contributing to provide-testkit! This package pro
 ## Development Setup
 
 ### Prerequisites
+
 - Python 3.11 or higher
 - UV package manager
 - Git
 
 ### Quick Setup
+
 ```bash
 # Clone the repository
 git clone https://github.com/provide-io/provide-testkit.git
@@ -23,7 +25,9 @@ pytest tests/
 ```
 
 ### Alternative Setup (Ecosystem Development)
+
 If you're working on the entire ecosystem:
+
 ```bash
 # From the provide-io root directory
 cd /path/to/provide-io
@@ -58,6 +62,7 @@ provide-testkit/
 ## Testing Philosophy
 
 ### Domain Organization
+
 Fixtures are organized by domain to make them easy to find and use:
 
 - **File domain**: Everything related to files, directories, and filesystem operations
@@ -69,6 +74,7 @@ Fixtures are organized by domain to make them easy to find and use:
 - **Time domain**: Clock mocking, time manipulation
 
 ### Lazy Loading
+
 The package uses lazy loading to minimize production overhead:
 
 ```python
@@ -82,6 +88,7 @@ def __getattr__(name: str):
 This ensures that importing testkit in production doesn't load testing dependencies.
 
 ### Testing Context Detection
+
 The system automatically detects testing contexts:
 
 ```python
@@ -102,14 +109,14 @@ def is_testing_context() -> bool:
 ### Adding New Fixtures
 
 1. **Choose the right domain**: Place fixtures in the appropriate domain directory
-2. **Follow naming conventions**: Use descriptive names that indicate what the fixture provides
-3. **Include comprehensive docstrings**: Document parameters, return values, and usage examples
-4. **Add tests**: Every fixture should have tests demonstrating its usage
-5. **Update exports**: Add new fixtures to the appropriate `__all__` list
+1. **Follow naming conventions**: Use descriptive names that indicate what the fixture provides
+1. **Include comprehensive docstrings**: Document parameters, return values, and usage examples
+1. **Add tests**: Every fixture should have tests demonstrating its usage
+1. **Update exports**: Add new fixtures to the appropriate `__all__` list
 
 Example fixture:
 
-```python
+````python
 import pytest
 from pathlib import Path
 from typing import Generator
@@ -136,29 +143,29 @@ def temp_config_file() -> Generator[Path, None, None]:
         yield config_path
     finally:
         config_path.unlink(missing_ok=True)
-```
+````
 
 ### Fixture Design Principles
 
 1. **Isolation**: Each fixture should be independent and not affect others
-2. **Cleanup**: Always clean up resources after tests complete
-3. **Flexibility**: Allow customization through parameters where appropriate
-4. **Performance**: Minimize fixture setup time for fast test execution
-5. **Reliability**: Fixtures should work consistently across platforms
+1. **Cleanup**: Always clean up resources after tests complete
+1. **Flexibility**: Allow customization through parameters where appropriate
+1. **Performance**: Minimize fixture setup time for fast test execution
+1. **Reliability**: Fixtures should work consistently across platforms
 
 ### Documentation Standards
 
 1. **Docstrings**: Every public function and fixture needs comprehensive docstrings
-2. **Examples**: Include working code examples in docstrings
-3. **Type hints**: Use comprehensive type annotations
-4. **README updates**: Update README.md when adding major features
+1. **Examples**: Include working code examples in docstrings
+1. **Type hints**: Use comprehensive type annotations
+1. **README updates**: Update README.md when adding major features
 
 ### Testing Requirements
 
 1. **Test your fixtures**: Every fixture should have tests
-2. **Cross-platform**: Test on multiple platforms (macOS, Linux, Windows)
-3. **Python versions**: Ensure compatibility with Python 3.11+
-4. **Performance**: Avoid fixtures that significantly slow down test suites
+1. **Cross-platform**: Test on multiple platforms (macOS, Linux, Windows)
+1. **Python versions**: Ensure compatibility with Python 3.11+
+1. **Performance**: Avoid fixtures that significantly slow down test suites
 
 ### Code Quality Standards
 
@@ -182,6 +189,7 @@ pytest tests/ --cov=src/provide/testkit --cov-report=term-missing
 ## Common Patterns
 
 ### Context Managers
+
 Many fixtures use context managers for resource cleanup:
 
 ```python
@@ -194,6 +202,7 @@ def mock_server():
 ```
 
 ### Parameterized Fixtures
+
 Use parameterization for testing multiple scenarios:
 
 ```python
@@ -204,6 +213,7 @@ def config_format(request):
 ```
 
 ### Async Fixtures
+
 Support async testing with async fixtures:
 
 ```python
@@ -219,11 +229,13 @@ async def async_client():
 ### Making Changes
 
 1. **Create a feature branch**:
+
    ```bash
    git checkout -b feature/add-database-fixtures
    ```
 
-2. **Add your fixture**:
+1. **Add your fixture**:
+
    ```bash
    # Add fixture to appropriate domain
    vim src/provide/testkit/database/fixtures.py
@@ -235,13 +247,15 @@ async def async_client():
    vim src/provide/testkit/database/__init__.py
    ```
 
-3. **Test your changes**:
+1. **Test your changes**:
+
    ```bash
    pytest tests/test_database_fixtures.py -v
    pytest tests/ # Run all tests
    ```
 
-4. **Update documentation**:
+1. **Update documentation**:
+
    ```bash
    # Update README if needed
    vim README.md
@@ -250,7 +264,8 @@ async def async_client():
    vim CHANGELOG.md
    ```
 
-5. **Submit a pull request**:
+1. **Submit a pull request**:
+
    ```bash
    git add .
    git commit -m "feat: add database testing fixtures"
@@ -260,19 +275,23 @@ async def async_client():
 ### Review Process
 
 1. **Automated checks**: CI will run tests, linting, and type checking
-2. **Code review**: Maintainers will review for:
+
+1. **Code review**: Maintainers will review for:
+
    - Code quality and style
    - Test coverage
    - Documentation completeness
    - Cross-platform compatibility
    - Performance impact
 
-3. **Testing**: Changes will be tested across the ecosystem
-4. **Integration**: Once approved, changes will be merged
+1. **Testing**: Changes will be tested across the ecosystem
+
+1. **Integration**: Once approved, changes will be merged
 
 ## Issue Reporting
 
 ### Bug Reports
+
 When reporting bugs, include:
 
 - **Environment**: OS, Python version, testkit version
@@ -282,6 +301,7 @@ When reporting bugs, include:
 - **Logs**: Any relevant error messages or stack traces
 
 ### Feature Requests
+
 When requesting features, include:
 
 - **Use case**: Why is this feature needed?
@@ -292,10 +312,10 @@ When requesting features, include:
 ## Release Process
 
 1. **Version bumping**: Follow semantic versioning
-2. **Changelog**: Update CHANGELOG.md with all changes
-3. **Testing**: Run full test suite across ecosystem
-4. **Documentation**: Update API documentation
-5. **Release**: Create GitHub release with notes
+1. **Changelog**: Update CHANGELOG.md with all changes
+1. **Testing**: Run full test suite across ecosystem
+1. **Documentation**: Update API documentation
+1. **Release**: Create GitHub release with notes
 
 ## Questions?
 

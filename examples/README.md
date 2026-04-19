@@ -5,36 +5,45 @@ This directory contains practical examples demonstrating how to use provide-test
 ## Example Categories
 
 ### 🚀 Getting Started
+
 - **[basics/basic_usage.py](https://github.com/provide-io/provide-testkit/blob/main/examples/basics/basic_usage.py)**: Simple examples showing core fixture usage
 - **[basics/first_test.py](https://github.com/provide-io/provide-testkit/blob/main/examples/basics/first_test.py)**: Your first test using provide-testkit
 
 ### 🔍 Quality Analysis
+
 - **[quality/framework_demo.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/framework_demo.py)**: Quality framework demonstration
 - **[quality/decorators_demo.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/decorators_demo.py)**: Quality decorators examples
 - **[quality/generate_reports.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/generate_reports.py)**: Report generation examples
 
 ### 📁 File and Directory Testing
+
 - **[file/file_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/file/file_testing.py)**: Testing file creation, reading, and manipulation
 - **[file/advanced_file_operations.py](https://github.com/provide-io/provide-testkit/blob/main/examples/file/advanced_file_operations.py)**: Working with complex file workflows
 
 ### ⚡ Async Testing
+
 - **[async/async_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/async/async_testing.py)**: Testing async/await operations
 
 ### 🌐 Network and Transport Testing
+
 - **[network/http_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/network/http_testing.py)**: Testing HTTP clients with mock servers
 
 ### 💻 CLI and Command-Line Testing
+
 - **[cli/cli_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/cli/cli_testing.py)**: Testing command-line applications
 
 ### 🧩 Patterns
+
 - **[patterns/mocking_patterns.py](https://github.com/provide-io/provide-testkit/blob/main/examples/patterns/mocking_patterns.py)**: Mocking and test organization patterns
 
 ### 🔐 Security
+
 - **[security_scan_example.py](https://github.com/provide-io/provide-testkit/blob/main/examples/security_scan_example.py)**: Security scan fixtures and reporting
 
 ## Running Examples
 
 ### Prerequisites
+
 ```bash
 # Install provide-testkit with development dependencies
 uv add provide-testkit[dev]
@@ -46,6 +55,7 @@ source .venv/bin/activate
 ```
 
 ### Running Individual Examples
+
 ```bash
 # Run a specific example
 pytest examples/basics/basic_usage.py -v
@@ -58,6 +68,7 @@ pytest examples/basics/basic_usage.py -v -s
 ```
 
 ### Running All Examples
+
 ```bash
 # Run all examples
 pytest examples/ -v
@@ -110,23 +121,27 @@ def test_example_functionality(fixture_name):
 ## Key Learning Paths
 
 ### Path 1: Testing Basics
+
 1. **[basics/basic_usage.py](https://github.com/provide-io/provide-testkit/blob/main/examples/basics/basic_usage.py)**: Start here for fundamental concepts
-2. **[file/file_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/file/file_testing.py)**: Learn file testing patterns
-3. **[async/async_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/async/async_testing.py)**: Understand async testing
+1. **[file/file_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/file/file_testing.py)**: Learn file testing patterns
+1. **[async/async_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/async/async_testing.py)**: Understand async testing
 
 ### Path 2: Quality & Reporting
+
 1. **[quality/framework_demo.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/framework_demo.py)**: Quality framework overview
-2. **[quality/decorators_demo.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/decorators_demo.py)**: Quality decorators in action
-3. **[quality/generate_reports.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/generate_reports.py)**: Report generation workflow
+1. **[quality/decorators_demo.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/decorators_demo.py)**: Quality decorators in action
+1. **[quality/generate_reports.py](https://github.com/provide-io/provide-testkit/blob/main/examples/quality/generate_reports.py)**: Report generation workflow
 
 ### Path 3: CLI & Automation
+
 1. **[cli/cli_testing.py](https://github.com/provide-io/provide-testkit/blob/main/examples/cli/cli_testing.py)**: Command-line application testing
-2. **[patterns/mocking_patterns.py](https://github.com/provide-io/provide-testkit/blob/main/examples/patterns/mocking_patterns.py)**: Mocking and organization patterns
-3. **[security_scan_example.py](https://github.com/provide-io/provide-testkit/blob/main/examples/security_scan_example.py)**: Security scan fixtures
+1. **[patterns/mocking_patterns.py](https://github.com/provide-io/provide-testkit/blob/main/examples/patterns/mocking_patterns.py)**: Mocking and organization patterns
+1. **[security_scan_example.py](https://github.com/provide-io/provide-testkit/blob/main/examples/security_scan_example.py)**: Security scan fixtures
 
 ## Common Patterns
 
 ### Pattern 1: Fixture Composition
+
 Combining multiple fixtures for complex scenarios:
 
 ```python
@@ -147,6 +162,7 @@ def test_complex_scenario(temp_directory, mock_server, client_cert):
 ```
 
 ### Pattern 2: Parameterized Testing
+
 Using fixtures with parametrization:
 
 ```python
@@ -167,6 +183,7 @@ def test_config_formats(temp_directory, file_format):
 ```
 
 ### Pattern 3: Async Context Management
+
 Proper async testing patterns:
 
 ```python
@@ -186,6 +203,7 @@ async def test_async_context(clean_event_loop, async_timeout):
 ### Common Issues and Solutions
 
 1. **Fixture Not Found**
+
    ```python
    # Problem: ImportError or fixture not recognized
    from provide.testkit import unknown_fixture  # ❌
@@ -194,7 +212,8 @@ async def test_async_context(clean_event_loop, async_timeout):
    from provide.testkit import temp_directory  # ✅
    ```
 
-2. **Async Test Issues**
+1. **Async Test Issues**
+
    ```python
    # Problem: Async test not running properly
    def test_async_operation():  # ❌
@@ -206,7 +225,8 @@ async def test_async_context(clean_event_loop, async_timeout):
        result = await some_async_function()
    ```
 
-3. **Resource Cleanup**
+1. **Resource Cleanup**
+
    ```python
    # Problem: Manual cleanup required
    def test_with_manual_cleanup():  # ❌
@@ -226,6 +246,7 @@ async def test_async_context(clean_event_loop, async_timeout):
 ## Performance Tips
 
 ### Optimize Test Execution
+
 ```python
 # Use session-scoped fixtures for expensive setup
 @pytest.fixture(scope="session")
@@ -243,6 +264,7 @@ def isolated_resource():
 ```
 
 ### Parallel Testing
+
 ```python
 # Mark tests that can run in parallel
 @pytest.mark.parallel
@@ -260,24 +282,24 @@ def test_shared_resource():
 ## Best Practices from Examples
 
 1. **Clear Test Names**: Use descriptive test names that explain what is being tested
-2. **Good Documentation**: Include docstrings explaining the test purpose
-3. **Arrange-Act-Assert**: Structure tests with clear sections
-4. **Fixture Reuse**: Leverage fixtures instead of manual setup/teardown
-5. **Error Testing**: Include tests for error conditions and edge cases
-6. **Performance Awareness**: Use appropriate fixture scopes for performance
+1. **Good Documentation**: Include docstrings explaining the test purpose
+1. **Arrange-Act-Assert**: Structure tests with clear sections
+1. **Fixture Reuse**: Leverage fixtures instead of manual setup/teardown
+1. **Error Testing**: Include tests for error conditions and edge cases
+1. **Performance Awareness**: Use appropriate fixture scopes for performance
 
 ## Contributing Examples
 
 Want to contribute an example? Follow these guidelines:
 
 1. **Clear Purpose**: Each example should demonstrate specific fixture usage
-2. **Complete Code**: Examples should be runnable without modification
-3. **Good Comments**: Explain what each part of the test does
-4. **Follow Patterns**: Use the established example structure
-5. **Test Coverage**: Include both success and failure scenarios
+1. **Complete Code**: Examples should be runnable without modification
+1. **Good Comments**: Explain what each part of the test does
+1. **Follow Patterns**: Use the established example structure
+1. **Test Coverage**: Include both success and failure scenarios
 
 See [CONTRIBUTING.md](https://github.com/provide-io/provide-testkit/blob/main/CONTRIBUTING.md) for detailed contribution guidelines.
 
----
+______________________________________________________________________
 
 Ready to explore? Start with [basics/basic_usage.py](https://github.com/provide-io/provide-testkit/blob/main/examples/basics/basic_usage.py) or pick an example that matches your testing needs!

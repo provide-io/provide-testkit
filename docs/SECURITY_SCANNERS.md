@@ -7,6 +7,7 @@ Comprehensive guide for using provide-testkit security scanners across the provi
 provide-testkit includes production-focused security scanners that integrate seamlessly with CI/CD pipelines. All scanners follow a consistent plugin architecture and return standardized `QualityResult` objects.
 
 **Available Scanners:**
+
 - **GitLeaks** - Secret detection (API keys, tokens, credentials)
 - **PipAudit** - PyPI package vulnerability scanning
 - **Safety** - PyUp vulnerability database scanning
@@ -80,6 +81,7 @@ print(f"Issues: {result.details['total_issues']}")
 Scans for exposed secrets like API keys, passwords, and tokens in code and git history.
 
 **Configuration:**
+
 ```python
 config = {
     "max_secrets": 0,                    # Maximum allowed secrets
@@ -98,6 +100,7 @@ result = scanner.analyze(Path("./src"), artifact_dir=Path(".security"))
 **Score Calculation:** 100 - (secrets_found × 25)
 
 **Example Output:**
+
 ```python
 {
     "tool": "gitleaks",
@@ -121,6 +124,7 @@ result = scanner.analyze(Path("./src"), artifact_dir=Path(".security"))
 Scans Python dependencies against the PyPI security advisory database.
 
 **Configuration:**
+
 ```python
 config = {
     "max_vulnerabilities": 0,           # Maximum allowed vulnerabilities
@@ -137,6 +141,7 @@ result = scanner.analyze(Path("."))  # Scans requirements.txt or pyproject.toml
 **Score Calculation:** 100 - (vulnerabilities × 10)
 
 **Example Output:**
+
 ```python
 {
     "tool": "pip-audit",
@@ -161,6 +166,7 @@ result = scanner.analyze(Path("."))  # Scans requirements.txt or pyproject.toml
 Scans Python dependencies against the PyUp Safety database.
 
 **Configuration:**
+
 ```python
 config = {
     "max_vulnerabilities": 0,
@@ -183,6 +189,7 @@ result = scanner.analyze(Path("."))
 Scans code for security vulnerabilities, bugs, and anti-patterns using pattern rules.
 
 **Configuration:**
+
 ```python
 config = {
     "config": ["auto"],                  # or ["p/security-audit", "p/owasp-top-10"]
@@ -201,11 +208,13 @@ result = scanner.analyze(Path("./src"))
 **Auto-detection:** Automatically uses `.provide/security/semgrep.yml` if present.
 
 **Score Calculation:**
+
 - ERROR: -15 points
 - WARNING: -5 points
 - INFO: -1 point
 
 **Example Output:**
+
 ```python
 {
     "tool": "semgrep",
@@ -230,6 +239,7 @@ result = scanner.analyze(Path("./src"))
 Scans Python code for common security issues using Bandit.
 
 **Configuration:**
+
 ```python
 config = {
     "max_high_severity": 0,              # Maximum HIGH severity issues
@@ -244,16 +254,19 @@ result = scanner.analyze(Path("./src"), artifact_dir=Path(".provide/output/secur
 ```
 
 **Verbosity Levels:**
+
 - `quiet`: Only errors (best for CI/CD)
 - `normal`: Errors and warnings (default)
 - `verbose`: All messages including debug info
 
 **Score Calculation:**
+
 - HIGH severity: -10 points
 - MEDIUM severity: -5 points
 - LOW severity: -1 point
 
 **Example Output:**
+
 ```python
 {
     "tool": "security",
@@ -288,6 +301,7 @@ result = scanner.analyze(Path("./src"), artifact_dir=Path(".provide/output/secur
 Scans for secrets using entropy analysis and pattern matching with optional verification.
 
 **Configuration:**
+
 ```python
 config = {
     "max_secrets": 0,
@@ -307,10 +321,12 @@ result = scanner.analyze(Path("."))
 **Auto-detection:** Automatically uses `.provide/security/trufflehog.yml` if present.
 
 **Score Calculation:**
+
 - Verified (active) secrets: -50 points each
 - Unverified secrets: -15 points each
 
 **Example Output:**
+
 ```python
 {
     "tool": "trufflehog",
@@ -612,6 +628,7 @@ class SnykScanner:
 ```
 
 **Usage:**
+
 ```python
 from snyk_scanner import SnykScanner
 
@@ -625,12 +642,12 @@ result = scanner.analyze(Path("."))
 ### Key Architecture Points
 
 1. **Standardized Result Format:** All scanners return `QualityResult` objects
-2. **Foundation Integration:** All use `foundation.process.run` for subprocess execution
-3. **Absolute Imports:** Always use absolute imports, never relative
-4. **Artifact Generation:** All generate JSON and text reports
-5. **Exception Handling:** Proper error handling with `QualityToolError`
-6. **Configuration:** Support both explicit config and auto-detection
-7. **Scoring:** Consistent scoring system (0-100 scale)
+1. **Foundation Integration:** All use `foundation.process.run` for subprocess execution
+1. **Absolute Imports:** Always use absolute imports, never relative
+1. **Artifact Generation:** All generate JSON and text reports
+1. **Exception Handling:** Proper error handling with `QualityToolError`
+1. **Configuration:** Support both explicit config and auto-detection
+1. **Scoring:** Consistent scoring system (0-100 scale)
 
 ## Best Practices
 
