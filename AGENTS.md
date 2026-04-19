@@ -6,66 +6,27 @@ This file provides guidance for AI assistants when working with code in this rep
 
 `provide-testkit` is a comprehensive testing utilities library for the provide ecosystem. It provides pytest fixtures, mocking utilities, and testing helpers organized by domain (file, process, transport, crypto, etc.) to support testing of Foundation-based applications.
 
-## Development Environment Setup
-
-## Task Runner
-
-This project uses `wrknv` for task automation. Commands are defined in `wrknv.toml`.
-
-### Quick Reference
-```bash
-we tasks             # List all available tasks
-we run test          # Run tests
-we run lint          # Check code quality
-we run format        # Format code
-we run typecheck     # Type checking
-we run build         # Build package
-```
-
-All tasks can be run with `we run <task>`. Nested tasks use dotted names (e.g., `we run test.coverage`).
-
-### Task Discovery
-
-Run `we tasks` to see the complete task tree for this project. Common task hierarchies:
-
-```bash
-we run test                # Run all tests
-we run test.parallel       # Run tests in parallel
-we run test.coverage       # Run tests with coverage
-```
-
 ## Common Development Commands
 
 ```bash
 # Environment setup
 uv sync                            # Install dependencies
 
-# Primary workflow (using we)
-we run test                        # Run all tests
-we run test.coverage               # Run with coverage report
-we run test.parallel               # Run tests in parallel
-we run lint                        # Check code quality
-we run lint.fix                    # Auto-fix linting issues
-we run format                      # Format code
-we run format.check                # Check formatting without changes
-we run typecheck                   # Run type checker
-we run build                       # Build distribution
-
-# Alternative (direct uv commands)
+# Testing
 uv run pytest                      # Direct test execution
 uv run pytest -n auto              # Run tests in parallel
 uv run pytest -n auto -vvv         # Verbose parallel test run
 uv run pytest tests/test_specific.py   # Run specific test file
 uv run pytest -k "test_name"       # Run tests matching pattern
-uv run ruff check .                # Direct linting
-uv run ruff format .               # Direct formatting
-uv run mypy src/                   # Direct type checking
+
+# Code quality
+uv run ruff check .                # Linting
+uv run ruff format .               # Formatting
+uv run mypy src/                   # Type checking
 
 # Publishing
 uv publish                         # Publish to PyPI
 ```
-
-For complete task documentation, see [wrknv.toml](wrknv.toml) or run `we tasks`.
 
 ## Architecture & Code Structure
 
