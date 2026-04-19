@@ -112,6 +112,7 @@ result = tracker.analyze(Path("./src"))
 ```
 
 **Configuration Options:**
+
 - `min_coverage`: Minimum coverage percentage (default: 80.0)
 - `generate_html`: Generate HTML coverage report (default: False)
 - `generate_xml`: Generate XML coverage report (default: False)
@@ -133,6 +134,7 @@ result = scanner.analyze(Path("./src"))
 ```
 
 **Configuration Options:**
+
 - `min_score`: Minimum security score (default: 90.0)
 - `ignore_issues`: List of bandit issue IDs to ignore
 - `severity_weights`: Custom weights for different severity levels
@@ -154,6 +156,7 @@ result = analyzer.analyze(Path("./src"))
 ```
 
 **Configuration Options:**
+
 - `max_complexity`: Maximum allowed complexity (default: 20)
 - `min_grade`: Minimum complexity grade (A, B, C, D, F)
 - `min_score`: Minimum complexity score (default: 70.0)
@@ -176,6 +179,7 @@ result = checker.analyze(Path("./src"))
 ```
 
 **Configuration Options:**
+
 - `min_coverage`: Minimum documentation coverage (default: 80.0)
 - `min_grade`: Minimum documentation grade
 - `ignore_init_method`: Ignore __init__ methods (default: True)
@@ -198,6 +202,7 @@ result = profiler.profile_function(my_function, *args)
 ```
 
 **Configuration Options:**
+
 - `max_memory_mb`: Maximum memory usage in MB
 - `max_execution_time`: Maximum execution time in seconds
 - `use_memray`: Use memray for memory profiling (default: True if available)
@@ -507,21 +512,25 @@ Implement quality gates incrementally:
 ### Common Issues
 
 1. **Missing Dependencies**: Install optional dependencies:
+
    ```bash
    uv add provide-testkit[quality]
    ```
 
-2. **Permission Errors**: Ensure write access to artifact directories:
+1. **Permission Errors**: Ensure write access to artifact directories:
+
    ```python
    manager = ArtifactManager("/tmp/quality-artifacts")
    ```
 
-3. **Memory Issues**: Configure profiling limits:
+1. **Memory Issues**: Configure profiling limits:
+
    ```python
    config = {"max_memory_mb": 1000}  # Increase limit
    ```
 
-4. **Performance Issues**: Use sampling for large codebases:
+1. **Performance Issues**: Use sampling for large codebases:
+
    ```python
    config = {"sample_rate": 0.1}  # Analyze 10% of files
    ```

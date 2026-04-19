@@ -1,10 +1,6 @@
 # 🧪✅ Provide TestKit
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![uv](https://img.shields.io/badge/uv-package_manager-FF6B35.svg)](https://github.com/astral-sh/uv)
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![CI](https://github.com/provide-io/provide-testkit/actions/workflows/ci.yml/badge.svg)](https://github.com/provide-io/provide-testkit/actions)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![uv](https://img.shields.io/badge/uv-package_manager-FF6B35.svg)](https://github.com/astral-sh/uv) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![CI](https://github.com/provide-io/provide-testkit/actions/workflows/ci.yml/badge.svg)](https://github.com/provide-io/provide-testkit/actions)
 
 **Comprehensive testing utilities and fixtures for the [provide ecosystem](https://github.com/provide-io)**
 
@@ -27,10 +23,11 @@ TestKit provides a unified testing framework designed specifically for applicati
 > **Note**: provide-testkit is in pre-release (v0.x.x). APIs and features may change before 1.0 release.
 
 1. Install: `uv add provide-testkit`
-2. Read the [Quick Start guide](https://github.com/provide-io/provide-testkit/blob/main/docs/getting-started/quick-start.md).
-3. Explore examples in [examples/README.md](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md).
+1. Read the [Quick Start guide](https://github.com/provide-io/provide-testkit/blob/main/docs/getting-started/quick-start.md).
+1. Explore examples in [examples/README.md](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md).
 
 ## Documentation
+
 - [Documentation index](https://github.com/provide-io/provide-testkit/blob/main/docs/index.md)
 - [Examples](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md)
 
@@ -54,9 +51,11 @@ uv run mypy src/           # Type checking
 See [CLAUDE.md](https://github.com/provide-io/provide-testkit/blob/main/CLAUDE.md) for detailed development instructions and architecture information.
 
 ## Contributing
+
 See [CONTRIBUTING.md](https://github.com/provide-io/provide-testkit/blob/main/CONTRIBUTING.md) for contribution guidelines.
 
 ## License
+
 See [LICENSE](https://github.com/provide-io/provide-testkit/blob/main/LICENSE) for license details.
 
 Copyright (c) provide.io LLC.
