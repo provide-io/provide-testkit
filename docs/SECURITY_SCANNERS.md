@@ -396,59 +396,6 @@ jobs:
           "
 ```
 
-### wrknv.toml Integration
-
-```toml
-[tasks.security]
-description = "Run all security scanners"
-script = """
-python -c "
-from pathlib import Path
-from provide.testkit.quality.security import *
-
-scanners = {
-    'secrets': GitLeaksScanner({'max_secrets': 0}),
-    'dependencies': PipAuditScanner({'max_vulnerabilities': 0}),
-    'code': SecurityScanner({'max_high_severity': 0, 'verbosity': 'quiet'}),
-}
-
-for name, scanner in scanners.items():
-    result = scanner.analyze(Path('.'))
-    print(f'{name}: {result.score}% - {'✅ PASSED' if result.passed else '❌ FAILED'}')
-    if not result.passed:
-        exit(1)
-"
-"""
-
-[tasks.security.gitleaks]
-description = "Scan for secrets with GitLeaks"
-script = """
-python -c "
-from pathlib import Path
-from provide.testkit.quality.security.gitleaks_scanner import GitLeaksScanner
-scanner = GitLeaksScanner({'max_secrets': 0})
-result = scanner.analyze(Path('.'))
-report = scanner.report(result, 'terminal')
-print(report)
-exit(0 if result.passed else 1)
-"
-"""
-
-[tasks.security.dependencies]
-description = "Scan dependencies for vulnerabilities"
-script = """
-python -c "
-from pathlib import Path
-from provide.testkit.quality.security.pip_audit_scanner import PipAuditScanner
-scanner = PipAuditScanner({'max_vulnerabilities': 0})
-result = scanner.analyze(Path('.'))
-report = scanner.report(result, 'terminal')
-print(report)
-exit(0 if result.passed else 1)
-"
-"""
-```
-
 ## Running Scanners on provide-testkit Itself
 
 Example of dogfooding - running scanners on this codebase:
