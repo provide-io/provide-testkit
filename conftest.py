@@ -1,7 +1,6 @@
 import hypothesis
 from hypothesis import HealthCheck
 
-
 hypothesis.settings.register_profile(
     "ci",
     deadline=None,
