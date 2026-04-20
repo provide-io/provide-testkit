@@ -96,8 +96,8 @@ Testkit automatically detects testing contexts and adjusts behavior:
 ## Next Steps
 
 1. **[Quick Start Guide](quick-start.md)** - Build your first test in 5 minutes
-2. **[API Reference](../api/index.md)** - Explore available fixtures and utilities
-3. **[Examples](../../examples/README.md)** - See practical testing patterns
+1. **[API Reference](../api/index.md)** - Explore available fixtures and utilities
+1. **[Examples](../../examples/README.md)** - See practical testing patterns
 
 ______________________________________________________________________
 
