@@ -19,11 +19,13 @@ TestKit provides a unified testing framework designed specifically for applicati
 - 🧵 **Thread Safety Testing** - Multi-threading test utilities
 
 ## Quick Start
+
 1. Install: `uv add provide-testkit`
-2. Read the [Quick Start guide](https://github.com/provide-io/provide-testkit/blob/main/docs/getting-started/quick-start.md).
-3. Explore examples in [examples/README.md](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md).
+1. Read the [Quick Start guide](https://github.com/provide-io/provide-testkit/blob/main/docs/getting-started/quick-start.md).
+1. Explore examples in [examples/README.md](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md).
 
 ## Documentation
+
 - [Documentation index](https://github.com/provide-io/provide-testkit/blob/main/docs/index.md)
 - [Examples](https://github.com/provide-io/provide-testkit/blob/main/examples/README.md)
 
@@ -36,31 +38,22 @@ TestKit provides a unified testing framework designed specifically for applicati
 uv sync
 
 # Run common tasks
-we run test       # Run tests
-we run lint       # Check code
-we run format     # Format code
-we tasks          # See all available commands
+uv run pytest              # Run tests
+uv run pytest -n auto      # Run tests in parallel
+uv run pytest --cov        # Run tests with coverage
+uv run ruff check .        # Check code
+uv run ruff format .       # Format code
+uv run mypy src/           # Type checking
 ```
 
 See [CLAUDE.md](https://github.com/provide-io/provide-testkit/blob/main/CLAUDE.md) for detailed development instructions and architecture information.
 
 ## Contributing
 
-**Common tasks:**
-- `we run test` - Run all tests
-- `we run test.coverage` - Run tests with coverage
-- `we run test.parallel` - Run tests in parallel
-- `we run lint` - Check code quality
-- `we run lint.fix` - Auto-fix linting issues
-- `we run format` - Format code
-- `we run typecheck` - Run type checker
-
-See [CLAUDE.md](https://github.com/provide-io/provide-testkit/blob/main/CLAUDE.md) for detailed development instructions and architecture information.
-
-## Contributing
 See [CONTRIBUTING.md](https://github.com/provide-io/provide-testkit/blob/main/CONTRIBUTING.md) for contribution guidelines.
 
 ## License
+
 See [LICENSE](https://github.com/provide-io/provide-testkit/blob/main/LICENSE) for license details.
 
 Copyright (c) provide.io LLC.
