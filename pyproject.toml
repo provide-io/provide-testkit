@@ -343,6 +343,17 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 show_error_codes = true
 
+# memray ships without .pyi stubs; try/except import pattern handles absence.
+[[tool.mypy.overrides]]
+module = ["memray", "memray.*"]
+ignore_missing_imports = true
+
+# click.Path(path_type=Path) returns a generic _PathType typevar mypy can't
+# narrow; the pattern appears 12+ times in this CLI module.
+[[tool.mypy.overrides]]
+module = ["provide.testkit.quality.cli"]
+disable_error_code = ["type-var"]
+
 [tool.coverage.run]
 source = ["src"]
 branch = true
