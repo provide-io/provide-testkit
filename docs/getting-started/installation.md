@@ -2,23 +2,22 @@
 
 ## Prerequisites
 
---8\<-- ".provide/foundry/docs/\_partials/python-requirements.md"
+--8<-- ".provide/foundry/docs/_partials/python-requirements.md"
 
 **Additional Requirements**:
-
 - **pytest 7.0 or later** - Required for running tests
 
 ## Installing UV
 
---8\<-- ".provide/foundry/docs/\_partials/uv-installation.md"
+--8<-- ".provide/foundry/docs/_partials/uv-installation.md"
 
 ## Python Version Setup
 
---8\<-- ".provide/foundry/docs/\_partials/python-version-setup.md"
+--8<-- ".provide/foundry/docs/_partials/python-version-setup.md"
 
 ## Virtual Environment
 
---8\<-- ".provide/foundry/docs/\_partials/virtual-env-setup.md"
+--8<-- ".provide/foundry/docs/_partials/virtual-env-setup.md"
 
 ## Installing Provide TestKit
 
@@ -57,7 +56,6 @@ uv add provide-testkit[quality]
 ```
 
 Includes:
-
 - Code coverage (coverage.py)
 - Security scanning (bandit)
 - Complexity analysis (radon)
@@ -105,14 +103,13 @@ def test_installation(fixtures.temp_directory):
 
 ## Troubleshooting
 
---8\<-- ".provide/foundry/docs/\_partials/troubleshooting-common.md"
+--8<-- ".provide/foundry/docs/_partials/troubleshooting-common.md"
 
 ### TestKit-Specific Issues
 
 **Problem**: Fixtures not discovered by pytest
 
 **Solution**: Ensure pytest is configured to find provide.testkit:
-
 ```bash
 # Check if testkit is installed
 python -c "import provide.testkit; print('✅ Found')"

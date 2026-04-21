@@ -1,0 +1,32 @@
+GitLeaks Secret Detection Report - gitleaks
+==================================================
+Status: ❌ FAILED
+Security Score: 0.0%
+Secrets Found: 4
+
+⚠️  SECRETS DETECTED (redacted):
+  - src/provide/testkit/crypto/fixtures.py:37
+    Rule: private-key
+    Description: Identified a Private Key, which may compromise cryptographic security and sensitive data encryption.
+    Match: -----BEGIN EC PRIVATE KEY-----
+MIGkAgEBBDAkxo19Kcz...
+
+  - src/provide/testkit/crypto/fixtures.py:65
+    Rule: private-key
+    Description: Identified a Private Key, which may compromise cryptographic security and sensitive data encryption.
+    Match: -----BEGIN EC PRIVATE KEY-----
+MIGkAgEBBDDZ1MORWFV...
+
+  - src/bfiles-20251012-132527-testkit.txt:3582
+    Rule: private-key
+    Description: Identified a Private Key, which may compromise cryptographic security and sensitive data encryption.
+    Match: -----BEGIN EC PRIVATE KEY-----
+MIGkAgEBBDAkxo19Kcz...
+
+  - src/bfiles-20251012-132527-testkit.txt:3610
+    Rule: private-key
+    Description: Identified a Private Key, which may compromise cryptographic security and sensitive data encryption.
+    Match: -----BEGIN EC PRIVATE KEY-----
+MIGkAgEBBDDZ1MORWFV...
+
+Execution Time: 0.01s

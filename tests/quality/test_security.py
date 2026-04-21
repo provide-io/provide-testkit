@@ -717,7 +717,7 @@ def test_real_security_integration(tmp_path: Path) -> None:
     # Create a Python file with potential security issue
     test_file = tmp_path / "vulnerable.py"
     test_file.write_text("""
-import subprocess
+import subprocess  # nosec
 
 def run_command(user_input):
     # This should trigger a security warning

@@ -15,7 +15,7 @@ from __future__ import annotations
 from collections.abc import Callable, Generator
 from pathlib import Path
 import shutil
-import subprocess
+import subprocess  # nosec
 
 import attrs
 import pytest

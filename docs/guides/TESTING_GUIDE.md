@@ -159,14 +159,12 @@ async def test_with_isolated_hub(isolated_hub):
 ### When to Use Isolated Fixtures vs FoundationTestCase
 
 **Use isolated fixtures (`isolated_container`, `isolated_hub`) when:**
-
 - Writing unit tests that need complete isolation
 - Testing components that accept Hub/Container via constructor
 - You want to avoid global state entirely
 - No need for reset functions between tests
 
 **Use FoundationTestCase when:**
-
 - Writing integration tests that use global Hub (via `get_hub()`)
 - Testing legacy code that relies on global state
 - You need automatic cleanup of temp files and mocks
@@ -175,7 +173,6 @@ async def test_with_isolated_hub(isolated_hub):
 ### Comparing Testing Patterns
 
 **Traditional Pattern (with reset):**
-
 ```python
 class TestMyFeature(FoundationTestCase):
     def test_something(self) -> None:
@@ -186,7 +183,6 @@ class TestMyFeature(FoundationTestCase):
 ```
 
 **Modern DI Pattern (no reset needed):**
-
 ```python
 def test_something(isolated_hub):
     # Fresh Hub per test, no reset needed
@@ -197,7 +193,6 @@ def test_something(isolated_hub):
 ```
 
 **Best of Both Worlds:**
-
 ```python
 class TestMyFeature(FoundationTestCase):
     def test_with_di(self, isolated_hub) -> None:
@@ -211,18 +206,17 @@ class TestMyFeature(FoundationTestCase):
 ## Best Practices
 
 1. **Always use FoundationTestCase** as base class for Foundation tests
-1. **Use testkit mocks** instead of unittest.mock directly
-1. **Use temp file utilities** instead of manual temp file creation
-1. **Use environment utilities** instead of manual os.environ manipulation
-1. **Use async fixtures** for async test scenarios
-1. **Clean up properly** (FoundationTestCase handles this automatically)
-1. **Prefer isolated fixtures** for new tests using DI-enabled components
-1. **Use explicit DI** (pass Hub/Container to constructors) instead of global `get_hub()` calls
+2. **Use testkit mocks** instead of unittest.mock directly
+3. **Use temp file utilities** instead of manual temp file creation
+4. **Use environment utilities** instead of manual os.environ manipulation
+5. **Use async fixtures** for async test scenarios
+6. **Clean up properly** (FoundationTestCase handles this automatically)
+7. **Prefer isolated fixtures** for new tests using DI-enabled components
+8. **Use explicit DI** (pass Hub/Container to constructors) instead of global `get_hub()` calls
 
 ## Migration from Plain Test Classes
 
 **Before:**
-
 ```python
 class TestMyFeature:
     def setup_method(self) -> None:
@@ -236,7 +230,6 @@ class TestMyFeature:
 ```
 
 **After:**
-
 ```python
 class TestMyFeature(FoundationTestCase):
     def test_something(self) -> None:
