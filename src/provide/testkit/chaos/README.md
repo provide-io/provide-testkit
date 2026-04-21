@@ -146,10 +146,10 @@ def test_pid_recycling_protection(tmp_path, scenario):
 ## Best Practices
 
 1. **Start Small** - Begin with `chaos_smoke` profile
-1. **Isolate Tests** - Mark with `@pytest.mark.chaos`
-1. **Document Findings** - Record discovered edge cases
-1. **CI Integration** - Use `chaos_ci` profile in CI
-1. **Hypothesis Database** - Commit `.hypothesis/` for regression
+2. **Isolate Tests** - Mark with `@pytest.mark.chaos`
+3. **Document Findings** - Record discovered edge cases
+4. **CI Integration** - Use `chaos_ci` profile in CI
+5. **Hypothesis Database** - Commit `.hypothesis/` for regression
 
 ## Running Chaos Tests
 

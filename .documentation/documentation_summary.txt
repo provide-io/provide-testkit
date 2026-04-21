@@ -1,0 +1,17 @@
+Documentation Coverage Report - documentation
+==================================================
+Status: ❌ FAILED
+Grade: B-
+Coverage: 75.0%
+Score: 80.0%
+
+Documented Items: 3
+Missing Documentation: 1
+Total Items: 4
+
+Thresholds:
+  Minimum Coverage: 80.0%
+  Minimum Grade: C
+  Minimum Score: 70.0%
+
+Execution Time: 0.00s

@@ -12,7 +12,7 @@ This file contains various patterns that quality tools would analyze:
 - Different levels of test coverage"""
 
 from collections.abc import Iterable
-import subprocess
+import subprocess  # nosec
 
 
 def well_documented_function(param1: str, param2: int) -> str:

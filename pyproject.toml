@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 #
-# provide-testkit/pyproject.toml
+# provide-testkit>=0.4.0/pyproject.toml
 #
 # Testing utilities and fixtures for the provide ecosystem.
 #
@@ -39,7 +39,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "provide-foundation>=0.3.29",
+    "provide-foundation>=0.4.0",
     "attrs>=25.4.0",
     "click>=8.3.1", # For CLI testing utilities - SHARED with Foundation
     # Core testing - minimum version constraints for stability
@@ -205,28 +205,28 @@ security = [
 
 # Convenience groups
 standard = [
-    "provide-testkit[quality,transport,crypto,process]",
+    "provide-testkit[quality,transport,crypto,process]>=0.4.0",
 ]
 
 grpc-dev = [
-    "provide-testkit[standard,grpc,typecheck]",
+    "provide-testkit[standard,grpc,typecheck]>=0.4.0",
 ]
 
 pyvider-dev = [
-    "provide-testkit[standard,advanced-testing,typecheck,grpc,build,profiling,security]",
+    "provide-testkit[standard,advanced-testing,typecheck,grpc,build,profiling,security]>=0.4.0",
 ]
 
 all = [
-    "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils,security,fuzzing]",
+    "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils,security,fuzzing]>=0.4.0",
 ]
 
 dev = [
-    "provide-testkit[quality,advanced-testing]",
+    "provide-testkit[quality,advanced-testing]>=0.4.0",
 ]
 
 # Self-referential docs for testkit itself
 docs-standalone = [
-    "provide-testkit[docs]",
+    "provide-testkit[docs]>=0.4.0",
 ]
 
 [project.scripts]
@@ -243,10 +243,10 @@ dev = [
     "mkdocs-macros-plugin",
     "mkdocstrings",
     "mkdocstrings-python",
-    "provide-testkit[quality,advanced-testing]",
+    "provide-testkit[quality,advanced-testing]>=0.4.0",
 ]
 docs = [
-    # provide-foundry - install separately for docs builds
+    # provide-foundry>=0.4.0 - install separately for docs builds
 ]
 
 ################################################################################
@@ -270,7 +270,7 @@ version = {file = "VERSION"}
 ################################################################################
 
 [tool.pytest.ini_options]
-minversion = "7.0"
+minversion = "0.4.0"
 addopts = "-ra -s --strict-markers --strict-config -m 'not memray'"
 # Parallel execution: pytest -n <workers> (range: 2-16, recommend: CPU cores or 8, max: 16 to avoid xdist hang)
 asyncio_mode = "auto"

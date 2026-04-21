@@ -31,11 +31,6 @@ try:
 except ImportError:  # pragma: no cover - pytest-asyncio is a test dependency
     pytest_asyncio = None  # type: ignore[assignment]
 
-try:
-    import pytest_asyncio
-except ImportError:  # pragma: no cover - pytest-asyncio is a test dependency
-    pytest_asyncio = None  # type: ignore[assignment]
-
 from provide.testkit.mocking import AsyncMock
 
 T = TypeVar("T")
