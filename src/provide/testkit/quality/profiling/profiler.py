@@ -25,7 +25,7 @@ try:
     MEMRAY_AVAILABLE = True
 except ImportError:
     MEMRAY_AVAILABLE = False
-    memray = None  # type: ignore[assignment]
+    memray = None
 
 from ..base import QualityResult, QualityToolError
 
