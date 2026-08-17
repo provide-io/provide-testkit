@@ -295,7 +295,7 @@ target-version = "py311"
 line-length = 111
 indent-width = 4
 # ruff format touches Python code blocks embedded in Markdown; docs prose is not the formatter's to restyle.
-exclude = ["**/*.md"]
+extend-exclude = ["**/*.md"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "ANN", "B", "BLE", "C90", "PIE", "PLR", "S", "SIM", "PTH", "RUF"]
