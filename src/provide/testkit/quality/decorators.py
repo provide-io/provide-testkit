@@ -290,6 +290,7 @@ def _extract_function_result(result: Any) -> Any:
 
 
 def quality_check(
+    *,
     coverage: float | bool | None = None,
     security: float | bool | None = None,
     complexity: dict[str, Any] | bool | None = None,

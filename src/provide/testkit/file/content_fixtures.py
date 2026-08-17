@@ -67,6 +67,7 @@ def temp_named_file() -> Generator[Callable[..., Path], None, None]:
     created_files: list[Path] = []
 
     def _make_named_file(
+        *,
         content: str | bytes | None = None,
         suffix: str = "",
         prefix: str = "tmp",

@@ -55,6 +55,7 @@ def quality_cli(ctx: click.Context) -> None:
 @click.option("--config", type=click.Path(exists=True, path_type=Path), help="Configuration file (JSON)")
 @click.option("--verbose", "-v", is_flag=True, help="Verbose output")
 def analyze_command(
+    *,
     path: Path,
     tool: tuple[str, ...],
     artifact_dir: Path,
@@ -126,6 +127,7 @@ def analyze_command(
 )
 @click.option("--verbose", "-v", is_flag=True, help="Verbose output")
 def gates_command(
+    *,
     path: Path,
     coverage: float | None,
     security: float | None,
@@ -235,7 +237,7 @@ def _print_detailed_results(results: Any) -> None:
 @click.option("--xml", is_flag=True, help="Generate XML report")
 @click.option("--verbose", "-v", is_flag=True, help="Verbose output")
 def coverage_command(
-    path: Path, min_coverage: float, artifact_dir: Path, html: bool, xml: bool, verbose: bool
+    *, path: Path, min_coverage: float, artifact_dir: Path, html: bool, xml: bool, verbose: bool
 ) -> None:
     """Run coverage analysis on the given path."""
     try:
