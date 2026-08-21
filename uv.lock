@@ -2826,42 +2826,17 @@ wheels = [
 
 [[package]]
 name = "provide-foundation"
-source = { editable = "../provide-foundation" }
+version = "0.4.2"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "structlog" },
     { name = "tomli-w" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "attrs", specifier = ">=25.4.0" },
-    { name = "click", marker = "extra == 'cli'", specifier = ">=8.3.1" },
-    { name = "cryptography", marker = "extra == 'crypto'", specifier = ">=45.0.7" },
-    { name = "httpx", marker = "extra == 'transport'", specifier = ">=0.28.1" },
-    { name = "opentelemetry-api", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
-    { name = "opentelemetry-exporter-otlp-proto-grpc", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
-    { name = "opentelemetry-exporter-otlp-proto-http", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
-    { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
-    { name = "provide-foundation", extras = ["cli", "compression", "crypto", "extended", "opentelemetry", "transport"], marker = "extra == 'all'", specifier = ">=0.4.0" },
-    { name = "provide-foundation", extras = ["platform", "process"], marker = "extra == 'extended'", specifier = ">=0.4.0" },
-    { name = "psutil", marker = "extra == 'platform'", specifier = ">=7.0.0" },
-    { name = "psutil", marker = "extra == 'process'", specifier = ">=7.0.0" },
-    { name = "py-cpuinfo", marker = "extra == 'platform'", specifier = ">=9.0.0" },
-    { name = "setproctitle", marker = "extra == 'process'", specifier = ">=1.3.7" },
-    { name = "structlog", specifier = ">=25.5.0" },
-    { name = "tomli-w", specifier = ">=1.2.0" },
-    { name = "zstandard", marker = "extra == 'compression'", specifier = ">=0.25.0" },
+sdist = { url = "https://files.pythonhosted.org/packages/2e/f1/43830b8faa786641592710ae43614c0e1afeadb03d55be63bddb9ca810b2/provide_foundation-0.4.2.tar.gz", hash = "sha256:e76aff7fe58620960967c9d80aaa8dc6db38481d29ee8e1f4f4f6500e773e1d0", size = 419800, upload-time = "2026-08-20T23:35:00.315Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ea/87/617dbf0fff9ee3cb82c677b5bd0e009bcb74fe3aefa22f0e7c9fed42d627/provide_foundation-0.4.2-py3-none-any.whl", hash = "sha256:a163c5dd12c76bc16e02632c11d1fc55626442bd1b157771a599d96cadfaa749", size = 617454, upload-time = "2026-08-20T23:34:58.397Z" },
 ]
-provides-extras = ["cli", "compression", "crypto", "transport", "opentelemetry", "platform", "process", "extended", "all"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "memray", specifier = ">=1.0" },
-    { name = "provide-testkit", extras = ["advanced-testing", "build", "standard", "typecheck", "utils"], editable = "." },
-]
-docs = [{ name = "provide-testkit", extras = ["docs"], editable = "." }]
-protobuf = [{ name = "protobuf", specifier = ">=6.32.0" }]
 
 [[package]]
 name = "provide-testkit"
@@ -2907,7 +2882,7 @@ all = [
     { name = "markdown-callouts" },
     { name = "markdown-exec" },
     { name = "markdown-include" },
-    { name = "memray" },
+    { name = "memray", marker = "sys_platform != 'win32'" },
     { name = "mike" },
     { name = "mkdocs" },
     { name = "mkdocs-autorefs" },
@@ -2932,7 +2907,7 @@ all = [
     { name = "pygments" },
     { name = "pymdown-extensions" },
     { name = "pynguin" },
-    { name = "pyre-check" },
+    { name = "pyre-check", marker = "sys_platform != 'win32'" },
     { name = "pyre-extensions" },
     { name = "pyrefly" },
     { name = "pyright" },
@@ -3063,7 +3038,7 @@ grpc-dev = [
     { name = "mutmut" },
     { name = "mypy" },
     { name = "psutil" },
-    { name = "pyre-check" },
+    { name = "pyre-check", marker = "sys_platform != 'win32'" },
     { name = "pyre-extensions" },
     { name = "pyrefly" },
     { name = "pyright" },
@@ -3085,7 +3060,7 @@ process = [
     { name = "setproctitle" },
 ]
 profiling = [
-    { name = "memray" },
+    { name = "memray", marker = "sys_platform != 'win32'" },
     { name = "viztracer" },
 ]
 pyvider-dev = [
@@ -3103,13 +3078,13 @@ pyvider-dev = [
     { name = "httpx" },
     { name = "hypothesis" },
     { name = "interrogate" },
-    { name = "memray" },
+    { name = "memray", marker = "sys_platform != 'win32'" },
     { name = "mutmut" },
     { name = "mypy" },
     { name = "pip-audit" },
     { name = "pre-commit" },
     { name = "psutil" },
-    { name = "pyre-check" },
+    { name = "pyre-check", marker = "sys_platform != 'win32'" },
     { name = "pyre-extensions" },
     { name = "pyrefly" },
     { name = "pyright" },
@@ -3170,7 +3145,7 @@ transport = [
 ]
 typecheck = [
     { name = "mypy" },
-    { name = "pyre-check" },
+    { name = "pyre-check", marker = "sys_platform != 'win32'" },
     { name = "pyre-extensions" },
     { name = "pyrefly" },
     { name = "pyright" },
@@ -3223,7 +3198,7 @@ requires-dist = [
     { name = "markdown-callouts", marker = "extra == 'docs'" },
     { name = "markdown-exec", marker = "extra == 'docs'" },
     { name = "markdown-include", marker = "extra == 'docs'" },
-    { name = "memray", marker = "extra == 'profiling'" },
+    { name = "memray", marker = "sys_platform != 'win32' and extra == 'profiling'" },
     { name = "mike", marker = "extra == 'docs'" },
     { name = "mkdocs", marker = "extra == 'docs'" },
     { name = "mkdocs-autorefs", marker = "extra == 'docs'" },
@@ -3246,7 +3221,7 @@ requires-dist = [
     { name = "mypy", marker = "extra == 'typecheck'" },
     { name = "pip-audit", marker = "extra == 'security'" },
     { name = "pre-commit", marker = "extra == 'build'" },
-    { name = "provide-foundation", editable = "../provide-foundation" },
+    { name = "provide-foundation", specifier = ">=0.4.0" },
     { name = "provide-testkit", extras = ["advanced-testing", "build", "crypto", "docs", "fuzzing", "grpc", "process", "profiling", "quality", "security", "transport", "typecheck", "utils"], marker = "extra == 'all'", specifier = ">=0.4.0" },
     { name = "provide-testkit", extras = ["advanced-testing", "build", "grpc", "profiling", "security", "standard", "typecheck"], marker = "extra == 'pyvider-dev'", specifier = ">=0.4.0" },
     { name = "provide-testkit", extras = ["advanced-testing", "quality"], marker = "extra == 'dev'", specifier = ">=0.4.0" },
@@ -3257,7 +3232,7 @@ requires-dist = [
     { name = "pygments", marker = "extra == 'docs'" },
     { name = "pymdown-extensions", marker = "extra == 'docs'" },
     { name = "pynguin", marker = "extra == 'fuzzing'" },
-    { name = "pyre-check", marker = "extra == 'typecheck'" },
+    { name = "pyre-check", marker = "sys_platform != 'win32' and extra == 'typecheck'" },
     { name = "pyre-extensions", marker = "extra == 'typecheck'" },
     { name = "pyrefly", marker = "extra == 'typecheck'" },
     { name = "pyright", marker = "extra == 'typecheck'" },
