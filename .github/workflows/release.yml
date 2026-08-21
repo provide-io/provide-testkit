@@ -67,7 +67,7 @@ jobs:
         run: .ci-tooling/scripts/release/resolve-tag-version.sh >> "$GITHUB_OUTPUT"
       - name: ✅ Install from TestPyPI and verify
         run: |
-          .ci-tooling/scripts/release/verify-testpypi.sh provide-testkit "${{ steps.ver.outputs.version }}" "from importlib.metadata import version; import provide.testkit; v = version("provide-testkit")"
+          .ci-tooling/scripts/release/verify-testpypi.sh provide-testkit "${{ steps.ver.outputs.version }}" "from importlib.metadata import version; import provide.testkit; v = version('provide-testkit')"
 
   # PyPI publish via trusted publisher bound to this repo's release.yml + env `pypi`.
   publish-pypi:
