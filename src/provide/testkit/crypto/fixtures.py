@@ -9,7 +9,6 @@ Provides comprehensive pytest fixtures for testing certificate functionality,
 including valid/invalid certificates, keys, chains, and edge cases."""
 
 from pathlib import Path
-from urllib.request import pathname2url
 
 import pytest
 
@@ -122,11 +121,12 @@ def temporary_cert_file(tmp_path: Path, client_cert: Certificate) -> str:
     """Creates a temporary file containing the client certificate."""
     cert_file = tmp_path / "client_cert.pem"
     cert_file.write_text(client_cert.cert_pem)
-    # Handle Windows drive letters in file URIs
-    cert_path = Path(cert_file)
-    if cert_path.drive:  # Windows path with drive letter
-        return f"file:///{pathname2url(str(cert_file))}"
-    return f"file://{cert_file}"
+    # `as_uri()` spells a file URI correctly on every platform, drive letters
+    # included. Building one by hand did not: `pathname2url` already returns a
+    # leading "///" for a Windows path, so prefixing "file:///" produced six
+    # slashes, and a consumer stripping "file://" was left with "////C:/..."
+    # which `Path` reads as `\C:\...` -- an invalid path that failed to open.
+    return cert_file.as_uri()
 
 
 @pytest.fixture
@@ -134,11 +134,12 @@ def temporary_key_file(tmp_path: Path, client_cert: Certificate) -> str:
     """Creates a temporary file containing the client private key."""
     key_file = tmp_path / "client_key.pem"
     key_file.write_text(client_cert.key_pem)
-    # Handle Windows drive letters in file URIs
-    key_path = Path(key_file)
-    if key_path.drive:  # Windows path with drive letter
-        return f"file:///{pathname2url(str(key_file))}"
-    return f"file://{key_file}"
+    # `as_uri()` spells a file URI correctly on every platform, drive letters
+    # included. Building one by hand did not: `pathname2url` already returns a
+    # leading "///" for a Windows path, so prefixing "file:///" produced six
+    # slashes, and a consumer stripping "file://" was left with "////C:/..."
+    # which `Path` reads as `\C:\...` -- an invalid path that failed to open.
+    return key_file.as_uri()
 
 
 @pytest.fixture
