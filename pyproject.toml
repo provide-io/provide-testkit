@@ -194,9 +194,16 @@ utils = [
 ]
 
 # Fuzzing and test generation (no upper bounds - use latest)
-fuzzing = [
-    "pynguin",
-]
+# `fuzzing` (pynguin) is gone: it could not be installed, on any Python, for as
+# long as this project has required pytest 9.
+#
+# pynguin >=0.46 requires pytest>=8.3.5,<9.0.0, which this project's own
+# pytest>=9.0.2 rules out. The only pynguin loose enough to coexist with pytest 9
+# is 0.6.3, from 2021, which depends on jellyfish 0.11.2 -- a release with no
+# cp313 wheels, so it builds from an sdist whose pyproject.toml declares neither
+# project.version nor dynamic, which uv refuses to parse. Both ends of the range
+# are therefore unavailable and the extra resolved to something no `uv sync`
+# could install. Restore it when pynguin supports pytest 9.
 
 # Comprehensive security scanning (no upper bounds - use latest)
 security = [
@@ -224,7 +231,7 @@ pyvider-dev = [
 ]
 
 all = [
-    "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils,security,fuzzing]>=0.4.0",
+    "provide-testkit[quality,typecheck,advanced-testing,profiling,transport,crypto,process,grpc,build,docs,utils,security]>=0.4.0",
 ]
 
 dev = [

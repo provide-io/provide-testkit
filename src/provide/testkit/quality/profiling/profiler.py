@@ -25,7 +25,9 @@ try:
     MEMRAY_AVAILABLE = True
 except ImportError:
     MEMRAY_AVAILABLE = False
-    memray = None
+    # memray is an optional dependency; mypy resolves the module when it is
+    # installed, so the sentinel needs the narrowing suppressed explicitly.
+    memray = None  # type: ignore[assignment]
 
 from ..base import QualityResult, QualityToolError
 
