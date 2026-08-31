@@ -38,6 +38,40 @@ class TestPthFileInstallation:
         assert "import provide.testkit._early_init" in content, ".pth file should import _early_init module"
         assert "TESTKIT_PTH_LOG" in content, ".pth file should support TESTKIT_PTH_LOG for debugging"
 
+    def test_pth_file_is_ascii(self) -> None:
+        """Verify the .pth file contains no non-ASCII bytes.
+
+        site.py reads .pth files with the locale's encoding, which is ASCII under
+        the C locale. A single non-ASCII byte therefore aborts interpreter
+        startup for every program in the environment, before any user code runs:
+
+            Fatal Python error: init_import_site: Failed to import the site module
+            UnicodeDecodeError: 'ascii' codec can't decode byte 0xf0
+
+        The debug messages still carry an emoji; it is written as a \\U escape so
+        the file itself stays ASCII and the escape is resolved when the line is
+        executed.
+        """
+        testkit_root = Path(__file__).parent.parent
+        pth_file = testkit_root / "src" / "provide" / "testkit" / "provide_testkit_init.pth"
+
+        raw = pth_file.read_bytes()
+        offending = [(index, byte) for index, byte in enumerate(raw) if byte > 0x7F]
+
+        assert not offending, f".pth file must be ASCII; non-ASCII bytes at {offending}"
+
+    def test_pth_file_keeps_its_emoji_as_an_escape(self) -> None:
+        """Verify the ASCII rule was met by escaping the emoji, not deleting it."""
+        testkit_root = Path(__file__).parent.parent
+        pth_file = testkit_root / "src" / "provide" / "testkit" / "provide_testkit_init.pth"
+
+        content = pth_file.read_text(encoding="ascii")
+        resolved = content.encode("ascii").decode("unicode_escape")
+
+        assert "\N{ELECTRIC PLUG}" in resolved, (
+            ".pth debug messages should still carry the plug emoji, written as an escape"
+        )
+
     def test_pth_file_installed_in_site_packages(self) -> None:
         """Verify .pth file is installed to site-packages after package install."""
         # Get site-packages directories
