@@ -11,28 +11,45 @@ after package installation to ensure the .pth file is in the correct location.""
 from __future__ import annotations
 
 from pathlib import Path
-import site
 import sys
 
 from provide.foundation.console.output import perr, pout
 
+_SITE_PACKAGES_NAMES = frozenset({"site-packages", "dist-packages"})
 
-def _resolve_site_packages() -> Path:
-    """Return the best-guess site-packages directory."""
-    site_packages: Path | None = None
-    if hasattr(site, "getsitepackages"):
-        site_dirs = site.getsitepackages()
-        if site_dirs:
-            site_packages = Path(site_dirs[0])
 
-    if site_packages is not None:
-        return site_packages
-
+def _prefix_site_packages() -> Path:
+    """Return the site-packages directory implied by ``sys.prefix``."""
     if sys.platform == "win32":
         return Path(sys.prefix) / "Lib" / "site-packages"
 
     python_version = f"python{sys.version_info.major}.{sys.version_info.minor}"
     return Path(sys.prefix) / "lib" / python_version / "site-packages"
+
+
+def _resolve_site_packages() -> Path:
+    """Return the site-packages directory this package is installed into.
+
+    ``site.getsitepackages()`` is deliberately not used. ``install_pth_file`` runs
+    during Python's site initialization, because the .pth file imports this
+    package -- and .pth files are processed from inside ``site.venv()``, which
+    reads them *before* it rewrites ``site.PREFIXES`` for the virtual
+    environment. A call made at that moment reports the base interpreter's
+    directories, not the venv's, so the .pth was written into the shared
+    interpreter: inert there, invisible to the venv, and beyond the reach of a
+    later upgrade, which is why a stale .pth could never be refreshed.
+
+    The directory holding ``provide/testkit/`` is the right answer by
+    construction and needs no interpreter state at all. ``sys.prefix`` is the
+    fallback -- unlike ``site.PREFIXES`` it already points at the venv this
+    early -- and covers an editable install, where this file lives in a source
+    tree that site.py would never read a .pth from.
+    """
+    package_parent = Path(__file__).resolve().parents[2]
+    if package_parent.name in _SITE_PACKAGES_NAMES:
+        return package_parent
+
+    return _prefix_site_packages()
 
 
 def install_pth_file(*, verbose: bool = False) -> int:

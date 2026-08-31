@@ -14,6 +14,7 @@ from __future__ import annotations
 from pathlib import Path
 import site
 import sys
+from unittest import mock
 
 import pytest
 
@@ -71,6 +72,44 @@ class TestPthFileInstallation:
         assert "\N{ELECTRIC PLUG}" in resolved, (
             ".pth debug messages should still carry the plug emoji, written as an escape"
         )
+
+    def test_resolver_ignores_site_prefixes(self) -> None:
+        """The destination must not come from `site.PREFIXES`.
+
+        `install_pth_file` runs during site initialization, because the .pth file
+        imports this package -- and .pth files are processed from inside
+        `site.venv()`, which reads them *before* it rewrites `site.PREFIXES` for
+        the virtual environment. Asking `site` at that moment returns the base
+        interpreter, so the .pth was written into the shared interpreter instead
+        of the venv: inert there, and beyond the reach of a later upgrade, which
+        is why a stale .pth could never be refreshed.
+        """
+        from provide.testkit._install_pth import _resolve_site_packages
+
+        before = _resolve_site_packages()
+
+        bogus = ["/nonexistent/base/interpreter"]
+        with mock.patch.object(site, "PREFIXES", bogus):
+            during = _resolve_site_packages()
+
+        assert during == before, "resolver must not read site.PREFIXES"
+        assert "/nonexistent/" not in str(during)
+
+    def test_resolver_targets_this_environment(self) -> None:
+        """The destination is inside the running interpreter's environment."""
+        from provide.testkit._install_pth import _resolve_site_packages
+
+        resolved = _resolve_site_packages()
+
+        assert resolved.is_absolute()
+        assert resolved.name in {"site-packages", "dist-packages"}
+        assert str(resolved).startswith(sys.prefix), f"{resolved} is outside this environment ({sys.prefix})"
+
+    def test_prefix_fallback_follows_sys_prefix(self) -> None:
+        """The fallback tracks sys.prefix, which is correct this early."""
+        from provide.testkit._install_pth import _prefix_site_packages
+
+        assert str(_prefix_site_packages()).startswith(sys.prefix)
 
     def test_pth_file_installed_in_site_packages(self) -> None:
         """Verify .pth file is installed to site-packages after package install."""

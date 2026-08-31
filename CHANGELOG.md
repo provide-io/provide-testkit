@@ -5,6 +5,42 @@ All notable changes to the provide-testkit project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.5] - 2026-08-30
+
+### Fixed
+- **The `.pth` file was installed into the base interpreter instead of the
+  virtual environment.** `install_pth_file()` asked `site.getsitepackages()`
+  where to write. It runs during Python's site initialization — the .pth file
+  imports this package — and .pth files are processed from inside `site.venv()`,
+  which reads them *before* it rewrites `site.PREFIXES` for the virtual
+  environment. Captured at the moment of the copy:
+
+  ```
+  sys.prefix    = <venv>                                  # correct
+  site.PREFIXES = ['/…/uv/python/cpython-3.11.16-…']       # base interpreter
+  dst           = <base>/lib/python3.11/site-packages/provide_testkit_init.pth
+  ```
+
+  Two consequences. The file landed in the shared interpreter, where no
+  `provide` package exists, so it did nothing but persist — surviving
+  uninstallation from every project. And because the copy never reached the
+  venv, a `.pth` already there was never refreshed: upgrading the package left
+  the old file in place, which is what kept 0.4.4's fix from reaching existing
+  environments.
+
+  The destination is now the directory that contains `provide/testkit/`, which
+  is correct by construction and reads no interpreter state. `sys.prefix` is the
+  fallback for an editable install; unlike `site.PREFIXES` it already points at
+  the venv this early.
+
+  Verified: planting a stale `.pth` in a 0.4.5 environment and running Python
+  once replaces it and fixes the C locale, and the base interpreter is never
+  written to.
+
+  If an earlier version left a `provide_testkit_init.pth` in your base
+  interpreter's `site-packages`, it is inert and safe to delete; `uninstall`
+  targets the environment it runs in and will not find it.
+
 ## [0.4.4] - 2026-08-30
 
 ### Fixed
