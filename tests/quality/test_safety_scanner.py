@@ -14,7 +14,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from provide.testkit.quality.base import QualityToolError
-from provide.testkit.quality.security.safety_scanner import SAFETY_AVAILABLE, SafetyScanner
+from provide.testkit.quality.security.safety_scanner import SafetyScanner
 
 
 @pytest.fixture(autouse=True)
@@ -62,9 +62,14 @@ class TestSafetyAvailability:
         assert result is False
 
 
-@pytest.mark.skipif(not SAFETY_AVAILABLE, reason="Safety not installed")
+# Nothing in this class runs safety. The only thing that ever needed it
+# installed was the constructor's availability guard, so the class used to
+# skip wholesale on any host without the tool -- and now that safety is a
+# tool to install rather than a declared dependency, that is every host.
+# Patching the guard is what the mocked tests below already do.
+@patch("provide.testkit.quality.security.safety_scanner.SAFETY_AVAILABLE", True)
 class TestSafetyScanner:
-    """Tests for Safety scanner (requires safety to be installed)."""
+    """Constructor and command-building tests for the Safety scanner."""
 
     def test_scanner_initialization(self) -> None:
         """Test scanner can be initialized."""

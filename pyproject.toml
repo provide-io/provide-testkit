@@ -205,16 +205,35 @@ utils = [
 # are therefore unavailable and the extra resolved to something no `uv sync`
 # could install. Restore it when pynguin supports pytest 9.
 
-# Comprehensive security scanning (no upper bounds - use latest)
+# Security scanning (no upper bounds - use latest)
+#
+# Only bandit is declared. It is the one scanner this package uses as a library
+# -- quality/security/scanner.py does `import bandit` and drives bandit.core
+# directly -- so it belongs in the dependency graph.
+#
+# The rest are command-line tools that the wrappers shell out to and probe for
+# on PATH, so declaring them would put a scanner into the resolved dependency
+# graph of every project that installs this extra. That is not academic:
+# `pyvider-dev` includes this extra, so `safety` -- and through it `nltk` --
+# ended up in the lockfile of every project in the pyvider family, where an
+# unpatched advisory against `nltk` (PYSEC-2026-3740) reads as a finding
+# against that project. A tool used to inspect a project should not be part of
+# what the project resolves.
+#
+# Install them as tools instead, which is what the wrappers' own error messages
+# already tell you to do:
+#
+#     uv tool install safety      # dependency vulnerability scanner (PyUp database)
+#     uv tool install pip-audit   # PyPI security advisory scanner
+#     uv tool install semgrep     # also conflicts with the mkdocs ecosystem
+#
+# gitleaks and trufflehog are Go binaries rather than pip packages: install
+# them through a system package manager or download a release.
+#
+# Every wrapper checks for its tool at runtime and reports what to install, so
+# a missing one degrades to a clear error rather than an import failure.
 security = [
-    "bandit",           # Python SAST (static application security testing)
-    "safety",           # Dependency vulnerability scanner (PyUp database)
-    "pip-audit",        # PyPI security advisory scanner
-    # Note: semgrep removed due to dependency conflicts with mkdocs ecosystem
-    # Install separately: uv tool install semgrep
-    # Note: gitleaks and trufflehog are Go binaries, not pip packages
-    # They should be installed via system package manager or downloaded binaries
-    # Wrappers will check for their availability at runtime
+    "bandit",           # Python SAST -- used as a library, not a subprocess
 ]
 
 # Convenience groups
