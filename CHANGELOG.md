@@ -5,6 +5,41 @@ All notable changes to the provide-testkit project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- **The `security` extra no longer declares `safety` or `pip-audit`.** Both are
+  command-line tools that the wrappers shell out to and probe for on `PATH` --
+  neither is imported -- so declaring them put a scanner into the resolved
+  dependency graph of every project that installed the extra. `pyvider-dev`
+  includes `security`, so `safety`, and through it `nltk`, reached the lockfile
+  of every project in the pyvider family. When `nltk` drew an unpatched
+  advisory (PYSEC-2026-3740), that read as a finding against those projects,
+  against a package none of them had ever asked for.
+
+  They join `semgrep`, `gitleaks` and `trufflehog`, which this extra already
+  documented rather than declared, and the instruction is the one the wrappers'
+  own error messages already print:
+
+      uv tool install safety
+      uv tool install pip-audit
+
+  `bandit` stays. `quality/security/scanner.py` imports it and drives
+  `bandit.core` directly, so it is a library this package uses rather than a
+  process it launches.
+
+  Consumers pick this up when they move to a release containing it; a project
+  that wants the two scanners available should install them as tools.
+
+### Fixed
+- **`TestSafetyScanner` and `TestPipAuditScanner` no longer skip.** Both classes
+  were guarded by `skipif(not <TOOL>_AVAILABLE)`, but neither runs the tool:
+  they cover the constructor and command building, and the only thing that
+  needed the binary present was the constructor's own availability check. They
+  now patch that guard, as the sibling mocked tests already did, so the 8 tests
+  in them run on every host instead of quietly disappearing on any host without
+  the tool installed -- which, after the change above, is every host.
+
 ## [0.4.5] - 2026-08-30
 
 ### Fixed

@@ -14,7 +14,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from provide.testkit.quality.base import QualityToolError
-from provide.testkit.quality.security.pip_audit_scanner import PIP_AUDIT_AVAILABLE, PipAuditScanner
+from provide.testkit.quality.security.pip_audit_scanner import PipAuditScanner
 
 
 class TestPipAuditAvailability:
@@ -61,9 +61,14 @@ class TestPipAuditAvailability:
         assert result is False
 
 
-@pytest.mark.skipif(not PIP_AUDIT_AVAILABLE, reason="pip-audit not installed")
+# Nothing in this class runs pip-audit. The only thing that ever needed it
+# installed was the constructor's availability guard, so the class used to
+# skip wholesale on any host without the tool -- and now that pip-audit is a
+# tool to install rather than a declared dependency, that is every host.
+# Patching the guard is what the mocked tests below already do.
+@patch("provide.testkit.quality.security.pip_audit_scanner.PIP_AUDIT_AVAILABLE", True)
 class TestPipAuditScanner:
-    """Tests for pip-audit scanner (requires pip-audit to be installed)."""
+    """Constructor and command-building tests for the pip-audit scanner."""
 
     def test_scanner_initialization(self) -> None:
         """Test scanner can be initialized."""
