@@ -79,6 +79,23 @@ def test_the_wrapper_delegates_what_it_does_not_define() -> None:
     assert unicode_safe(stream).encoding == "cp1252"
 
 
+class _NoReturnStream:
+    """colorama's Windows wrapper: write() returns None, not a count."""
+
+    encoding = "cp1252"
+
+    def __init__(self) -> None:
+        self.text = ""
+
+    def write(self, text: str) -> None:
+        self.text += text.encode("cp1252", "strict").decode("cp1252")
+
+
+def test_a_stream_whose_write_returns_none_is_accepted() -> None:
+    """colorama returns None from write; coercing that to int raised TypeError."""
+    assert unicode_safe(_NoReturnStream()).write("plain\n") == len("plain\n")
+
+
 def test_the_plugin_configures_a_stream_that_cannot_raise(monkeypatch) -> None:
     """The regression: the plugin handed structlog the raw console."""
     import structlog

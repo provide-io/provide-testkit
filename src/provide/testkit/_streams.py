@@ -38,7 +38,7 @@ class _UnicodeSafeStream:
 
     def write(self, text: str) -> int:
         try:
-            return int(self._stream.write(text))
+            written = self._stream.write(text)
         except UnicodeEncodeError:
             encoding = getattr(self._stream, "encoding", None) or "ascii"
             # backslashreplace names the character (\U0001f40d) where replace
@@ -46,6 +46,9 @@ class _UnicodeSafeStream:
             safe = text.encode(encoding, "backslashreplace").decode(encoding, "replace")
             self._stream.write(safe)
             return len(text)
+        # colorama's Windows wrapper returns None rather than a count, so the
+        # length of what was handed over stands in for it.
+        return written if isinstance(written, int) else len(text)
 
     def __getattr__(self, name: str) -> Any:
         return getattr(self._stream, name)
