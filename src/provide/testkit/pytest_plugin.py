@@ -29,6 +29,8 @@ import sys
 
 import structlog
 
+from provide.testkit._streams import unicode_safe
+
 # Configure structlog with test-safe defaults BEFORE Foundation imports.
 # This ensures that even if Foundation's get_logger() falls back to structlog.get_logger()
 # during circular import resolution, the returned loggers will have proper configuration
@@ -50,17 +52,28 @@ def _strip_foundation_context(
     return event_dict
 
 
-structlog.configure(
-    processors=[
-        structlog.processors.TimeStamper(fmt="iso"),
-        _strip_foundation_context,  # type: ignore[list-item]
-        structlog.dev.ConsoleRenderer(),
-    ],
-    wrapper_class=structlog.BoundLogger,
-    context_class=dict,
-    logger_factory=structlog.PrintLoggerFactory(file=sys.stdout),
-    cache_logger_on_first_use=False,  # Disable caching for test isolation
-)
+def _configure_test_structlog() -> None:
+    """Configure structlog for the test session.
+
+    The stream is read at call time and wrapped: on a legacy console this is a
+    cp1252 stream behind colorama, and a log line carrying an emoji would
+    otherwise raise UnicodeEncodeError out of the logging call and into
+    whatever the test was doing.
+    """
+    structlog.configure(
+        processors=[
+            structlog.processors.TimeStamper(fmt="iso"),
+            _strip_foundation_context,  # type: ignore[list-item]
+            structlog.dev.ConsoleRenderer(),
+        ],
+        wrapper_class=structlog.BoundLogger,
+        context_class=dict,
+        logger_factory=structlog.PrintLoggerFactory(file=unicode_safe(sys.stdout)),
+        cache_logger_on_first_use=False,  # Disable caching for test isolation
+    )
+
+
+_configure_test_structlog()
 
 # Install the import hook unconditionally
 # This module is a pytest plugin (registered via pytest11 entry point) that ONLY
