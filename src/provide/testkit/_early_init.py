@@ -124,6 +124,8 @@ def _configure_structlog_for_testing() -> None:
             event_dict.pop("_foundation_level_hint", None)
             return event_dict
 
+        from provide.testkit._streams import unicode_safe
+
         structlog.configure(
             processors=[
                 structlog.processors.TimeStamper(fmt="iso"),
@@ -134,7 +136,7 @@ def _configure_structlog_for_testing() -> None:
             wrapper_class=structlog.BoundLogger,
             context_class=dict,
             # Use stderr instead of stdout to avoid polluting pytest-xdist pipe communication
-            logger_factory=structlog.PrintLoggerFactory(file=sys.stderr),
+            logger_factory=structlog.PrintLoggerFactory(file=unicode_safe(sys.stderr)),
             cache_logger_on_first_use=False,  # Disable caching for test isolation
         )
     except Exception:
