@@ -29,6 +29,7 @@ import sys
 
 import structlog
 
+from provide.testkit._capture import install_capture_swap_fix
 from provide.testkit._streams import unicode_safe
 
 # Configure structlog with test-safe defaults BEFORE Foundation imports.
@@ -83,6 +84,12 @@ from provide.testkit._blocker import SetproctitleImportBlocker  # noqa: E402
 from provide.testkit._install_blocker import install_setproctitle_blocker  # noqa: E402
 
 install_setproctitle_blocker(force=True)
+
+# Pytest hands a suspended stream back to whatever it saved at start, so a test
+# that swaps sys.stdout after that -- CliRunner.isolation, redirect_stdout --
+# loses the swap the first time a live log record suspends capture, and its
+# output lands in pytest's buffer instead. See provide.testkit._capture.
+install_capture_swap_fix()
 
 __all__ = ["SetproctitleImportBlocker", "pytest_load_initial_conftests"]
 
