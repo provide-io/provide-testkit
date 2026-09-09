@@ -22,6 +22,7 @@ import sys
 from _pytest.capture import SysCapture
 import pytest
 
+from provide.testkit import _capture
 from provide.testkit._capture import install_capture_swap_fix
 
 STDOUT_FD = 1
@@ -140,3 +141,89 @@ def test_the_same_run_loses_its_output_without_this_plugin(pytester: pytest.Pyte
     result = pytester.runpytest_subprocess("-o", "log_cli=true", "-p", "no:provide_testkit")
 
     result.assert_outcomes(failed=1)
+
+
+class _FixedSysCapture(SysCapture):
+    """A pytest whose capture hands back the stream that was in place."""
+
+    def suspend(self) -> None:
+        self._assert_state("suspend", ("started", "suspended"))
+        if self._state == "started":
+            self._seen = getattr(sys, self.name)
+        setattr(sys, self.name, self._old)
+        self._state = "suspended"
+
+    def resume(self) -> None:
+        self._assert_state("resume", ("started", "suspended"))
+        if self._state == "started":
+            return
+        setattr(sys, self.name, getattr(self, "_seen", self.tmpfile))
+        self._state = "started"
+
+
+class _UnfixedSysCapture(SysCapture):
+    """Pytest as shipped: resume reinstates the stream capture installed."""
+
+    def suspend(self) -> None:
+        self._assert_state("suspend", ("started", "suspended"))
+        setattr(sys, self.name, self._old)
+        self._state = "suspended"
+
+    def resume(self) -> None:
+        self._assert_state("resume", ("started", "suspended"))
+        if self._state == "started":
+            return
+        setattr(sys, self.name, self.tmpfile)
+        self._state = "started"
+
+
+# Both stand-ins answer for pytest itself, so they must claim the origin the
+# install check reads -- a class whose methods came from anywhere else is a
+# different patcher, and declining that is a separate rule.
+for _stand_in in (_FixedSysCapture, _UnfixedSysCapture):
+    _stand_in.suspend.__module__ = "_pytest.capture"
+    _stand_in.resume.__module__ = "_pytest.capture"
+
+
+def test_the_fix_is_declined_when_pytest_already_preserves_the_swap(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The exit route: a pytest that fixed this upstream is left alone."""
+    monkeypatch.setattr(_capture, "_capture_classes", lambda: (_FixedSysCapture, _FixedSysCapture))
+
+    installed = install_capture_swap_fix()
+
+    assert installed is False
+    assert _FixedSysCapture.suspend.__qualname__ == "_FixedSysCapture.suspend"
+
+
+def test_the_fix_is_installed_when_pytest_still_drops_the_swap(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The probe answers by behaviour, so it must still say yes to today's pytest."""
+    monkeypatch.setattr(_capture, "_capture_classes", lambda: (_UnfixedSysCapture, _UnfixedSysCapture))
+
+    installed = install_capture_swap_fix()
+
+    assert installed is True
+    assert _UnfixedSysCapture.suspend is _capture._suspend
+
+
+def test_a_pytest_without_the_class_leaves_the_plugin_importable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A reshaped pytest must cost the fix, not every suite that loads the plugin."""
+    monkeypatch.setattr(_capture, "_capture_classes", lambda: None)
+
+    assert install_capture_swap_fix() is False
+
+
+@pytest.mark.usefixtures("stdout_restored")
+def test_the_probe_gives_back_the_stream_it_found(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Deciding whether to patch runs a real capture; it must leave no trace."""
+    monkeypatch.setattr(_capture, "_capture_classes", lambda: (_UnfixedSysCapture, _UnfixedSysCapture))
+    before = sys.stdout
+
+    install_capture_swap_fix()
+
+    assert sys.stdout is before
