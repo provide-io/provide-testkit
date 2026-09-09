@@ -5,6 +5,38 @@ All notable changes to the provide-testkit project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2026-09-08
+
+### Fixed
+- **Pytest's stream capture now gives back the stream it took, not the one it
+  saved.** `SysCaptureBase.suspend` handed `sys.stdout` back to the stream saved
+  before capture started, and `resume` reinstated the stream capture installed at
+  `start`; neither read what was actually there. A swap made after capture
+  started -- `CliRunner.isolation`, `contextlib.redirect_stdout`, a stream
+  fixture of one's own -- was discarded on the first suspend, and every write
+  after it landed in pytest's buffer instead of the caller's.
+
+  `log_cli = true` makes that ordinary: pytest's live-log handler sits on the
+  root logger and suspends global capture around each record, so one log line
+  emitted from inside `CliRunner.invoke` -- from any library, at any depth --
+  left `result.output` empty while the text itself was real and showed up in
+  pytest's own captured output. On one consumer's CLI suite that was 51 tests,
+  and assertions of the form `assert "--debug" not in result.output` passed
+  vacuously once the output was empty.
+
+  Teardown is unchanged: `done` still restores the stream capture replaced, so a
+  swap left behind by a test cannot outlive it. This belongs in pytest, and
+  `_capture.py` goes away when the pytest floor carries the fix.
+
+## [0.5.1] - 2026-09-07
+
+### Fixed
+- **Test logging cannot raise on a console that cannot encode it.** The plugin
+  configures structlog before Foundation is imported, so the stream it hands
+  structlog is whatever pytest holds at that moment. On a legacy Windows console
+  that is a cp1252 stream behind colorama, and a log line carrying an emoji
+  raised `UnicodeEncodeError` out of the logging call and into the test.
+
 ## [0.5.0] - 2026-09-05
 
 ### Changed
