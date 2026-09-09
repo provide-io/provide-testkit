@@ -5,6 +5,42 @@ All notable changes to the provide-testkit project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.3] - 2026-09-09
+
+### Fixed
+- **The pytest capture patch decides for itself whether pytest needs it.**
+  `install_capture_swap_fix` guarded on the two methods still coming from
+  `_pytest.capture`, which identifies another patcher and nothing else. A pytest
+  carrying its own fix keeps those methods exactly where they are, so the guard
+  admits it and the patch lands on the corrected implementation, putting the
+  `sys.stdout` reassignment back into a capture that had stopped doing it --
+  silently, and only in the environments that had upgraded.
+
+  Installing measures instead of inferring: a real `SysCapture` is driven
+  through swap, suspend and resume, and only a pytest that loses the swap is
+  patched. A version floor cannot answer that question, since a backport, a fork
+  and a vendored copy each answer it for themselves. A probe that cannot be
+  driven at all reports no defect, because patching a class whose behaviour was
+  never established is how a fix becomes an outage.
+
+  This is what retires the patch. `pytest-dev/pytest#14996` proposes the fix
+  upstream and drew a maintainer's preference for a different design -- capture
+  owning a distinct stream rather than reassigning `sys.stdout` -- so the shape
+  that eventually lands is unlikely to be this one. Either way, the probe stands
+  down on its own rather than waiting for someone to remember this module.
+
+- **A reshaped `_pytest.capture` costs the fix, not the suite.**
+  `from _pytest.capture import SysCaptureBase` sat at module scope, and
+  `pytest_plugin` imports this module while pytest loads it. A pytest that
+  renames or drops the class therefore raises `ImportError` inside plugin load
+  and takes every suite that installs this plugin with it, on nothing more than
+  a version bump. The import is asked for inside the call, where its absence is
+  a missing fix and nothing else.
+
+- **The install marker is read from the class's own `__dict__`** rather than
+  through inheritance, so a subclass cannot report a fix that is not on the
+  class in hand.
+
 ## [0.5.2] - 2026-09-08
 
 ### Fixed
