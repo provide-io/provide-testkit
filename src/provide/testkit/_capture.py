@@ -24,24 +24,30 @@ at resume, which is what the two methods already claim to do. Teardown is
 untouched: ``done`` still restores the stream capture replaced, so a swap left
 behind by a test cannot outlive it.
 
-This belongs in pytest, and the tests in ``tests/test_capture_stream_swap.py``
-drive the real ``SysCapture``, so they fail loudly once pytest changes the
-methods underneath -- whether it fixes this or reshapes the class. Drop this
-module when the pytest floor carries the fix.
+This belongs in pytest, so the module is built to retire itself rather than to
+be remembered. Installing drives a real capture through swap, suspend and
+resume, and patches only a pytest that loses the swap -- one that keeps it is
+left alone, by whatever route it came to keep it. A pytest that no longer has
+the class costs the fix and nothing else: the import is asked for inside the
+call rather than at module scope, so a reshaped capture module cannot take the
+plugin, and every suite that loads it, down with it.
 """
 
 from __future__ import annotations
 
+import io
 import sys
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from _pytest.capture import SysCaptureBase
+if TYPE_CHECKING:
+    from _pytest.capture import SysCaptureBase
 
 __all__ = ["install_capture_swap_fix"]
 
 _INSTALLED_MARKER = "_provide_testkit_swap_safe"
 # The stream is parked on pytest's object, so the name says whose it is.
 _SWAPPED_IN = "_provide_testkit_swapped_in"
+_STDOUT_FD = 1
 
 
 def _suspend(self: SysCaptureBase[Any]) -> None:
@@ -64,18 +70,75 @@ def _resume(self: SysCaptureBase[Any]) -> None:
     self._state = "started"
 
 
+def _capture_classes() -> tuple[Any, type] | None:
+    """The class to patch and the one to probe, or ``None`` from a pytest without them.
+
+    ``SysCaptureBase`` carries the two methods for every capture that reaches
+    ``sys``; ``SysCapture`` is the one that can be driven. Asking for them here
+    rather than at import is what keeps a renamed or removed class a lost fix
+    instead of an ``ImportError`` raised while the plugin is loading.
+    """
+    try:
+        from _pytest.capture import SysCapture, SysCaptureBase
+    except (ImportError, AttributeError):
+        return None
+    return SysCaptureBase, SysCapture
+
+
+def _drops_a_swap(probe_class: type) -> bool:
+    """Whether this pytest loses a stream installed after capturing started.
+
+    The question is behavioural, so the answer is measured rather than read off
+    a version: start a capture, swap the stream, cycle suspend and resume, and
+    see which stream is left standing. A pytest that keeps the swap wants
+    nothing from this module, and a version number cannot say which pytest that
+    is -- a backport, a fork or a vendored copy all answer here for themselves.
+
+    A probe that cannot be driven at all -- a capture reshaped past recognition
+    -- reports no defect. Patching a class whose behaviour could not be
+    established is how a fix becomes the outage.
+    """
+    saved = sys.stdout
+    try:
+        probe = probe_class(_STDOUT_FD)
+        probe.start()
+        try:
+            swapped_in = io.StringIO()
+            sys.stdout = swapped_in
+            probe.suspend()
+            probe.resume()
+            return sys.stdout is not swapped_in
+        finally:
+            probe.done()
+    except Exception:
+        return False
+    finally:
+        sys.stdout = saved
+
+
 def install_capture_swap_fix() -> bool:
     """Make pytest's stream capture preserve a swap made after it started.
 
     Returns whether this call is the one that installed it. Declining leaves
-    pytest exactly as found: the fix is worth having, and silently layering it
-    over a patch someone else installed is not.
+    pytest exactly as found -- a pytest that already keeps the swap, one whose
+    methods belong to another patcher, and one this module cannot recognise are
+    all cases where doing nothing is the whole job.
     """
-    if getattr(SysCaptureBase, _INSTALLED_MARKER, False):
+    classes = _capture_classes()
+    if classes is None:
         return False
-    if any(getattr(SysCaptureBase, name).__module__ != "_pytest.capture" for name in ("suspend", "resume")):
+    patch_target, probe_class = classes
+
+    # Read the marker off the class itself. A subclass inherits it, and asking
+    # through inheritance would report a fix that is not on the class in hand.
+    if _INSTALLED_MARKER in patch_target.__dict__:
         return False
-    SysCaptureBase.suspend = _suspend  # type: ignore[method-assign]
-    SysCaptureBase.resume = _resume  # type: ignore[method-assign]
-    setattr(SysCaptureBase, _INSTALLED_MARKER, True)
+    if any(getattr(patch_target, name).__module__ != "_pytest.capture" for name in ("suspend", "resume")):
+        return False
+    if not _drops_a_swap(probe_class):
+        return False
+
+    patch_target.suspend = _suspend
+    patch_target.resume = _resume
+    setattr(patch_target, _INSTALLED_MARKER, True)
     return True
